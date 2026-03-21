@@ -1,0 +1,8 @@
+<section class="hero" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('/images/home-bg.jpg'); background-size: cover; background-position: center;">
+  <div class="hero-overlay">
+    <div class="hero-content">
+      <h1>{{ .Site.Title }}</h1>
+      <p>{{ with .Site.Params.heroTagline }}{{ . }}{{ else }}Gaming Guides &amp; Product Picks{{ end }}</p>
+    </div>
+  </div>
+</section>

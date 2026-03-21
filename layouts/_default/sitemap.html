@@ -1,0 +1,41 @@
+{{ define "main" }}
+<section>
+  <h1>{{ .Title }}</h1>
+  {{ .Content }}
+
+  <h2>Categories</h2>
+  {{ $sections := site.Sections.ByTitle }}
+  {{ if gt (len $sections) 0 }}
+    <ul class="sitemap-list">
+      {{ range $sections }}
+        <li>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          {{ $sectionPages := .RegularPages.ByTitle }}
+          {{ if gt (len $sectionPages) 0 }}
+            <ul class="sitemap-list">
+              {{ range $sectionPages }}
+                <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+              {{ end }}
+            </ul>
+          {{ end }}
+        </li>
+      {{ end }}
+    </ul>
+  {{ else }}
+    <p>No categories found yet.</p>
+  {{ end }}
+
+  <h2>Pages</h2>
+  {{ $current := . }}
+  {{ $standalonePages := where (where site.RegularPages "Section" "eq" "") "RelPermalink" "ne" $current.RelPermalink }}
+  {{ if gt (len $standalonePages) 0 }}
+    <ul class="sitemap-list">
+      {{ range $standalonePages.ByTitle }}
+        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+      {{ end }}
+    </ul>
+  {{ else }}
+    <p>No standalone pages found yet.</p>
+  {{ end }}
+</section>
+{{ end }}

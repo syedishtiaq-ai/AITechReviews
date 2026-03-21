@@ -1,0 +1,51 @@
+{{ define "main" }}
+<section class="dual-box-section">
+  <h2 class="section-title">What are you looking for?</h2>
+  <div class="dual-box">
+    <div class="box-left">
+      {{ $show := .Site.Params.showOnHome }}
+      {{ if or (not $show) $show.productReviews }}
+      <div class="service-item">
+        <a href="{{ "/product-reviews/" | relURL }}">
+          <img src="{{ "/images/computer-2026.svg" | relURL }}" alt="Product Reviews">
+          <span>Product Reviews</span>
+        </a>
+      </div>
+      {{ end }}
+
+      {{ if or (not $show) $show.gaming }}
+      <div class="service-item">
+        <a href="{{ "/gaming/" | relURL }}">
+          <img src="{{ "/images/computer-2026.svg" | relURL }}" alt="Gaming">
+          <span>Gaming</span>
+        </a>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div id="postContainer" class="post-groups" data-home-order='{{ default (slice "Gaming" "Product Reviews") .Site.Params.homepageOrder | jsonify }}'>
+    <div class="post-group">
+      <div class="post-group-header">
+        <h2 class="post-group-title">Loading posts…</h2>
+      </div>
+      <div class="carousel">
+        <div class="carousel-track">
+          <div class="carousel-card loading-card">
+            <div class="card-content">
+              <div class="loading-row">
+                <div class="loading-cell">
+                  <span class="spinner" aria-hidden="true"></span>
+                  <span class="loading-text">Loading posts…</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{{ end }}

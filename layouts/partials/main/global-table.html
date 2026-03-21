@@ -1,0 +1,75 @@
+{{- /*
+Reusable "Articles Table" section.
+Usage: pass a dict with keys:
+  - Page (required): the current page context
+  - Title (optional): section heading
+  - DataUrl (optional): URL to JSON data (array of objects)
+  - TableId (optional): unique id suffix for aria attributes
+*/ -}}
+
+{{- $title := .Title | default "Articles" -}}
+{{- $dataUrl := .DataUrl | default "" -}}
+{{- $tableId := .TableId | default (printf "articles-%s" (md5 $title)) -}}
+{{- $col0 := .Col0Label | default "Game Name" -}}
+{{- $col1 := .Col1Label | default "Item" -}}
+{{- $col2 := .Col2Label | default "Description" -}}
+{{- $col3 := .Col3Label | default "View All" -}}
+{{- $col4 := .Col4Label | default "YouTube URL" -}}
+{{- $col5 := .Col5Label | default "Insta URL" -}}
+
+<section class="global-table-section" data-articles-table data-url="{{ $dataUrl }}" data-table-id="{{ $tableId }}">
+  <div class="global-table-card">
+    <div class="global-table-top">
+      <h2 class="global-table-title">{{ $title }}</h2>
+
+      <div class="global-table-controls" aria-label="Table controls">
+        <div class="global-table-search">
+          <input type="text" class="js-articles-table-search" placeholder="Search in table..." aria-label="Search in table">
+          <button type="button" class="js-articles-table-clear">Clear</button>
+        </div>
+
+        <div class="global-table-rows">
+          <label>
+            Rows per page:
+            <select class="js-articles-table-rows" aria-label="Rows per page">
+              <option value="10" selected>10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="global-table-wrap">
+      <table class="global-table" aria-describedby="{{ $tableId }}-pageinfo">
+        <thead>
+          <tr>
+            <th scope="col" class="is-sortable" data-sort-index="0">{{ $col0 }} <span class="sort-indicator" aria-hidden="true"></span></th>
+            <th scope="col" class="is-sortable" data-sort-index="1">{{ $col1 }} <span class="sort-indicator" aria-hidden="true"></span></th>
+            <th scope="col" class="is-sortable" data-sort-index="2">{{ $col2 }} <span class="sort-indicator" aria-hidden="true"></span></th>
+            <th scope="col">{{ $col3 }}</th>
+            <th scope="col">{{ $col4 }}</th>
+            <th scope="col">{{ $col5 }}</th>
+          </tr>
+        </thead>
+        <tbody class="js-articles-table-body">
+          <tr class="loading-row">
+            <td colspan="6" class="loading-cell">
+              <span class="spinner" aria-hidden="true"></span>
+              <span class="loading-text">Loading posts…</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="global-table-no-results js-articles-table-no-results" hidden>No results found</div>
+
+      <div class="global-table-pagination">
+        <button type="button" class="js-articles-table-prev">Previous</button>
+        <button type="button" class="js-articles-table-next">Next</button>
+        <div class="global-table-pageinfo js-articles-table-pageinfo" id="{{ $tableId }}-pageinfo"></div>
+      </div>
+    </div>
+  </div>
+</section>

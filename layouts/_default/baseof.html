@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
+
+  <!-- SEO Description -->
+  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="{{ .Permalink }}">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="{{ "/images/favicon.png" | relURL }}">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Open Graph (Social Sharing) -->
+  <meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }}{{ end }}">
+  <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ .Permalink }}">
+  <meta property="og:site_name" content="{{ .Site.Title }}">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }}{{ end }}">
+  <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+
+  <!-- Google Search Console Verification -->
+  <!-- Replace the code below with the one Google gives you -->
+  <meta name="google-site-verification" content="vWd2GVWF4ysZdgKTxEiepAzOLdTYstSgqsXsSqmozfw" />
+
+  <!-- Structured Data (Helps Google understand your site) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "{{ .Site.Title }}",
+    "url": "{{ .Site.BaseURL }}",
+    "logo": "{{ .Site.BaseURL }}images/logo.png"
+  }
+  </script>
+
+  <!-- Google Analytics GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-00D58FDB3V"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-00D58FDB3V');
+  </script>
+
+</head>
+
+<body class="{{ if or (eq .RelPermalink "/privacy-policy/") (eq .RelPermalink "/use-of-cookies-policy/") }}privacy-page{{ end }}">
+
+  {{ partial "main/header.html" . }}
+
+  {{ partial "breadcrumbs.html" . }}
+
+  <!-- hero banner removed per request -->
+
+  {{ $mainClass := "" }}
+  {{ if .IsHome }}
+    {{ $mainClass = "container home-main" }}
+  {{ else if .Params.noContentCard }}
+    {{ $mainClass = "container" }}
+  {{ else }}
+    {{ $mainClass = "container content" }}
+  {{ end }}
+
+  <main class="{{ $mainClass }}">
+    {{ block "main" . }}{{ end }}
+  </main>
+
+  {{ partial "main/footer.html" . }}
+
+  {{ partial "back-to-top.html" . }}
+
+  <script src="/js/site.js" defer></script>
+
+</body>
+</html>

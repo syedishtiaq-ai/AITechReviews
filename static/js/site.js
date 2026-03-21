@@ -1,0 +1,1067 @@
+(() => {
+  // Config: change this value to control how many posts are fetched per category
+  // on the homepage carousels. We only want the top 5 articles and show 4
+  // at a time so the 5th sits off-screen until the user clicks the right arrow.
+  const TOP_N = 5;
+
+  // simple debounce helper used by search input
+  const debounce = (fn, delay = 300) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn(...args), delay);
+    };
+  };
+
+  
+  /**
+   * collect every posts.json file referenced by the main navigation and
+   * also include the root /posts.json. Returns a flat array of post objects.
+   * This is used by the site-wide search popup.
+   */
+  const fetchAllPosts = async () => {
+    const navLinks = document.querySelectorAll(".nav-links > li > a");
+    const urls = new Set();
+    navLinks.forEach((link) => {
+      let href = link.getAttribute("href") || "";
+      if (!href) return;
+      // normalize to trailing slash
+      if (!href.endsWith("/")) href += "/";
+      urls.add(href + "posts.json");
+    });
+    // always include the site root index as a fallback
+    urls.add("/posts.json");
+
+    const results = await Promise.all(
+      Array.from(urls).map((u) =>
+        fetch(u, { cache: "no-store" })
+          .then((r) => (r.ok ? r.json() : []))
+          .catch(() => [])
+      )
+    );
+    return results.flat();
+  };
+
+  /**
+   * initialize the popup search box once we have the list of posts
+   */
+  const initSiteSearch = (posts) => {
+    const searchInput = document.getElementById("searchInput");
+    const siteSearchPopup = document.getElementById("siteSearchPopup");
+    const clearSiteSearch = document.getElementById("clearSiteSearch");
+    if (!searchInput || !siteSearchPopup) return;
+
+    const renderResults = (items, term) => {
+      // clear previous
+      siteSearchPopup.innerHTML = "";
+      if (!items.length) {
+        const div = document.createElement("div");
+        div.className = "no-results";
+        div.textContent = "No results found";
+        siteSearchPopup.appendChild(div);
+        siteSearchPopup.style.display = "block";
+        return;
+      }
+      const ul = document.createElement("ul");
+      items.forEach((p) => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = p.link || "#";
+        a.textContent = p.title || p.item || "(no title)";
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+      siteSearchPopup.appendChild(ul);
+      siteSearchPopup.style.display = "block";
+    };
+
+    const handleSiteSearch = ({ target }) => {
+      const term = (target.value || "").trim().toLowerCase();
+      if (!term) {
+        siteSearchPopup.style.display = "none";
+        return;
+      }
+      const results = posts.filter((p) => {
+        const a = String(p.title || "").toLowerCase();
+        const b = String(p.item || "").toLowerCase();
+        const c = String(p.content || p.description || "").toLowerCase();
+        return a.includes(term) || b.includes(term) || c.includes(term);
+      });
+      renderResults(results.slice(0, 20), term);
+    };
+
+    searchInput.addEventListener("input", debounce(handleSiteSearch, 250));
+
+    if (clearSiteSearch) {
+      clearSiteSearch.addEventListener("click", () => {
+        searchInput.value = "";
+        siteSearchPopup.style.display = "none";
+      });
+    }
+
+    document.addEventListener("click", (e) => {
+      if (!siteSearchPopup.contains(e.target) && e.target !== searchInput) {
+        siteSearchPopup.style.display = "none";
+      }
+    });
+  };
+
+  /**
+   * initialize the mobile search box once we have the list of posts
+   */
+  const initMobileSearch = (posts) => {
+    const searchToggle = document.querySelector(".mobile-search-toggle");
+    const searchBox = document.querySelector(".mobile-search-box");
+    const mobileSearchInput = document.getElementById("mobileSearchInput");
+    const mobileSearchPopup = document.getElementById("mobileSearchPopup");
+    const mobileClearSearch = document.getElementById("mobileClearSearch");
+    const mobileHeaderActions = document.querySelector(".mobile-header-actions");
+    
+    if (!searchToggle || !searchBox || !mobileSearchInput || !mobileSearchPopup) {
+      console.warn("Mobile search elements not found");
+      return;
+    }
+
+    const toggleSearchBox = (show) => {
+      if (show) {
+        searchBox.classList.add("active");
+        searchBox.removeAttribute("hidden");
+        mobileHeaderActions.classList.add("search-active");
+        mobileSearchInput.focus();
+        searchToggle.setAttribute("aria-expanded", "true");
+      } else {
+        searchBox.classList.remove("active");
+        searchBox.setAttribute("hidden", "");
+        mobileHeaderActions.classList.remove("search-active");
+        mobileSearchPopup.setAttribute("hidden", "");
+        mobileSearchPopup.style.display = "none";
+        searchToggle.setAttribute("aria-expanded", "false");
+      }
+    };
+
+    // Handle clicks on button and SVG
+    searchToggle.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const isOpen = searchBox.classList.contains("active");
+      toggleSearchBox(!isOpen);
+    });
+
+    const renderResults = (items, term) => {
+      // clear previous
+      mobileSearchPopup.innerHTML = "";
+      if (!items.length) {
+        const div = document.createElement("div");
+        div.className = "no-results";
+        div.textContent = "No results found";
+        mobileSearchPopup.appendChild(div);
+        mobileSearchPopup.removeAttribute("hidden");
+        mobileSearchPopup.style.display = "block";
+        return;
+      }
+      const ul = document.createElement("ul");
+      items.forEach((p) => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = p.link || "#";
+        a.textContent = p.title || p.item || "(no title)";
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+      mobileSearchPopup.appendChild(ul);
+      mobileSearchPopup.removeAttribute("hidden");
+      mobileSearchPopup.style.display = "block";
+    };
+
+    const handleMobileSearch = ({ target }) => {
+      const term = (target.value || "").trim().toLowerCase();
+      if (!term) {
+        mobileSearchPopup.style.display = "none";
+        mobileSearchPopup.setAttribute("hidden", "");
+        return;
+      }
+      const results = posts.filter((p) => {
+        const a = String(p.title || "").toLowerCase();
+        const b = String(p.item || "").toLowerCase();
+        const c = String(p.content || p.description || "").toLowerCase();
+        return a.includes(term) || b.includes(term) || c.includes(term);
+      });
+      renderResults(results.slice(0, 20), term);
+    };
+
+    mobileSearchInput.addEventListener("input", debounce(handleMobileSearch, 250));
+
+    if (mobileClearSearch) {
+      mobileClearSearch.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        mobileSearchInput.value = "";
+        mobileSearchPopup.style.display = "none";
+        mobileSearchPopup.setAttribute("hidden", "");
+        toggleSearchBox(false);
+      });
+    }
+
+    // Close search when clicking outside (but not on toggle button)
+    document.addEventListener("click", (e) => {
+      const isClickOnToggle = e.target === searchToggle || searchToggle.contains(e.target);
+      const isClickInSearchBox = searchBox.contains(e.target);
+      
+      if (!isClickInSearchBox && !isClickOnToggle) {
+        toggleSearchBox(false);
+      }
+    });
+  };
+
+
+  const escapeHtml = (value) => {
+    const text = String(value ?? "");
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  };
+
+  const highlightHtml = (text, term) => {
+    if (!term) return escapeHtml(text);
+    const safe = escapeHtml(text);
+    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`(${escapedTerm})`, "gi");
+    return safe.replace(regex, "<mark>$1</mark>");
+  };
+
+  const makeLinkCell = (href, label) => {
+    if (!href) return "";
+    const safeHref = escapeHtml(href);
+    const safeLabel = escapeHtml(label);
+    return `<a href="${safeHref}" target="_self" rel="noopener">${safeLabel}</a>`;
+  };
+
+  const normalizeUrl = (value) => {
+    const raw = String(value ?? "").trim();
+    if (!raw) return "";
+    if (/^https?:\/\//i.test(raw)) return raw;
+    return `https://${raw}`;
+  };
+
+  const makeIconLinkCell = (href, kind) => {
+    const url = normalizeUrl(href);
+    if (!url) return "";
+
+    const safeHref = escapeHtml(url);
+    const iconSrc = kind === "youtube" ? "/images/youtube.png" : "/images/instagram.png";
+    const alt = kind === "youtube" ? "YouTube" : "Instagram";
+    return `
+      <a class="global-table-iconlink" href="${safeHref}" target="_blank" rel="noopener noreferrer" aria-label="Open ${alt}">
+        <img class="global-table-icon" src="${iconSrc}" alt="${alt}">
+      </a>
+    `.trim();
+  };
+
+  const renderRow = (post, term) => {
+    const title = post?.title ?? "";
+    const item = post?.item ?? "";
+    const content = post?.content ?? post?.description ?? "";
+
+    const readMore = post?.link ? `<a class="global-table-readmore" href="${escapeHtml(post.link)}">View All</a>` : "";
+
+    const youtube = makeIconLinkCell(post?.youtube, "youtube");
+    const insta = makeIconLinkCell(post?.insta ?? post?.instagram, "instagram");
+
+    const titleCell = post?.link 
+      ? `<a href="${escapeHtml(post.link)}">${highlightHtml(title, term)}</a>`
+      : highlightHtml(title, term);
+
+    return `
+      <tr>
+        <td class="js-cell" data-col="0">${titleCell}</td>
+        <td class="js-cell" data-col="1">${highlightHtml(item, term)}</td>
+        <td class="js-cell" data-col="2">${highlightHtml(content, term)}</td>
+        <td>${readMore}</td>
+        <td class="global-table-iconcell">${youtube}</td>
+        <td class="global-table-iconcell">${insta}</td>
+      </tr>
+    `;
+  };
+
+  const initArticlesTable = (section) => {
+    const dataUrl = section.getAttribute("data-url") || "";
+
+    const searchInput = section.querySelector(".js-articles-table-search");
+    const clearBtn = section.querySelector(".js-articles-table-clear");
+    const rowsSelect = section.querySelector(".js-articles-table-rows");
+    const prevBtn = section.querySelector(".js-articles-table-prev");
+    const nextBtn = section.querySelector(".js-articles-table-next");
+    const pageInfo = section.querySelector(".js-articles-table-pageinfo");
+    const noResults = section.querySelector(".js-articles-table-no-results");
+    const tbody = section.querySelector(".js-articles-table-body");
+
+    if (!tbody || !rowsSelect || !prevBtn || !nextBtn || !pageInfo) return;
+
+    let allPosts = [];
+    let currentPage = 1;
+    let rowsPerPage = parseInt(rowsSelect.value, 10) || 10;
+
+    // Default sort: newest first (publish_date) so latest posts show on top.
+    // Users can still click the table headers to sort by Title/Item/Description.
+    let currentSortColumn = "date";
+    let sortAscending = false;
+
+    const getTerm = () => (searchInput?.value || "").trim().toLowerCase();
+
+    const applySorting = (posts) => {
+      const col = currentSortColumn;
+      const dir = sortAscending ? 1 : -1;
+
+      const parsePublishDateMs = (post) => {
+        const raw = post?.publish_date ?? post?.publishDate ?? post?.date ?? "";
+        const ms = Date.parse(String(raw));
+        return Number.isFinite(ms) ? ms : 0;
+      };
+
+      const key = (post) => {
+        if (col === "date") return parsePublishDateMs(post);
+        if (col === 0) return String(post?.title ?? "").toLowerCase();
+        if (col === 1) return String(post?.item ?? "").toLowerCase();
+        if (col === 2) return String(post?.content ?? post?.description ?? "").toLowerCase();
+        return "";
+      };
+
+      return posts.slice().sort((a, b) => {
+        const av = key(a);
+        const bv = key(b);
+
+        // Numeric compare for dates.
+        if (col === "date") {
+          if (av < bv) return -1 * dir;
+          if (av > bv) return 1 * dir;
+
+          // Tie-breaker for consistent ordering.
+          const at = String(a?.title ?? "").toLowerCase();
+          const bt = String(b?.title ?? "").toLowerCase();
+          if (at < bt) return -1;
+          if (at > bt) return 1;
+          return 0;
+        }
+
+        if (av < bv) return -1 * dir;
+        if (av > bv) return 1 * dir;
+        return 0;
+      });
+    };
+
+    const applyFiltering = (posts) => {
+      const term = getTerm();
+      if (!term) return posts;
+
+      return posts.filter((p) => {
+        const a = String(p?.title ?? "").toLowerCase();
+        const b = String(p?.item ?? "").toLowerCase();
+        const c = String(p?.content ?? p?.description ?? "").toLowerCase();
+        return a.includes(term) || b.includes(term) || c.includes(term);
+      });
+    };
+
+    const updateSortIndicators = () => {
+      section.querySelectorAll("th.is-sortable").forEach((th) => {
+        const indicator = th.querySelector(".sort-indicator");
+        if (indicator) indicator.textContent = "";
+        th.removeAttribute("aria-sort");
+      });
+
+      if (typeof currentSortColumn !== "number") return;
+
+      const active = section.querySelector(`th.is-sortable[data-sort-index="${currentSortColumn}"]`);
+      if (!active) return;
+
+      const indicator = active.querySelector(".sort-indicator");
+      if (indicator) indicator.textContent = sortAscending ? "▲ A→Z" : "▼ Z→A";
+      active.setAttribute("aria-sort", sortAscending ? "ascending" : "descending");
+    };
+
+    const renderEmptyRow = (message) => {
+      tbody.innerHTML = `
+        <tr class="global-table-empty">
+          <td colspan="6" class="global-table-empty-cell">${escapeHtml(message)}</td>
+        </tr>
+      `;
+
+      if (noResults) noResults.hidden = true;
+      pageInfo.textContent = "Page 1 of 1";
+      prevBtn.disabled = true;
+      nextBtn.disabled = true;
+      updateSortIndicators();
+    };
+
+    const render = () => {
+      const term = getTerm();
+      const filtered = applyFiltering(allPosts);
+      const sorted = applySorting(filtered);
+
+      const totalRows = sorted.length;
+      if (totalRows === 0) {
+        renderEmptyRow("No results found");
+        return;
+      }
+
+      const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
+      currentPage = Math.min(currentPage, totalPages);
+
+      const start = (currentPage - 1) * rowsPerPage;
+      const pageRows = sorted.slice(start, start + rowsPerPage);
+
+      tbody.innerHTML = pageRows.map((p) => renderRow(p, term)).join("");
+
+      pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+      prevBtn.disabled = currentPage <= 1 || totalRows === 0;
+      nextBtn.disabled = currentPage >= totalPages || totalRows === 0;
+
+      if (noResults) noResults.hidden = true;
+
+      updateSortIndicators();
+    };
+
+    const attachSorting = () => {
+      section.querySelectorAll("th.is-sortable").forEach((th) => {
+        th.addEventListener("click", () => {
+          const idx = parseInt(th.getAttribute("data-sort-index") || "0", 10);
+          sortAscending = currentSortColumn === idx ? !sortAscending : true;
+          currentSortColumn = idx;
+          currentPage = 1;
+          render();
+        });
+      });
+    };
+
+    const attachControls = () => {
+      if (searchInput) {
+        searchInput.addEventListener("input", () => {
+          currentPage = 1;
+          render();
+        });
+      }
+
+      if (clearBtn && searchInput) {
+        clearBtn.addEventListener("click", () => {
+          searchInput.value = "";
+          currentPage = 1;
+          render();
+        });
+      }
+
+      rowsSelect.addEventListener("change", () => {
+        rowsPerPage = parseInt(rowsSelect.value, 10) || 10;
+        currentPage = 1;
+        render();
+      });
+
+      prevBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+          currentPage -= 1;
+          render();
+        }
+      });
+
+      nextBtn.addEventListener("click", () => {
+        currentPage += 1;
+        render();
+      });
+    };
+
+    const load = async () => {
+      try {
+        if (!dataUrl) {
+          allPosts = [];
+          renderEmptyRow("No results found");
+          return;
+        }
+
+        const res = await fetch(dataUrl, { cache: "no-store" });
+        if (!res.ok) throw new Error(`Failed to fetch ${dataUrl}: ${res.status}`);
+        const data = await res.json();
+        allPosts = Array.isArray(data) ? data : [];
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+        allPosts = [];
+      } finally {
+        render();
+      }
+    };
+
+    attachSorting();
+    attachControls();
+    load();
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // global handler: if any <img> fails to load, swap in the placeholder svg
+    // (covers unexpected missing files or faulty URLs anywhere on the page).
+    document.addEventListener('error', function(e) {
+      const tgt = e.target;
+      if (tgt && tgt.tagName === 'IMG' && !tgt.dataset.checked) {
+        // avoid infinite loop if placeholder also missing
+        tgt.dataset.checked = '1';
+        tgt.src = '/images/placeholder.svg';
+      }
+    }, true);
+
+    // Back-to-top button (reintroduced safely). Minimal behavior only.
+    (function() {
+      const btn = document.getElementById('backToTop');
+      if (!btn) return;
+      const isScrollable = () => document.documentElement.scrollHeight > window.innerHeight + 10;
+      const update = () => {
+        if (!isScrollable()) {
+          btn.classList.remove('visible');
+          return;
+        }
+        if (window.pageYOffset > 300) btn.classList.add('visible');
+        else btn.classList.remove('visible');
+      };
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      btn.addEventListener('click', (e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    })();
+
+    document
+      .querySelectorAll("[data-articles-table]")
+      .forEach((section) => initArticlesTable(section));
+
+    // ---------- homepage dynamic sections ----------------
+    const initHomePage = () => {
+      const postContainer = document.getElementById("postContainer");
+      if (!postContainer) return;
+
+      // Read desired homepage order (injected by Hugo into the DOM).
+      let desiredOrder = [];
+      try {
+        const raw = postContainer.dataset.homeOrder || "";
+        if (raw) desiredOrder = JSON.parse(raw);
+      } catch (e) {
+        // fall back to empty order which preserves nav order
+        desiredOrder = [];
+      }
+
+      // collect main category links from the navbar
+      const navLinks = document.querySelectorAll(".nav-links > li > a");
+      const categories = [];
+      navLinks.forEach((link) => {
+        const href = link.getAttribute("href") || "";
+        const text = link.textContent.trim();
+        // skip obvious non-content links
+        if (!href || href === "/" || href === "/index.html") return;
+        if (/contact|about|how[- ]it[- ]works|site[- ]map/i.test(text)) return;
+        categories.push({ href, text });
+      });
+
+      const fetchJson = (url) => fetch(url)
+        .then((r) => (r.ok ? r.json() : []))
+        .catch(() => []);
+
+      const jsonUrlForHref = (href) => {
+        let path = href;
+        if (!path.endsWith("/")) path += "/";
+        return path + "posts.json";
+      };
+
+      const wireCarousels = () => {
+        postContainer.querySelectorAll(".carousel").forEach((carousel) => {
+          const track = carousel.querySelector(".carousel-track");
+          if (!track) return;
+
+          const cards = Array.from(track.querySelectorAll('.card'));
+          if (!cards.length) return;
+
+          const leftBtn = carousel.querySelector('.carousel-btn.left');
+          const rightBtn = carousel.querySelector('.carousel-btn.right');
+
+          // compute number of visible cards based on carousel width
+          const computeVisibleCount = () => {
+            const w = carousel.clientWidth;
+            if (w < 600) return 1;
+            if (w < 900) return 2;
+            if (w < 1200) return 3;
+            return 4;
+          };
+
+          const gap = () => parseFloat(getComputedStyle(track).gap) || 16;
+
+          const computeCardWidth = (visibleCount) => {
+            const totalGap = Math.max(0, visibleCount - 1) * gap();
+            return Math.floor((carousel.clientWidth - totalGap) / visibleCount);
+          };
+
+          let visibleCount = computeVisibleCount();
+          let cardWidth = computeCardWidth(visibleCount);
+          let index = 0; // first visible card index
+
+          const applyCardWidths = () => {
+            visibleCount = computeVisibleCount();
+            cardWidth = computeCardWidth(visibleCount);
+            cards.forEach((c) => {
+              c.style.flex = `0 0 ${cardWidth}px`;
+              c.style.maxWidth = `${cardWidth}px`;
+            });
+
+            const totalWidth = cards.length * (cardWidth + gap()) - gap();
+            track.style.width = `${Math.max(totalWidth, carousel.clientWidth)}px`;
+          };
+
+          const waitForImages = () => {
+            const imgs = Array.from(track.querySelectorAll('img'));
+            return Promise.all(
+              imgs.map((img) =>
+                new Promise((res) => {
+                  if (img.complete) return res();
+                  img.addEventListener('load', res, { once: true });
+                  img.addEventListener('error', res, { once: true });
+                })
+              )
+            );
+          };
+
+          const clampIndex = () => {
+            const maxIndex = Math.max(0, cards.length - visibleCount);
+            if (index < 0) index = 0;
+            if (index > maxIndex) index = maxIndex;
+          };
+
+          const scrollToIndex = (newIndex, smooth = true) => {
+            index = newIndex;
+            clampIndex();
+            const translate = Math.min(0, -index * (cardWidth + gap()));
+            if (smooth) {
+              track.style.transition = 'transform 300ms ease';
+            } else {
+              track.style.transition = 'none';
+            }
+            track.style.transform = `translateX(${translate}px)`;
+            // clear transition after it ends so later instant moves are immediate
+            if (smooth) {
+              setTimeout(() => {
+                track.style.transition = '';
+              }, 350);
+            }
+          };
+
+          const leftHandler = (e) => {
+            e && e.preventDefault();
+            scrollToIndex(index - visibleCount);
+          };
+
+          const rightHandler = (e) => {
+            e && e.preventDefault();
+            scrollToIndex(index + visibleCount);
+          };
+
+          // Note: mouse wheel scrolling inside the carousel is intentionally
+          // disabled to satisfy the requirement. The wheel handler was removed
+          // so only arrow buttons control carousel movement.
+
+          const replaceWithListener = (el, listener) => {
+            if (!el) return;
+            try {
+              // some buttons may be re-created by other logic; ensure single listener
+              el.removeEventListener('click', el._heroListener || (() => {}));
+            } catch (err) {}
+            el.addEventListener('click', listener);
+            el._heroListener = listener;
+          };
+
+          // initial sizing after images loaded
+          waitForImages().then(() => {
+            applyCardWidths();
+            scrollToIndex(index, false);
+          });
+
+          // attach handlers to buttons (if present)
+          if (leftBtn) replaceWithListener(leftBtn, leftHandler);
+          if (rightBtn) replaceWithListener(rightBtn, rightHandler);
+
+          // Ensure the track behaves as a non-wrapping flex row so cards never
+          // drop to a new row. This keeps the 5th card inline (off-screen)
+          // when only 4 are visible.
+          track.classList.remove('grid');
+          track.style.display = 'flex';
+          track.style.flexWrap = 'nowrap';
+          track.style.alignItems = 'stretch';
+
+          // on resize, recompute widths and keep index valid
+          let resizeTimeout = null;
+          const onResize = () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+              const prevVisible = visibleCount;
+              applyCardWidths();
+              // if visibleCount changed, keep the current first visible card in view
+              if (prevVisible !== visibleCount) {
+                // adjust index so the currently visible range still contains the same first card
+                clampIndex();
+              }
+              scrollToIndex(index, false);
+            }, 120);
+          };
+          window.addEventListener('resize', onResize);
+        });
+      };
+
+      const buildSections = (postsByCategory) => {
+        postContainer.innerHTML = Object.keys(postsByCategory)
+          .map((category) => {
+            const posts = postsByCategory[category];
+            if (!posts || !posts.length) return "";
+            const cardsHtml = posts
+              .map((p) => {
+                // use SVG placeholder; if actual image URL 404s we'll replace on error
+                const imgPath = p.image ? escapeHtml(p.image) : "/images/placeholder.svg";
+                const img = imgPath;
+                const title = escapeHtml(p.title || "");
+                const link = escapeHtml(p.link || "#");
+                const desc = escapeHtml((p.description || p.content || "").slice(0, 120));
+                return `
+          <div class="card">
+            <img src="${img}" alt="${title}" onerror="this.onerror=null;this.src='/images/placeholder.svg';">
+            <div class="card-content">
+              <h3 class="card-title"><a href="${link}">${title}</a></h3>
+              <p class="card-desc">${desc}${(p.description || p.content || "").length > 120 ? "..." : ""}</p>
+              <a href="${link}" class="read-more">Read More</a>
+            </div>
+          </div>`;
+              })
+              .join("");
+            const groupId = `group-${category.replace(/\s+/g, "-").toLowerCase()}`;
+            return `
+        <section class="category-block post-group" id="${groupId}">
+          <div class="post-group-header">
+            <h2>${escapeHtml(category)}</h2>
+          </div>
+          <div class="carousel" data-target="${groupId}">
+            <button class="carousel-btn left" data-target="${groupId}" aria-label="Scroll left">&larr;</button>
+            <div class="grid carousel-track">
+              ${cardsHtml}
+            </div>
+            <button class="carousel-btn right" data-target="${groupId}" aria-label="Scroll right">&rarr;</button>
+          </div>
+        </section>`;
+          })
+          .join("");
+
+        // Enable scrolling via arrows and wheel.
+        wireCarousels();
+      };
+
+      Promise.all(
+        categories.map((cat) =>
+          fetchJson(jsonUrlForHref(cat.href)).then((posts) => {
+            // sort newest first
+            const sorted = (posts || []).slice().sort((a, b) => {
+              const da = new Date(a.publish_date || 0).getTime();
+              const db = new Date(b.publish_date || 0).getTime();
+              return db - da;
+            });
+            return { category: cat.text, posts: sorted.slice(0, TOP_N) };
+          })
+        )
+      ).then((arr) => {
+        const map = {};
+        arr.forEach(({ category, posts }) => {
+          map[category] = posts;
+        });
+
+        // If a desired order is provided, build an ordered map where
+        // specified names appear first, then any remaining categories.
+        const orderedMap = {};
+        const included = new Set();
+        if (Array.isArray(desiredOrder) && desiredOrder.length) {
+          desiredOrder.forEach((name) => {
+            if (map[name]) {
+              orderedMap[name] = map[name];
+              included.add(name);
+            }
+          });
+        }
+
+        Object.keys(map).forEach((name) => {
+          if (!included.has(name)) orderedMap[name] = map[name];
+        });
+
+        buildSections(orderedMap);
+      });
+    };
+
+    if (document.getElementById('postContainer')) {
+      initHomePage();
+    }
+
+    // prepare site-wide search once we know the DOM is available
+    fetchAllPosts()
+      .then((posts) => {
+        initSiteSearch(posts);
+        initMobileSearch(posts);
+      })
+      .catch((err) => {
+        console.error("Error in site search setup:", err);
+      });
+
+    // Mobile menu toggle + dropdown behavior with accessibility and submenu panels
+    (function initMobileMenu() {
+      const toggle = document.querySelector('.mobile-menu-toggle');
+      const mobileNav = document.querySelector('.mobile-nav');
+      if (!toggle || !mobileNav) return;
+
+      const panelClose = mobileNav.querySelector('.panel-close');
+      const panelBack = mobileNav.querySelector('.panel-back');
+      const panelTitle = mobileNav.querySelector('.panel-title');
+      const panelRoot = mobileNav.querySelector('.panel-root');
+      const panelSub = mobileNav.querySelector('.panel-sub');
+
+      let lastFocused = null;
+      let keydownHandler = null;
+      let subStack = [];
+
+      const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+      const trapFocus = (enable) => {
+        if (!enable) {
+          if (keydownHandler) document.removeEventListener('keydown', keydownHandler);
+          keydownHandler = null;
+          return;
+        }
+
+        keydownHandler = (e) => {
+          if (e.key === 'Escape') {
+            closeMenu();
+            return;
+          }
+          if (e.key !== 'Tab') return;
+          const focusable = Array.from(mobileNav.querySelectorAll(focusableSelector)).filter((el) => el.offsetParent !== null);
+          if (!focusable.length) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey) {
+            if (document.activeElement === first) {
+              e.preventDefault();
+              last.focus();
+            }
+          } else {
+            if (document.activeElement === last) {
+              e.preventDefault();
+              first.focus();
+            }
+          }
+        };
+
+        document.addEventListener('keydown', keydownHandler);
+      };
+
+      const openMenu = () => {
+        subStack = [];
+        lastFocused = document.activeElement;
+        toggle.setAttribute('aria-expanded', 'true');
+        mobileNav.classList.add('open');
+        mobileNav.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        trapFocus(true);
+        // focus first link
+        const first = mobileNav.querySelector(focusableSelector);
+        if (first) first.focus();
+      };
+
+      const closeMenu = () => {
+        toggle.setAttribute('aria-expanded', 'false');
+        mobileNav.classList.remove('open');
+        mobileNav.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        trapFocus(false);
+        // close any open submenu panel
+        panelRoot.classList.remove('shift-left');
+        panelRoot.classList.remove('hidden');
+        panelSub.classList.remove('open');
+        panelSub.innerHTML = '';
+        panelTitle.textContent = 'Menu';
+        if (lastFocused) lastFocused.focus();
+        subStack = [];
+      };
+
+      toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+        if (isOpen) closeMenu(); else openMenu();
+      });
+
+      if (panelClose) panelClose.addEventListener('click', (e) => { e.preventDefault(); closeMenu(); });
+
+      // header-level back button: returns from submenu to root menu
+      if (panelBack) {
+        panelBack.addEventListener('click', (e) => {
+          e.preventDefault();
+          // slide root back into place and hide submenu
+          panelRoot.classList.remove('shift-left');
+          panelRoot.classList.remove('hidden');
+          panelSub.classList.remove('open');
+          panelSub.setAttribute('aria-hidden', 'true');
+          panelSub.innerHTML = '';
+          panelTitle.textContent = 'Menu';
+          try { panelBack.setAttribute('hidden', ''); panelBack.setAttribute('aria-hidden', 'true'); } catch (err) {}
+          // reset any expanded chevrons
+          try { const srcBtn = mobileNav.querySelector('.submenu-toggle[aria-expanded="true"]'); if (srcBtn) srcBtn.setAttribute('aria-expanded', 'false'); } catch (err) {}
+          const firstRoot = panelRoot.querySelector(focusableSelector);
+          if (firstRoot) firstRoot.focus();
+        });
+      }
+
+      // close mobile menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!mobileNav.contains(e.target) && !toggle.contains(e.target)) {
+          closeMenu();
+        }
+      });
+
+      // Handle first-level menu items only (root panel)
+      panelRoot.addEventListener('click', (e) => {
+        const btn = e.target.closest('.submenu-toggle');
+        if (!btn) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const li = btn.closest('li');
+        if (!li) return;
+        const anchor = li.querySelector('a');
+        
+        // Find dropdown
+        let submenu = li.querySelector('.dropdown');
+        if (!submenu) return;
+
+        const cloned = submenu.cloneNode(true);
+        cloned.classList.remove('dropdown');
+        cloned.classList.add('nav-links');
+        
+        // Remove inline display: none style from cloned element
+        cloned.style.display = '';
+        
+        // Hide only nested ULs that are grandchildren or deeper (nested under LI items)
+        cloned.querySelectorAll && cloned.querySelectorAll('li > ul').forEach((n) => {
+          n.style.display = 'none';
+        });
+
+        let submenuHtml = '<div class="subheader"><button class="sub-back" aria-label="Back">←</button><h3 class="sub-title">' + (anchor ? anchor.textContent.trim() : 'Submenu') + '</h3></div>';
+
+        if (panelSub.classList.contains('open')) {
+          subStack.push(panelSub.innerHTML);
+        }
+
+        panelSub.innerHTML = submenuHtml + cloned.outerHTML;
+        
+        // Hide root panel and show submenu panel
+        panelRoot.classList.add('shift-left');
+        panelRoot.classList.add('hidden');
+        panelSub.classList.add('open');
+        panelSub.setAttribute('aria-hidden', 'false');
+        
+        // show header back button
+        try { panelBack.removeAttribute('hidden'); panelBack.removeAttribute('aria-hidden'); } catch (e) {}
+
+        // wire up sub-back button
+        const subBack = panelSub.querySelector('.sub-back');
+        if (subBack) {
+          subBack.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            if (subStack.length > 0) {
+              panelSub.innerHTML = subStack.pop();
+              // focus first in restored panel
+              const first = panelSub.querySelector(focusableSelector);
+              if (first) first.focus();
+            } else {
+              // Return to main menu
+              panelRoot.classList.remove('shift-left');
+              panelRoot.classList.remove('hidden');
+              panelSub.classList.remove('open');
+              panelSub.setAttribute('aria-hidden', 'true');
+              panelSub.innerHTML = '';
+              panelTitle.textContent = 'Menu';
+              subStack = [];
+              // reset expanded state on the originating button(s)
+              try {
+                const srcBtn = mobileNav.querySelector('.submenu-toggle[aria-expanded="true"]');
+                if (srcBtn) srcBtn.setAttribute('aria-expanded', 'false');
+              } catch (err) {}
+              // hide header back button
+              try { panelBack.setAttribute('hidden', ''); panelBack.setAttribute('aria-hidden', 'true'); } catch (e) {}
+              const firstRoot = panelRoot.querySelector(focusableSelector);
+              if (firstRoot) firstRoot.focus();
+            }
+          });
+        }
+
+        // Re-attach submenu toggle listeners for newly created elements
+        attachSubmenuToggles();
+        
+        // focus first link in submenu
+        const first = panelSub.querySelector(focusableSelector);
+        if (first) first.focus();
+      });
+      
+      // Function to attach toggle listeners to submenu items
+      const attachSubmenuToggles = () => {
+        panelSub.querySelectorAll('.submenu-toggle').forEach((btn) => {
+          btn.removeEventListener('click', handleToggleClick);
+          btn.addEventListener('click', handleToggleClick);
+        });
+      };
+      
+      const handleToggleClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const btn = e.target.closest('.submenu-toggle');
+        if (!btn) return;
+        const li = btn.closest('li');
+        if (!li) return;
+        const submenu = li.querySelector('ul');
+        if (!submenu) {
+          console.warn('No submenu found for:', li);
+          return;
+        }
+        
+        const anchor = li.querySelector('a');
+        const cloned = submenu.cloneNode(true);
+        cloned.classList.remove('dropdown');
+        cloned.classList.add('nav-links');
+        
+        // Remove inline display: none style from cloned element
+        cloned.style.display = '';
+        
+        // Hide only nested ULs that are grandchildren or deeper (nested under LI items)
+        cloned.querySelectorAll && cloned.querySelectorAll('li > ul').forEach((n) => {
+          n.style.display = 'none';
+        });
+        
+        let submenuHtml = '<div class="subheader"><button class="sub-back" aria-label="Back">←</button><h3 class="sub-title">' + (anchor ? anchor.textContent.trim() : 'Submenu') + '</h3></div>';
+        
+        if (panelSub.classList.contains('open')) {
+          subStack.push(panelSub.innerHTML);
+        }
+        
+        panelSub.innerHTML = submenuHtml + cloned.outerHTML;
+        
+        const subBack = panelSub.querySelector('.sub-back');
+        if (subBack) {
+          subBack.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            if (subStack.length > 0) {
+              panelSub.innerHTML = subStack.pop();
+              attachSubmenuToggles();
+              const f = panelSub.querySelector(focusableSelector);
+              if (f) f.focus();
+            }
+          });
+        }
+        
+        attachSubmenuToggles();
+      };
+
+    })();
+  });
+})();

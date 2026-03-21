@@ -1,0 +1,50 @@
+[
+  {
+    "title": "Refrigerators - 1",
+    "item": "Samsung 655L Side-by-Side Refrigerator Review - Item category",
+    "view_all_url": "/product-reviews/home-appliances/refrigerators/",
+    "description": "A deep dive into cooling performance, noise levels, and power efficiency for a large family fridge.",
+    "image": "images/home-bg.jpg",
+    "link": "/product-reviews/home-appliances/refrigerators/",
+    "youtube": "https://youtube.com/watch?v=refrigerator-review-1",
+    "instagram": "https://instagram.com/home_appliances",
+    "category": "Refrigerators",
+    "publish_date": "2026-03-02T12:00:00Z"
+  },
+  {
+    "title": "Refrigerators - 2",
+    "item": "LG 308L Double Door Refrigerator Review - Item category",
+    "view_all_url": "/product-reviews/home-appliances/refrigerators/",
+    "description": "Practical review focused on storage layout, temperature stability, and long-term value.",
+    "image": "images/home-bg.jpg",
+    "link": "/product-reviews/home-appliances/refrigerators/",
+    "youtube": "https://youtube.com/watch?v=refrigerator-review-2",
+    "instagram": "https://instagram.com/home_appliances",
+    "category": "Refrigerators",
+    "publish_date": "2026-03-01T12:00:00Z"
+  },
+  {
+    "title": "Washing Machines - 1",
+    "item": "IFB 7kg Front Load Washing Machine Review - Item category",
+    "view_all_url": "/product-reviews/home-appliances/washing-machines/",
+    "description": "Performance review covering wash quality, vibration/noise, cycle times, and fabric care.",
+    "image": "images/home-bg.jpg",
+    "link": "/product-reviews/home-appliances/washing-machines/",
+    "youtube": "https://youtube.com/watch?v=washing-machine-review-1",
+    "instagram": "https://instagram.com/home_appliances",
+    "category": "Washing-Machines",
+    "publish_date": "2026-02-28T12:00:00Z"
+  },
+  {
+    "title": "Washing Machines - 2",
+    "item": "Bosch 8kg Front Load Washing Machine Review - Item category",
+    "view_all_url": "/product-reviews/home-appliances/washing-machines/",
+    "description": "Hands-on review of cleaning performance, water usage, build quality, and usability.",
+    "image": "images/home-bg.jpg",
+    "link": "/product-reviews/home-appliances/washing-machines/",
+    "youtube": "https://youtube.com/watch?v=washing-machine-review-2",
+    "instagram": "https://instagram.com/home_appliances",
+    "category": "Washing-Machines",
+    "publish_date": "2026-02-27T12:00:00Z"
+  }
+]

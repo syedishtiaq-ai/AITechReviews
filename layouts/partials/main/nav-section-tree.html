@@ -1,0 +1,25 @@
+{{- /*
+Renders a recursive dropdown menu based on Hugo section/page structure.
+- node: a Page (typically a section/list page)
+- current: the current page (for optional active state)
+*/ -}}
+
+{{- $node := .node -}}
+{{- $current := .current -}}
+
+{{- $sections := sort $node.Sections "Title" -}}
+
+{{- range $sections -}}
+  {{- $hasChildren := gt (len .Sections) 0 -}}
+  <li{{ if $hasChildren }} class="has-children"{{ end }}>
+    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    {{- if $hasChildren }}
+      <button class="submenu-toggle" aria-label="Open submenu for {{ .Title }}" aria-expanded="false">›</button>
+    {{- end }}
+    {{- if $hasChildren -}}
+      <ul class="dropdown">
+        {{ partial "main/nav-section-tree.html" (dict "node" . "current" $current) }}
+      </ul>
+    {{- end -}}
+  </li>
+{{- end -}}

@@ -1,0 +1,43 @@
+{{- $items := .items -}}
+{{- $page := .page -}}
+{{- $level := .level -}}
+{{- if .sort -}}
+  {{- $items = sort $items "Name" -}}
+{{- end -}}
+{{- range $items }}
+  {{- $isActive := or ($page.IsMenuCurrent "main" .) ($page.HasMenuCurrent "main" .) -}}
+  {{- $autoRoot := "" -}}
+  {{- if eq .Identifier "product-reviews" -}}
+    {{- $autoRoot = $page.Site.GetPage "section" "product-reviews" -}}
+    {{- with $autoRoot -}}
+      {{- $isActive = or $isActive (eq $page.RelPermalink .RelPermalink) ($page.IsDescendant .) -}}
+    {{- end -}}
+  {{- else if eq .Identifier "gaming" -}}
+    {{- $autoRoot = $page.Site.GetPage "section" "gaming" -}}
+    {{- with $autoRoot -}}
+      {{- $isActive = or $isActive (eq $page.RelPermalink .RelPermalink) ($page.IsDescendant .) -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $hasDropdown := or (and $autoRoot (eq $level 1)) (and .Children (gt (len .Children) 0)) -}}
+  <li{{ if $hasDropdown }} class="has-children"{{ end }}>
+    <a href="{{ .URL }}"{{ if and (eq $level 1) $isActive }} class="active-link"{{ end }}>{{ .Name }}</a>
+    {{- if $hasDropdown }}
+      <button class="submenu-toggle" aria-label="Open submenu for {{ .Name }}" aria-expanded="false">›</button>
+    {{- end }}
+
+    {{- /* Auto-populated dropdowns for Product Reviews and Gaming */ -}}
+    {{- if and $autoRoot (eq $level 1) -}}
+      <ul class="dropdown">
+        {{ partial "main/nav-section-tree.html" (dict "node" $autoRoot "current" $page) }}
+      </ul>
+
+    {{- else -}}
+      {{- with .Children }}
+        <ul class="dropdown">
+          {{ partial "main/nav-items.html" (dict "items" . "sort" true "page" $page "level" (add $level 1)) }}
+        </ul>
+      {{- end }}
+    {{- end }}
+  </li>
+{{- end }}

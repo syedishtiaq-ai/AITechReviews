@@ -1,0 +1,49 @@
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol class="breadcrumb-list">
+    {{ if .IsHome }}
+      <li class="breadcrumb-item active">
+        <span class="breadcrumb-current">Home</span>
+      </li>
+    {{ else }}
+      <li class="breadcrumb-item">
+        <a href="/" class="breadcrumb-link">Home</a>
+      </li>
+
+      {{ $page := . }}
+      {{ $parts := split (strings.TrimPrefix "/" (strings.TrimSuffix "/" .RelPermalink)) "/" }}
+      
+      {{ range $index, $part := $parts }}
+        {{ if and (ne $part "") (ne $index (sub (len $parts) 1)) }}
+          {{ $path := "/" }}
+          {{ range $i, $p := $parts }}
+            {{ if le $i $index }}
+              {{ $path = printf "%s%s/" $path $p }}
+            {{ end }}
+          {{ end }}
+          
+          {{ $title := humanize (replace $part "-" " ") }}
+          
+          {{ $found := false }}
+          {{ range $page.Site.RegularPages }}
+            {{ if eq .RelPermalink $path }}
+              {{ $found = true }}
+              <li class="breadcrumb-item">
+                <a href="{{ $path }}" class="breadcrumb-link">{{ .Title }}</a>
+              </li>
+            {{ end }}
+          {{ end }}
+          
+          {{ if not $found }}
+            <li class="breadcrumb-item">
+              <a href="{{ $path }}" class="breadcrumb-link">{{ $title }}</a>
+            </li>
+          {{ end }}
+        {{ end }}
+      {{ end }}
+
+      <li class="breadcrumb-item active">
+        <span class="breadcrumb-current">{{ $page.Title }}</span>
+      </li>
+    {{ end }}
+  </ol>
+</nav>

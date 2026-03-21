@@ -1,0 +1,27 @@
+{{ define "main" }}
+
+{{ $hideIntro := .Params.hideIntro | default false }}
+
+{{ if not $hideIntro }}
+  <section class="section-intro">
+    <h1>{{ .Title }}</h1>
+    {{ .Content }}
+  </section>
+{{ end }}
+
+  {{ with .Params.articlesTable }}
+    {{ $cfg := . }}
+    {{ partial "main/global-table.html" (dict
+      "Page" $
+      "Title" ($cfg.title | default "Articles")
+      "DataUrl" ($cfg.dataUrl | default "")
+      "TableId" ($cfg.tableId | default "")
+      "Col0Label" ($cfg.col0Label | default "")
+      "Col1Label" ($cfg.col1Label | default "")
+      "Col2Label" ($cfg.col2Label | default "")
+      "Col3Label" ($cfg.col3Label | default "")
+      "Col4Label" ($cfg.col4Label | default "")
+      "Col5Label" ($cfg.col5Label | default "")
+    ) }}
+  {{ end }}
+{{ end }}

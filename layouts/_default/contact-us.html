@@ -1,0 +1,107 @@
+{{ define "main" }}
+<section class="dual-box-section contact-box">
+  <h2 class="section-title">Get in Touch</h2>
+  {{ with .Content }}
+    <div class="contact-intro">{{ . }}</div>
+  {{ end }}
+
+  <form class="contact-form" id="contactForm" novalidate>
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="email" id="email" placeholder="Your Email" required>
+
+    <textarea id="message" rows="5" placeholder="Your Message (50–1000 characters)" required></textarea>
+    <div id="charCount" class="char-count">1000 characters remaining</div>
+    <div class="progress-bar">
+      <div id="progressFill"></div>
+    </div>
+
+    <button type="submit">Send</button>
+
+    <div id="successMessage" class="success-message" style="display:none;"></div>
+    <div id="errorMessage" class="error-message" style="display:none;"></div>
+    <div id="limitMessage" class="error-message" style="display:none;">❌ You have reached the 1000 character limit.</div>
+  </form>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("contactForm");
+  const successMessage = document.getElementById("successMessage");
+  const errorMessage = document.getElementById("errorMessage");
+  const limitMessage = document.getElementById("limitMessage");
+  const messageBox = document.getElementById("message");
+  const charCount = document.getElementById("charCount");
+  const progressFill = document.getElementById("progressFill");
+  const maxChars = 1000;
+  const minChars = 50;
+
+  if (!form || !messageBox || !charCount || !progressFill) return;
+
+  messageBox.addEventListener("input", () => {
+    const length = messageBox.value.length;
+    const remaining = maxChars - length;
+    charCount.textContent = `${remaining} characters remaining`;
+
+    const percent = Math.min((length / maxChars) * 100, 100);
+    progressFill.style.width = percent + "%";
+
+    if (length === 0) {
+      progressFill.style.background = "#e5e7eb";
+    } else if (length < minChars) {
+      progressFill.style.background = "#ef4444";
+    } else if (length >= minChars && length < maxChars - 50) {
+      progressFill.style.background = "#10b981";
+    } else {
+      progressFill.style.background = "#f59e0b";
+    }
+
+    if (remaining <= 0) {
+      messageBox.value = messageBox.value.slice(0, maxChars);
+      charCount.textContent = "0 characters remaining";
+      limitMessage.style.display = "block";
+      setTimeout(() => limitMessage.style.display = "none", 4000);
+    }
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const message = messageBox.value.trim();
+
+    const dotIndex = email.lastIndexOf(".");
+    const validEmail = dotIndex > -1 && email.length - dotIndex > 2;
+
+    if (!name || !email || !message) {
+      errorMessage.textContent = "❌ Please fill out all fields before submitting.";
+      errorMessage.style.display = "block";
+      setTimeout(() => errorMessage.style.display = "none", 4000);
+      return;
+    }
+
+    if (!validEmail) {
+      errorMessage.textContent = "❌ Please enter a valid email address. Example - user@example.com";
+      errorMessage.style.display = "block";
+      setTimeout(() => errorMessage.style.display = "none", 4000);
+      return;
+    }
+
+    if (message.length < minChars) {
+      errorMessage.textContent = `❌ Your message must be at least ${minChars} characters long.`;
+      errorMessage.style.display = "block";
+      setTimeout(() => errorMessage.style.display = "none", 4000);
+      return;
+    }
+
+    errorMessage.style.display = "none";
+    successMessage.style.display = "block";
+    successMessage.textContent = `✅ Thank you, ${name}! Your message has been sent.`;
+    form.reset();
+    charCount.textContent = `${maxChars} characters remaining`;
+    progressFill.style.width = "0%";
+    progressFill.style.background = "#e5e7eb";
+    setTimeout(() => successMessage.style.display = "none", 4000);
+  });
+});
+</script>
+{{ end }}

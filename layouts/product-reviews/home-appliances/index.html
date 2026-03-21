@@ -1,0 +1,53 @@
+{{/* Home Appliances listing */}}
+{{ define "main" }}
+  {{ $posts := slice }}
+  {{ $jsonPath := "content/product-reviews/home-appliances/posts.json" }}
+  {{ with (readFile $jsonPath | transform.Unmarshal) }}
+    {{ $posts = . }}
+  {{ end }}
+
+  <section class="home-appliances-groups" aria-label="Home Appliances categories">
+    {{ range .Sections }}
+      {{ $slug := (path.Base .File.Dir) | urlize }}
+      {{ $slugNorm := replace $slug "-and-" "-" }}
+      {{ $groupURL := .RelPermalink }}
+      {{ $items := slice }}
+      {{ range $posts }}
+        {{ $catSlug := replace (((.category | default "") | urlize)) "-and-" "-" }}
+        {{ if eq $catSlug $slugNorm }}
+          {{ $items = append $items (slice .) }}
+        {{ end }}
+      {{ end }}
+
+      {{ if gt (len $items) 0 }}
+        {{ $sorted := sort $items "publish_date" "desc" }}
+        <div class="home-appliances-group">
+          <div class="home-appliances-group-head">
+            <h2 class="home-appliances-group-title">{{ .Title }}</h2>
+          </div>
+          <ul class="home-appliances-posts" aria-label="Posts for {{ .Title }}">
+            {{ range $sorted }}
+              <li class="home-appliances-post">
+                <div class="home-appliances-post-main">
+                  {{ if .link }}
+                    <a class="home-appliances-post-title" href="{{ .link | relURL }}">{{ .item | default .title }}</a>
+                  {{ else }}
+                    <span class="home-appliances-post-title">{{ .item | default .title }}</span>
+                  {{ end }}
+                  {{ with .publish_date }}
+                    <div class="home-appliances-post-date">{{ . | time | dateFormat "Jan 2, 2006" }}</div>
+                  {{ end }}
+                </div>
+                <div class="home-appliances-post-actions">
+                  {{ if .link }}
+                    <a class="global-table-readmore" href="{{ .link | relURL }}">View All</a>
+                  {{ end }}
+                </div>
+              </li>
+            {{ end }}
+          </ul>
+        </div>
+      {{ end }}
+    {{ end }}
+  </section>
+{{ end }}

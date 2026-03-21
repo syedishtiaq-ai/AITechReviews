@@ -1,0 +1,11 @@
+{{- $entries := . -}}
+<ul class="sitemap-list">
+  {{- range $entries }}
+    <li>
+      <a href="{{ .URL | relURL }}">{{ .Name }}</a>
+      {{- with .Children }}
+        {{ partial "main/sitemap-links.html" . }}
+      {{- end }}
+    </li>
+  {{- end }}
+</ul>

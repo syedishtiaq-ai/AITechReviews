@@ -1,0 +1,60 @@
+<header class="navbar">
+  <div class="desktop-header" role="banner">
+    <a href="{{ "/" | relURL }}" class="logo" aria-label="{{ .Site.Title }}">
+      <img src="{{ "/images/logo.png" | relURL }}" alt="{{ .Site.Title }}" class="site-logo">
+    </a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <ul class="nav-links">
+        {{ partial "main/nav-items.html" (dict "items" .Site.Menus.main "sort" false "page" . "level" 1) }}
+      </ul>
+    </nav>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search the site…" aria-label="Search the site">
+      <button id="clearSiteSearch" aria-label="Clear search">Clear</button>
+      <div id="siteSearchPopup" class="search-popup" hidden>
+        <ul></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="mobile-header" role="banner">
+    <a href="{{ "/" | relURL }}" class="logo" aria-label="{{ .Site.Title }}">
+      <img src="{{ "/images/logo.png" | relURL }}" alt="{{ .Site.Title }}" class="site-logo">
+    </a>
+    <div class="mobile-header-actions">
+      <button class="mobile-search-toggle" aria-expanded="false" aria-label="Open search" type="button">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="pointer-events: none;">
+          <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2"/>
+          <path d="M14 14L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button class="mobile-menu-toggle" aria-expanded="false" aria-label="Open menu" type="button">☰</button>
+    </div>
+    <nav class="mobile-nav" aria-label="Mobile navigation" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="mobile-panel">
+        <div class="panel-header">
+          <button class="panel-back" hidden aria-label="Back to menu">←</button>
+          <h2 class="panel-title">Menu</h2>
+          <button class="panel-close" aria-label="Close menu">✕</button>
+        </div>
+        <div class="panel-body">
+          <div class="panel-root">
+            <ul class="nav-links">
+              {{ partial "main/nav-items.html" (dict "items" .Site.Menus.main "sort" false "page" . "level" 1) }}
+            </ul>
+          </div>
+          <div class="panel-sub" aria-hidden="true"></div>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <nav class="mobile-search-box" role="search" aria-label="Site search" hidden>
+    <input type="text" id="mobileSearchInput" placeholder="Search the site…" aria-label="Search the site">
+    <button id="mobileClearSearch" aria-label="Clear search" type="button">✕</button>
+    <div id="mobileSearchPopup" class="search-popup" hidden>
+      <ul></ul>
+    </div>
+  </nav>
+
+</header>

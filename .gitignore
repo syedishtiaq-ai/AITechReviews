@@ -1,0 +1,31 @@
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+*.swo
+*~
+
+# Hugo build files
+public/
+resources/
+.hugo_build.lock
+
+# Old structure - DO NOT RESTORE
+content/product-reviews/
+content/*/*/posts.json
+content/*/all/
+
+# Node modules (if used)
+node_modules/
+package-lock.json
+yarn.lock
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Environment
+.env
+.env.local

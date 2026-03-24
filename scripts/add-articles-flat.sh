@@ -34,6 +34,50 @@ get_section_code() {
     esac
 }
 
+# Check if subcategory is valid for section
+is_valid_subcategory() {
+    local section="$1"
+    local subcategory="$2"
+    
+    case "$section" in
+        "buying-guides")
+            [[ "$subcategory" =~ ^(Electronics|Home Appliances|Mobile Gadgets)$ ]] && return 0
+            ;;
+        "gaming")
+            [[ "$subcategory" =~ ^(Achievements|Guides|Walkthroughs)$ ]] && return 0
+            ;;
+        "tutorials-guides")
+            [[ "$subcategory" =~ ^(Equipment|Repair Guides|Software)$ ]] && return 0
+            ;;
+    esac
+    return 1
+}
+
+# Get valid subcategories for a specific section
+get_valid_subcategories() {
+    local section="$1"
+    case "$section" in
+        "buying-guides")
+            echo "Electronics"
+            echo "Home Appliances"
+            echo "Mobile Gadgets"
+            ;;
+        "gaming")
+            echo "Achievements"
+            echo "Guides"
+            echo "Walkthroughs"
+            ;;
+        "tutorials-guides")
+            echo "Equipment"
+            echo "Repair Guides"
+            echo "Software"
+            ;;
+        *)
+            echo ""
+            ;;
+    esac
+}
+
 get_subcategory_code() {
     case "$1" in
         "Electronics") echo "EL" ;;
@@ -173,7 +217,19 @@ for i in $(seq 1 $NUM_ARTICLES); do
     
     read -p "         Description (optional): " DESC
     
-    read -p "         Subcategory (optional): " SUBCAT
+    read -p "         Subcategory (required): " SUBCAT
+    
+    # Validate subcategory
+    if [ -z "$SUBCAT" ]; then
+        print_warning "Subcategory required - skipping this article"
+        continue
+    fi
+    
+    if ! is_valid_subcategory "$SECTION" "$SUBCAT"; then
+        print_warning "Invalid subcategory '$SUBCAT' for section '$SECTION'"
+        echo "         Valid options: $(get_valid_subcategories "$SECTION" | tr '\n' ', ' | sed 's/,$//')"
+        continue
+    fi
     
     read -p "         Author (optional): " AUTHOR
     AUTHOR=${AUTHOR:-"Tech Writer"}
@@ -181,16 +237,11 @@ for i in $(seq 1 $NUM_ARTICLES); do
     # Generate filename and slug
     FILENAME=$(generate_filename "$TITLE")
     
-    # Build path with subcategory folder if provided
-    if [ ! -z "$SUBCAT" ]; then
-        SUBCAT_SLUG=$(get_subcategory_slug "$SUBCAT")
-        SUBCAT_DIR="$CONTENT_DIR/$SECTION/$SUBCAT_SLUG"
-        mkdir -p "$SUBCAT_DIR"
-        FILEPATH="$SUBCAT_DIR/$FILENAME"
-    else
-        print_warning "Subcategory required for each article"
-        continue
-    fi
+    # Build path with subcategory folder (now always provided after validation)
+    SUBCAT_SLUG=$(get_subcategory_slug "$SUBCAT")
+    SUBCAT_DIR="$CONTENT_DIR/$SECTION/$SUBCAT_SLUG"
+    mkdir -p "$SUBCAT_DIR"
+    FILEPATH="$SUBCAT_DIR/$FILENAME"
     
     # Check if file exists
     if [ -f "$FILEPATH" ]; then
@@ -198,10 +249,8 @@ for i in $(seq 1 $NUM_ARTICLES); do
         continue
     fi
     
-    # Get subcategory code if provided
-    SUBCAT_CODE=""
-    if [ ! -z "$SUBCAT" ]; then
-        SUBCAT_CODE=$(get_subcategory_code "$SUBCAT")
+    # Get subcategory code
+    SUBCAT_CODE=$(get_subcategory_code "$SUBCAT")
     fi
     
     # Create article

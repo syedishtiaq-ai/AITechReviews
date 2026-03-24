@@ -37,6 +37,50 @@ get_category_code() {
     esac
 }
 
+# Get valid subcategories for a specific section
+get_valid_subcategories() {
+    local section="$1"
+    case "$section" in
+        "buying-guides")
+            echo "Electronics"
+            echo "Home Appliances"
+            echo "Mobile Gadgets"
+            ;;
+        "gaming")
+            echo "Achievements"
+            echo "Guides"
+            echo "Walkthroughs"
+            ;;
+        "tutorials-guides")
+            echo "Equipment"
+            echo "Repair Guides"
+            echo "Software"
+            ;;
+        *)
+            echo ""
+            ;;
+    esac
+}
+
+# Check if subcategory is valid for section
+is_valid_subcategory() {
+    local section="$1"
+    local subcategory="$2"
+    
+    case "$section" in
+        "buying-guides")
+            [[ "$subcategory" =~ ^(Electronics|Home Appliances|Mobile Gadgets)$ ]] && return 0
+            ;;
+        "gaming")
+            [[ "$subcategory" =~ ^(Achievements|Guides|Walkthroughs)$ ]] && return 0
+            ;;
+        "tutorials-guides")
+            [[ "$subcategory" =~ ^(Equipment|Repair Guides|Software)$ ]] && return 0
+            ;;
+    esac
+    return 1
+}
+
 get_subcategory_code() {
     case "$1" in
         "Electronics") echo "EL" ;;
@@ -169,34 +213,73 @@ fi
 print_success "Selected category: $CATEGORY"
 echo ""
 
-# Select subcategory
-echo "Available subcategories:"
-echo "  1) Electronics"
-echo "  2) Home Appliances"
-echo "  3) Mobile Gadgets"
-echo "  4) Achievements"
-echo "  5) Guides"
-echo "  6) Walkthroughs"
-echo "  7) Equipment"
-echo "  8) Repair Guides"
-echo "  9) Software"
+# Select subcategory - show only valid ones for selected category
+echo "Available subcategories for $CATEGORY:"
+echo ""
+
+# Build list based on category
+case "$CATEGORY" in
+    "buying-guides")
+        echo "  1) Electronics"
+        echo "  2) Home Appliances"
+        echo "  3) Mobile Gadgets"
+        valid_count=3
+        ;;
+    "gaming")
+        echo "  1) Achievements"
+        echo "  2) Guides"
+        echo "  3) Walkthroughs"
+        valid_count=3
+        ;;
+    "tutorials-guides")
+        echo "  1) Equipment"
+        echo "  2) Repair Guides"
+        echo "  3) Software"
+        valid_count=3
+        ;;
+    *)
+        print_error "No subcategories available for: $CATEGORY"
+        exit 1
+        ;;
+esac
 echo ""
 
 read -p "📂 Select subcategory: " SUBCAT_INPUT
 
-case "$SUBCAT_INPUT" in
-    1) SUBCATEGORY="Electronics" ;;
-    2) SUBCATEGORY="Home Appliances" ;;
-    3) SUBCATEGORY="Mobile Gadgets" ;;
-    4) SUBCATEGORY="Achievements" ;;
-    5) SUBCATEGORY="Guides" ;;
-    6) SUBCATEGORY="Walkthroughs" ;;
-    7) SUBCATEGORY="Equipment" ;;
-    8) SUBCATEGORY="Repair Guides" ;;
-    9) SUBCATEGORY="Software" ;;
-    *)
-        print_error "Invalid subcategory selection"
-        exit 1
+# Map selection to subcategory based on category
+case "$CATEGORY" in
+    "buying-guides")
+        case "$SUBCAT_INPUT" in
+            1) SUBCATEGORY="Electronics" ;;
+            2) SUBCATEGORY="Home Appliances" ;;
+            3) SUBCATEGORY="Mobile Gadgets" ;;
+            *)
+                print_error "Invalid subcategory selection"
+                exit 1
+                ;;
+        esac
+        ;;
+    "gaming")
+        case "$SUBCAT_INPUT" in
+            1) SUBCATEGORY="Achievements" ;;
+            2) SUBCATEGORY="Guides" ;;
+            3) SUBCATEGORY="Walkthroughs" ;;
+            *)
+                print_error "Invalid subcategory selection"
+                exit 1
+                ;;
+        esac
+        ;;
+    "tutorials-guides")
+        case "$SUBCAT_INPUT" in
+            1) SUBCATEGORY="Equipment" ;;
+            2) SUBCATEGORY="Repair Guides" ;;
+            3) SUBCATEGORY="Software" ;;
+            *)
+                print_error "Invalid subcategory selection"
+                exit 1
+                ;;
+        esac
         ;;
 esac
 

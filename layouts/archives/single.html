@@ -1,0 +1,106 @@
+{{ define "main" }}
+
+<div class="archive-page">
+  <!-- Archive Header -->
+  <header class="archive-header">
+    <h1>{{ .Title }}</h1>
+    {{ if .Description }}
+    <p class="archive-description">{{ .Description }}</p>
+    {{ end }}
+  </header>
+
+  <!-- Archive Content -->
+  {{ if .Content }}
+  <div class="archive-intro">
+    {{ .Content }}
+  </div>
+  {{ end }}
+
+  <!-- Archive Navigation -->
+  <nav class="archive-nav">
+    <div class="nav-section">
+      <h3>Browse By Category</h3>
+      <ul class="category-list">
+        {{ $categories := slice "Gaming" "Electronics" "Software" "Mobile" "Home Appliances" "Tutorials & Guides" }}
+        {{ $articles := where .Site.RegularPages "Section" "articles" }}
+        
+        {{ range $categories }}
+          {{ $cat := . }}
+          {{ $count := len (where $articles "Params.category" $cat) }}
+          {{ if gt $count 0 }}
+          <li>
+            <a href="{{ relURL (print "/articles/" ($cat | urlize) "/") }}" class="nav-link">
+              {{ $cat }}<span class="count">({{ $count }})</span>
+            </a>
+          </li>
+          {{ end }}
+        {{ end }}
+      </ul>
+    </div>
+
+    <div class="nav-section">
+      <h3>Browse By Year</h3>
+      <ul class="date-list">
+        <li>
+          <a href="#2026" class="nav-link">2026<span class="count">({{ len (where .Site.RegularPages "Section" "articles") }})</span></a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="nav-section">
+      <h3>Browse By Tag</h3>
+      <div class="tag-cloud-archive">
+        <!-- Display tags from articles -->
+        {{ $displayedTags := slice }}
+        {{ range where .Site.RegularPages "Section" "articles" }}
+          {{ with .Params.tags }}
+            {{ range . }}
+              {{ if and (not (in $displayedTags .)) (lt (len $displayedTags) 30) }}
+                {{ $displayedTags = $displayedTags | append . }}
+                <a href="{{ relURL (print "/tags/" (. | urlize) "/") }}" class="tag-archive">
+                  {{ . }}
+                </a>
+              {{ end }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Articles List -->
+  <section class="archive-articles">
+    <h2>All Articles</h2>
+    <div class="articles-timeline">
+      {{ $lastYear := "" }}
+      {{ range sort (where .Site.RegularPages "Section" "articles") "Date" "desc" }}
+        {{ $year := .Date.Format "2006" }}
+        
+        {{ if ne $year $lastYear }}
+          {{ if ne $lastYear "" }}</div></div>{{ end }}
+          <div class="year-group" id="{{ $year }}" data-year="{{ $year }}">
+            <h3 class="year-header">{{ $year }}</h3>
+            <div class="articles-list">
+          {{ $lastYear = $year }}
+        {{ end }}
+        
+        <div class="article-item" data-date="{{ .Date.Format "2006-01-02" }}" data-category="{{ .Params.category }}">
+          <div class="article-date">
+            <span class="month">{{ .Date.Format "Jan" }}</span>
+            <span class="day">{{ .Date.Format "02" }}</span>
+          </div>
+          <div class="article-meta">
+            <h4><a href="{{ .RelPermalink }}" class="article-link">{{ .Title }}</a></h4>
+            <p class="article-summary">
+              <span class="category-tag">{{ .Params.category }}</span>
+              <span class="article-excerpt">{{ .Params.excerpt }}</span>
+            </p>
+          </div>
+        </div>
+      {{ end }}
+      {{ if ne $lastYear "" }}</div></div>{{ end }}
+    </div>
+  </section>
+</div>
+
+{{ end }}

@@ -1,0 +1,68 @@
+{{ define "main" }}
+
+<div class="articles-page-with-sidebar">
+  <!-- Main Content -->
+  <main class="articles-main-content">
+    <!-- Page Header -->
+    <header class="articles-header">
+      <h1>{{ .Title }}</h1>
+      {{ if .Description }}
+      <p class="articles-description">{{ .Description }}</p>
+      {{ else }}
+      <p class="articles-description">Browse articles in {{ .Title }}</p>
+      {{ end }}
+    </header>
+
+    <!-- Articles Content (if any) -->
+    {{ if .Content }}
+    <div class="articles-intro">
+      {{ .Content }}
+    </div>
+    {{ end }}
+
+    <!-- Filters & Sorting -->
+    <div class="articles-filters">
+      <div class="filter-group">
+        <label for="sort-select">Sort by:</label>
+        <select id="sort-select" class="sort-select">
+          <option value="date-desc">Newest First</option>
+          <option value="date-asc">Oldest First</option>
+          <option value="title-asc">Title (A-Z)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Articles Grid -->
+    <div class="articles-grid">
+      {{ $articles := where .Site.RegularPages "Section" "articles" }}
+      
+      {{ if $articles }}
+        {{ range $articles }}
+          {{ partial "article-card.html" . }}
+        {{ end }}
+      {{ else }}
+        <div class="no-articles">
+          <p>No articles found.</p>
+          <a href="/articles/">← Back to all articles</a>
+        </div>
+      {{ end }}
+    </div>
+
+    <!-- Pagination (if needed) -->
+    {{ if gt (len $articles) 12 }}
+    <div class="pagination">
+      {{ template "_internal/pagination.html" . }}
+    </div>
+    {{ end }}
+  </main>
+
+  <!-- Sidebar -->
+  <aside class="articles-sidebar">
+    {{ partial "articles/filters-sidebar.html" . }}
+  </aside>
+</div>
+
+<!-- Load Article Management Script -->
+<script src="{{ relURL "/js/articles.js" }}"></script>
+
+{{ end }}

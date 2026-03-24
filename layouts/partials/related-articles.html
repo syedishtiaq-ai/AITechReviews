@@ -1,0 +1,40 @@
+<section class="related-articles-section">
+  <h2>Related Articles</h2>
+  
+  <div class="related-articles-grid">
+    {{ $current := . }}
+    {{ $category := .Params.category }}
+    {{ $count := 0 }}
+    
+    <!-- Find articles in same category -->
+    {{ range where (where .Site.RegularPages "Section" "articles") "Params.category" $category }}
+      {{ if ne .Permalink $current.Permalink }}
+        {{ if lt $count 3 }}
+          {{ partial "article-card.html" . }}
+          {{ $count = add $count 1 }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+    
+    <!-- If fewer than 3, add articles from other categories -->
+    {{ if lt $count 3 }}
+      {{ range where .Site.RegularPages "Section" "articles" }}
+        {{ if ne .Permalink $current.Permalink }}
+          {{ if ne .Params.category $category }}
+            {{ if lt $count 3 }}
+              {{ partial "article-card.html" . }}
+              {{ $count = add $count 1 }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  </div>
+
+  <!-- If no related articles found -->
+  {{ if eq $count 0 }}
+  <div class="no-related">
+    <p>No related articles found. <a href="/articles/">Browse all articles</a></p>
+  </div>
+  {{ end }}
+</section>

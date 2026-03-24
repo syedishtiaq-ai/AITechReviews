@@ -1,0 +1,104 @@
+{{ define "main" }}
+
+<div class="articles-page-with-sidebar">
+  <!-- Main Content -->
+  <main class="articles-main-content">
+    <!-- Page Header -->
+    <header class="articles-header">
+      <h1>{{ .Title }}</h1>
+      {{ if .Description }}
+      <p class="articles-description">{{ .Description }}</p>
+      {{ else }}
+      <p class="articles-description">Explore our comprehensive buying guides and reviews</p>
+      {{ end }}
+    </header>
+
+    <!-- Articles Content (if any) -->
+    {{ if .Content }}
+    <div class="articles-intro">
+      {{ .Content }}
+    </div>
+    {{ end }}
+
+    <!-- Filters & Sorting -->
+    <div class="articles-filters">
+      <div class="filter-group">
+        <label for="sort-select">Sort by:</label>
+        <select id="sort-select" class="sort-select">
+          <option value="date-desc">Newest First</option>
+          <option value="date-asc">Oldest First</option>
+          <option value="title-asc">Title (A-Z)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Articles Grid -->
+    <div class="articles-grid">
+      {{ $articles := slice }}
+      {{ $subcategory := "" }}
+      {{ $category := "Buying Guides" }}
+      
+      <!-- Parse the URL to determine subcategory -->
+      {{ $urlPath := strings.TrimSuffix "/" .RelPermalink }}
+      {{ $urlPath := strings.TrimPrefix "/" $urlPath }}
+      {{ $pathParts := split $urlPath "/" }}
+      
+      <!-- Determine subcategory from URL for /buying-guides/electronics/ or /buying-guides/home-appliances/ -->
+      {{ if ge (len $pathParts) 2 }}
+        {{ $subPath := index $pathParts 1 }}
+        {{ if eq $subPath "electronics" }}
+          {{ $subcategory = "Electronics" }}
+        {{ else if eq $subPath "home-appliances" }}
+          {{ $subcategory = "Home Appliances" }}
+        {{ else if eq $subPath "mobile-gadgets" }}
+          {{ $subcategory = "Mobile Gadgets" }}
+        {{ end }}
+      {{ end }}
+      
+      <!-- Query articles based on determined subcategory -->
+      {{ $allPages := .Site.RegularPages }}
+      
+      {{ if and $category $subcategory }}
+        <!-- Filter by both category and subcategory -->
+        {{ $articles = where $allPages "Params.category" $category }}
+        {{ $articles = where $articles "Params.subcategory" $subcategory }}
+      {{ else if $category }}
+        <!-- Filter by category only -->
+        {{ $articles = where $allPages "Params.category" $category }}
+      {{ else }}
+        <!-- Fallback: show all pages -->
+        {{ $articles = $allPages }}
+      {{ end }}
+      
+      <!-- Sort by date descending -->
+      {{ $articles = sort $articles "Date" "desc" }}
+      
+      {{ if $articles }}
+        {{ range $articles }}
+          {{ partial "article-card.html" . }}
+        {{ end }}
+      {{ else }}
+        <div class="no-articles">
+          <p>No articles found in this section.</p>
+        </div>
+      {{ end }}
+    </div>
+
+    <!-- Pagination (if many articles) -->
+    {{ if gt (len $articles) 12 }}
+    <div class="pagination">
+      {{ template "_internal/pagination.html" . }}
+    </div>
+    {{ end }}
+  </main>
+
+  <!-- Sidebar -->
+  <aside class="articles-sidebar">
+    {{ partial "articles/filters-sidebar.html" . }}
+  </aside>
+</div>
+
+<!-- Load Article Management Script -->
+<script src="{{ relURL "/js/articles.js" }}"></script>
+
+{{ end }}

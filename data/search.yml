@@ -1,0 +1,20 @@
+articles:
+  {{- $articles := (where .Site.RegularPages "Type" "articles") }}
+  {{- range $articles }}
+  - slug: "{{ .Permalink }}"
+    title: "{{ .Title }}"
+    excerpt: "{{ with .Params.description }}{{ . | plainify }}{{ else }}{{ .Summary | plainify }}{{ end }}"
+    category: "{{ with .Params.category }}{{ . }}{{ else }}Uncategorized{{ end }}"
+    author: "{{ with .Params.author }}{{ . }}{{ else }}AITechReviews{{ end }}"
+    date: "{{ .PublishDate.Format "2006-01-02" }}"
+    updated: "{{ .Date.Format "2006-01-02" }}"
+    {{- with .Params.tags }}
+    tags:
+    {{- range . }}
+      - "{{ . }}"
+    {{- end }}
+    {{- end }}
+    readingTime: "{{ with .Params.readingTime }}{{ . }}{{ else }}N/A{{ end }}"
+    featured: {{ with .Params.featured }}{{ . }}{{ else }}false{{ end }}
+    image: "{{ with .Params.featured_image }}{{ . }}{{ else }}{{ end }}"
+  {{- end }}

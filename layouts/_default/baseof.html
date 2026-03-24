@@ -1,29 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
-
-  <!-- SEO Description -->
-  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
-
-  <!-- Canonical URL -->
-  <link rel="canonical" href="{{ .Permalink }}">
+  {{ partial "meta/head.html" . }}
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="{{ "/images/favicon.png" | relURL }}">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="/css/style.css">
-
-  <!-- Open Graph (Social Sharing) -->
-  <meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }}{{ end }}">
-  <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="{{ .Permalink }}">
-  <meta property="og:site_name" content="{{ .Site.Title }}">
+  <link rel="stylesheet" href="{{ "/css/style.css" | relURL }}">
+  <link rel="stylesheet" href="{{ "/css/articles.css" | relURL }}">
+  <link rel="stylesheet" href="{{ "/css/archives.css" | relURL }}">
+  <link rel="stylesheet" href="{{ "/css/authors.css" | relURL }}">
+  <link rel="stylesheet" href="{{ "/css/search.css" | relURL }}">
+  <link rel="stylesheet" href="{{ "/css/carousel.css" | relURL }}">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
@@ -60,7 +49,9 @@
 
   {{ partial "main/header.html" . }}
 
+  {{ if not .IsHome }}
   {{ partial "breadcrumbs.html" . }}
+  {{ end }}
 
   <!-- hero banner removed per request -->
 
@@ -77,11 +68,11 @@
     {{ block "main" . }}{{ end }}
   </main>
 
-  {{ partial "main/footer.html" . }}
-
   {{ partial "back-to-top.html" . }}
 
-  <script src="/js/site.js" defer></script>
+  {{ partial "main/footer.html" . }}
+
+  <script src="{{ "/js/site.js" | relURL }}" defer></script>
 
 </body>
 </html>

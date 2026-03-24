@@ -1,0 +1,54 @@
+<div class="articles-filters-sidebar">
+  <!-- Results Count -->
+  <div class="filter-section">
+    <p class="results-count" id="articles-count">Showing articles</p>
+  </div>
+
+  <!-- Clear Filters Button -->
+  <div class="filter-section">
+    <button id="clear-filters-btn" class="clear-filters-btn" style="display: none;">
+      Clear All Filters
+    </button>
+  </div>
+
+  <!-- Tag Cloud (if on articles page) -->
+  {{ if in .RelPermalink "/articles/" }}
+  <div class="filter-section">
+    <h3 class="filter-title">Popular Tags</h3>
+    <div class="tags-cloud-small">
+      <!-- Display top tags from ACTUAL articles only (from article sections) -->
+      {{ $allArticles := where (where .Site.RegularPages "Section" "in" (slice "buying-guides" "gaming" "tutorials-guides")) "Type" "ne" "list" }}
+      {{ $displayedTags := slice }}
+      {{ range $allArticles }}
+        {{ with .Params.tags }}
+          {{ range . }}
+            {{ if and (not (in $displayedTags .)) (lt (len $displayedTags) 15) }}
+              {{ $displayedTags = $displayedTags | append . }}
+              <a href="#" 
+                 class="tag-small tag-filter"
+                 data-filter-tag="{{ . }}">
+                #{{ . }}
+              </a>
+            {{ end }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+      {{ if eq (len $displayedTags) 0 }}
+        <p class="no-tags">No tags available</p>
+      {{ end }}
+    </div>
+  </div>
+  {{ end }}
+
+  <!-- Search Box -->
+  <div class="filter-section">
+    <h3 class="filter-title">Search Articles</h3>
+    <div class="search-box-small">
+      <input type="text" 
+             id="article-search-input" 
+             placeholder="Search articles…" 
+             class="search-input"
+             aria-label="Search articles">
+    </div>
+  </div>
+</div>

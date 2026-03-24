@@ -1,0 +1,98 @@
+{{ define "main" }}
+
+<div class="author-page">
+  <!-- Author Header -->
+  <header class="author-header">
+    <div class="author-info">
+      {{ if .Params.authorImage }}
+      <img src="{{ .Params.authorImage | relURL }}" alt="{{ .Title }}" class="author-avatar">
+      {{ end }}
+      
+      <div class="author-details">
+        <h1 class="author-name">{{ .Title }}</h1>
+        {{ if .Params.authorRole }}
+        <p class="author-role">{{ .Params.authorRole }}</p>
+        {{ end }}
+        
+        {{ if .Params.authorBio }}
+        <p class="author-bio">{{ .Params.authorBio }}</p>
+        {{ end }}
+        
+        {{ if .Params.authorLinks }}
+        <div class="author-links">
+          {{ with .Params.authorLinks.twitter }}
+          <a href="https://twitter.com/{{ . }}" target="_blank" rel="noopener" class="social-link twitter" title="Twitter">
+            🐦
+          </a>
+          {{ end }}
+          {{ with .Params.authorLinks.LinkedIn }}
+          <a href="{{ . }}" target="_blank" rel="noopener" class="social-link linkedin" title="LinkedIn">
+            💼
+          </a>
+          {{ end }}
+          {{ with .Params.authorLinks.website }}
+          <a href="{{ . }}" target="_blank" rel="noopener" class="social-link website" title="Website">
+            🌐
+          </a>
+          {{ end }}
+        </div>
+        {{ end }}
+      </div>
+    </div>
+
+    <!-- Author Stats -->
+    <div class="author-stats">
+      {{ $articles := where .Site.RegularPages "Section" "articles" }}
+      {{ $authorArticles := where $articles "Params.author" .Title }}
+      
+      {{ $categories := slice }}
+      {{ range $authorArticles }}
+        {{ if not (in $categories .Params.category) }}
+          {{ $categories = $categories | append .Params.category }}
+        {{ end }}
+      {{ end }}
+      
+      <div class="stat">
+        <span class="stat-number">{{ len $authorArticles }}</span>
+        <span class="stat-label">Article{{ if ne (len $authorArticles) 1 }}s{{ end }}</span>
+      </div>
+      
+      <div class="stat">
+        <span class="stat-number">{{ len $categories }}</span>
+        <span class="stat-label">Categor{{ if ne (len $categories) 1 }}ies{{ else }}y{{ end }}</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Author Content (Bio) -->
+  {{ if .Content }}
+  <div class="author-content">
+    {{ .Content }}
+  </div>
+  {{ end }}
+
+  <!-- Articles by Author -->
+  <section class="author-articles">
+    <h2>Articles by {{ .Title }}</h2>
+    
+    {{ $articles := where .Site.RegularPages "Section" "articles" }}
+    {{ $authorArticles := where $articles "Params.author" .Title }}
+    
+    {{ if $authorArticles }}
+    <div class="articles-grid">
+      {{ range sort $authorArticles "Date" "desc" }}
+        {{ partial "article-card.html" . }}
+      {{ end }}
+    </div>
+    {{ else }}
+    <div class="no-articles">
+      <p>No articles by {{ .Title }} yet.</p>
+    </div>
+    {{ end }}
+  </section>
+</div>
+
+<!-- Load Article Management Script -->
+<script src="{{ relURL "/js/articles.js" }}"></script>
+
+{{ end }}

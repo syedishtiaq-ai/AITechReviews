@@ -7,13 +7,8 @@
 {{- range $items }}
   {{- $isActive := or ($page.IsMenuCurrent "main" .) ($page.HasMenuCurrent "main" .) -}}
   {{- $autoRoot := "" -}}
-  {{- if eq .Identifier "product-reviews" -}}
-    {{- $autoRoot = $page.Site.GetPage "section" "product-reviews" -}}
-    {{- with $autoRoot -}}
-      {{- $isActive = or $isActive (eq $page.RelPermalink .RelPermalink) ($page.IsDescendant .) -}}
-    {{- end -}}
-  {{- else if eq .Identifier "gaming" -}}
-    {{- $autoRoot = $page.Site.GetPage "section" "gaming" -}}
+  {{- if eq .Identifier "buying-guides" -}}
+    {{- $autoRoot = $page.Site.GetPage "section" "buying-guides" -}}
     {{- with $autoRoot -}}
       {{- $isActive = or $isActive (eq $page.RelPermalink .RelPermalink) ($page.IsDescendant .) -}}
     {{- end -}}
@@ -26,7 +21,7 @@
       <button class="submenu-toggle" aria-label="Open submenu for {{ .Name }}" aria-expanded="false">›</button>
     {{- end }}
 
-    {{- /* Auto-populated dropdowns for Product Reviews and Gaming */ -}}
+    {{- /* Auto-populated dropdowns for Buying Guides and Gaming */ -}}
     {{- if and $autoRoot (eq $level 1) -}}
       <ul class="dropdown">
         {{ partial "main/nav-section-tree.html" (dict "node" $autoRoot "current" $page) }}

@@ -1,0 +1,141 @@
+{{ define "main" }}
+
+<div class="search-container">
+  <!-- Search Header -->
+  <div class="search-header">
+    <h1 class="search-title">Search Articles</h1>
+    <p class="search-subtitle">Find guides, reviews, and tutorials by keyword, category, or date</p>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-bar-wrapper">
+    <div class="search-bar">
+      <input 
+        type="text" 
+        id="searchQuery" 
+        placeholder="Search by title, keywords, or article content..."
+        aria-label="Search articles">
+    </div>
+  </div>
+
+  <!-- Filters and Results -->
+  <div class="search-filters-wrapper">
+    <!-- Sidebar Filters -->
+    <aside class="search-filters">
+      <!-- Category Filter -->
+      <div class="filter-group">
+        <h3 class="filter-title">Categories</h3>
+        <div class="filter-options">
+          {{ $sections := slice "buying-guides" "gaming" "tutorials-guides" }}
+          {{ range $sections }}
+          <div class="filter-option">
+            <input type="checkbox" id="cat-{{ . }}" class="filter-checkbox filter-category" value="{{ . }}">
+            <label for="cat-{{ . }}">{{ . | humanize }}</label>
+          </div>
+          {{ end }}
+        </div>
+      </div>
+
+      <!-- Author Filter -->
+      <div class="filter-group">
+        <h3 class="filter-title">Authors</h3>
+        <div class="filter-options">
+          {{ $authors := slice "AITechReviews" "Tech Reviewer" "Gaming Guide" "Software Expert" }}
+          {{ range $authors }}
+          <div class="filter-option">
+            <input type="checkbox" id="author-{{ . | lower | replace " " "-" }}" class="filter-checkbox filter-author" value="{{ . }}">
+            <label for="author-{{ . | lower | replace " " "-" }}">{{ . }}</label>
+          </div>
+          {{ end }}
+        </div>
+      </div>
+
+      <!-- Date Range Filter -->
+      <div class="filter-group">
+        <h3 class="filter-title">Date Range</h3>
+        <div class="date-range">
+          <input 
+            type="date" 
+            id="filterStartDate" 
+            class="date-input" 
+            aria-label="Start date filter">
+          <input 
+            type="date" 
+            id="filterEndDate" 
+            class="date-input" 
+            aria-label="End date filter">
+        </div>
+      </div>
+
+      <!-- Clear Filters -->
+      <button id="clearFilters" class="clear-filters-btn">Clear All Filters</button>
+    </aside>
+
+    <!-- Main Results Section -->
+    <main class="search-results-wrapper">
+      <!-- Results Header -->
+      <div class="results-header">
+        <div id="resultCount">0 results</div>
+        <div class="sort-wrapper">
+          <label for="sortResults">Sort by:</label>
+          <select id="sortResults" aria-label="Sort results">
+            <option value="relevance">Relevance</option>
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="title-asc">Title (A-Z)</option>
+            <option value="title-desc">Title (Z-A)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Search Results -->
+      <div id="searchResults">
+        <div style="text-align: center; padding: 2rem; color: #6b7280;">
+          Loading articles...
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Help Text -->
+  <div style="margin-top: 3rem; padding: 1.5rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #2563eb; color: #0c4a6e;">
+    <p><strong>💡 Search Tips:</strong></p>
+    <ul style="margin: 0.5rem 0 0 1.25rem; padding: 0;">
+      <li>Use multiple filters to narrow down results</li>
+      <li>Search terms work across article titles and content</li>
+      <li>Combine date range with other filters for precise results</li>
+      <li>Click any result to read the full article</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Embed search index data -->
+<script>
+window.ARTICLE_INDEX = [
+  {{- $pages := .Site.RegularPages }}
+  {{- $first := true }}
+  {{- range $pages }}
+    {{- if and (ne .Type "archives") (ne .Type "search") (ne .Type "authors") }}
+      {{- if $first }}{{ $first = false }}{{ else }},{{ end }}
+      {
+        slug: "{{ .Permalink }}",
+        title: "{{ .Title | replaceRE "\"" "\\\"" }}",
+        excerpt: "{{ (or .Params.description (plainify .Summary)) | replaceRE "\"" "\\\"" | replaceRE "\n" " " }}",
+        section: "{{ .Type }}",
+        author: "{{ or .Params.author "AITechReviews" }}",
+        date: "{{ .PublishDate.Format "2006-01-02" }}",
+        updated: "{{ .Date.Format "2006-01-02" }}",
+        tags: [{{ range $i, $tag := .Params.tags }}{{ if gt $i 0 }}, {{ end }}"{{ $tag | replaceRE "\"" "\\\"" }}"{{ end }}],
+        readingTime: "{{ .Params.readingTime }}",
+        featured: {{ (or .Params.featured false) }},
+        image: "{{ .Params.featured_image }}"
+      }
+    {{- end }}
+  {{- end }}
+];
+</script>
+
+<!-- Load search functionality -->
+<script src="{{ "/js/search.js" | relURL }}" defer></script>
+
+{{ end }}

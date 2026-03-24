@@ -1,0 +1,99 @@
+{{ define "main" }}
+
+<div class="archive-page">
+  <!-- Breadcrumbs -->
+  {{ if not .IsHome }}
+  {{ partial "breadcrumbs.html" . }}
+  {{ end }}
+
+  <div class="container">
+    <div class="archive-wrapper">
+      <!-- Archive Sidebar -->
+      <aside class="archive-sidebar">
+        {{ partial "archive-sidebar.html" . }}
+      </aside>
+
+      <!-- Archive Content -->
+      <main class="archive-main">
+        <!-- Page Header -->
+        <div class="archive-header">
+          <h1>{{ .Title }}</h1>
+          {{ if .Params.description }}
+          <p class="archive-description">{{ .Params.description }}</p>
+          {{ end }}
+        </div>
+
+        <!-- Archive Filters -->
+        {{ if not .IsHome }}
+        <div class="archive-filters">
+          {{ partial "archive-filters.html" . }}
+        </div>
+        {{ end }}
+
+        <!-- Archive Articles Listing -->
+        <div class="archive-articles">
+          {{ if .Content }}
+          <div class="archive-intro">
+            {{ .Content }}
+          </div>
+          {{ end }}
+
+          <!-- Article Count -->
+          {{ $articles := where .Site.RegularPages "Section" "articles" }}
+          
+          {{ if .Params.archive_category }}
+            <!-- Filter by category -->
+            {{ $articles = where $articles "Params.category" .Params.archive_category }}
+          {{ else if or .Params.archive_month .Params.archive_year }}
+            <!-- Filter by date range - manual filtering -->
+            {{ $filtered := slice }}
+            {{ $startDate := .Params.archive_date_start }}
+            {{ $endDate := .Params.archive_date_end }}
+            {{ range $articles }}
+              {{ $dateStr := .Date.Format "2006-01-02" }}
+              {{ if and (ge $dateStr $startDate) (lt $dateStr $endDate) }}
+                {{ $filtered = $filtered | append . }}
+              {{ end }}
+            {{ end }}
+            {{ $articles = $filtered }}
+          {{ end }}
+
+          {{ if gt (len $articles) 0 }}
+            <div class="article-count">
+              Found <strong>{{ len $articles }}</strong> article{{ if ne (len $articles) 1 }}s{{ end }}
+            </div>
+
+            <!-- Articles Grid -->
+            <div class="archive-articles-grid">
+              {{ range $articles }}
+              <div class="archive-article-card">
+                {{ if .Params.featuredImage }}
+                <div class="archive-card-image">
+                  <img src="{{ .Params.featuredImage | relURL }}" alt="{{ .Title }}" loading="lazy">
+                </div>
+                {{ end }}
+                <div class="archive-card-content">
+                  <span class="archive-card-date">{{ .Date.Format "January 2, 2006" }}</span>
+                  {{ if .Params.category }}
+                  <span class="archive-card-category">{{ .Params.category }}</span>
+                  {{ end }}
+                  <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+                  {{ if .Params.excerpt }}
+                  <p class="archive-card-excerpt">{{ .Params.excerpt }}</p>
+                  {{ end }}
+                </div>
+              </div>
+              {{ end }}
+            </div>
+          {{ else }}
+            <div class="no-articles">
+              <p>No articles found in this archive.</p>
+            </div>
+          {{ end }}
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+{{ end }}

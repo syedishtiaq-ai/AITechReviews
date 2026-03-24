@@ -1,0 +1,84 @@
+{{ define "main" }}
+
+<div class="authors-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1>{{ .Title }}</h1>
+    {{ if .Description }}
+    <p class="page-description">{{ .Description }}</p>
+    {{ end }}
+  </header>
+
+  <!-- Page Content -->
+  {{ if .Content }}
+  <div class="page-content">
+    {{ .Content }}
+  </div>
+  {{ end }}
+
+  <!-- Authors Grid -->
+  <section class="authors-section">
+    <div class="authors-grid">
+      {{ $articles := where .Site.RegularPages "Section" "articles" }}
+      
+      <!-- Collect unique authors and count their articles -->
+      {{ $authors := dict }}
+      {{ range $articles }}
+        {{ $author := .Params.author }}
+        {{ if $author }}
+          {{ $currentCount := 0 }}
+          {{ if index $authors $author }}
+            {{ $currentCount = index $authors $author }}
+          {{ end }}
+          {{ $authors = merge $authors (dict $author (add $currentCount 1)) }}
+        {{ end }}
+      {{ end }}
+      
+      <!-- Sort authors by name -->
+      {{ $sortedAuthors := slice }}
+      {{ range sort (where (where .Site.Pages "Type" "authors") "Kind" "page") "Title" }}
+        {{ $author := . }}
+        {{ if index $authors .Title }}
+          {{ $sortedAuthors = $sortedAuthors | append $author }}
+        {{ end }}
+      {{ end }}
+      
+      <!-- Alternative: If no author pages exist, just show authors -->
+      {{ if (eq (len $sortedAuthors) 0) }}
+        <!-- Display author cards from articles data -->
+        <p class="info-message">Create author pages in content/authors/ to display author profiles.</p>
+      {{ else }}
+        {{ range $sortedAuthors }}
+          {{ $author := . }}
+          {{ $articleCount := index $authors .Title }}
+          
+          <a href="{{ .RelPermalink }}" class="author-card">
+            {{ if .Params.authorImage }}
+            <div class="author-card-image">
+              <img src="{{ .Params.authorImage | relURL }}" alt="{{ .Title }}" loading="lazy">
+            </div>
+            {{ end }}
+            
+            <div class="author-card-content">
+              <h3 class="author-card-name">{{ .Title }}</h3>
+              
+              {{ if .Params.authorRole }}
+              <p class="author-card-role">{{ .Params.authorRole }}</p>
+              {{ end }}
+              
+              {{ if .Params.authorBio }}
+              <p class="author-card-bio">{{ .Params.authorBio }}</p>
+              {{ end }}
+              
+              <p class="author-card-stats">
+                <strong>{{ $articleCount }}</strong> Article{{ if ne $articleCount 1 }}s{{ end }}
+              </p>
+            </div>
+          </a>
+        {{ end }}
+      {{ end }}
+    </div>
+  </section>
+</div>
+
+{{ end }}

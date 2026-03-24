@@ -1,0 +1,128 @@
+{{ define "main" }}
+
+<div class="articles-page-with-sidebar">
+  <!-- Main Content -->
+  <main class="articles-main-content">
+    <!-- Page Header -->
+    <header class="articles-header">
+      <h1>{{ .Title }}</h1>
+      {{ if .Description }}
+      <p class="articles-description">{{ .Description }}</p>
+      {{ else }}
+      <p class="articles-description">Explore all articles from our entire website</p>
+      {{ end }}
+    </header>
+
+    <!-- Articles Content (if any) -->
+    {{ if .Content }}
+    <div class="articles-intro">
+      {{ .Content }}
+    </div>
+    {{ end }}
+
+    <!-- Category Tabs Filter -->
+    <!-- Generate tabs from unique categories in all articles -->
+    <div class="articles-category-tabs">
+      <a href="#" class="category-tab active" data-category="all">All Articles</a>
+      
+      {{ $buyingGuides := where (where .Site.RegularPages "Section" "=" "buying-guides") "Type" "ne" "list" }}
+      {{ if $buyingGuides }}
+      <a href="#" class="category-tab" data-category="Buying Guides">Buying Guides</a>
+      {{ end }}
+      
+      {{ $gaming := where (where .Site.RegularPages "Section" "=" "gaming") "Type" "ne" "list" }}
+      {{ if $gaming }}
+      <a href="#" class="category-tab" data-category="Gaming">Gaming</a>
+      {{ end }}
+      
+      {{ $tutorials := where (where .Site.RegularPages "Section" "=" "tutorials-guides") "Type" "ne" "list" }}
+      {{ if $tutorials }}
+      <a href="#" class="category-tab" data-category="Tutorials &amp; Guides">Tutorials & Guides</a>
+      {{ end }}
+    </div>
+
+    <!-- Filters & Sorting -->
+    <div class="articles-filters">
+      <div class="filter-group">
+        <label for="sort-select">Sort by:</label>
+        <select id="sort-select" class="sort-select">
+          <option value="date-desc">Newest First</option>
+          <option value="date-asc">Oldest First</option>
+          <option value="title-asc">Title (A-Z)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Articles Grid -->
+    <div class="articles-grid" id="articles-container">
+      <!-- Query ONLY articles from actual article sections -->
+      <!-- This includes only: buying-guides, gaming, tutorials-guides -->
+      {{ $allArticles := where (where .Site.RegularPages "Section" "in" (slice "buying-guides" "gaming" "tutorials-guides")) "Type" "ne" "list" }}
+      {{ $allArticles = sort $allArticles "Date" "desc" }}
+      
+      {{ if $allArticles }}
+        {{ range $allArticles }}
+          {{ partial "article-card.html" . }}
+        {{ end }}
+      {{ else }}
+        <div class="no-articles">
+          <p>No articles found.</p>
+        </div>
+      {{ end }}
+    </div>
+  </main>
+
+  <!-- Sidebar -->
+  <aside class="articles-sidebar">
+    {{ partial "articles/filters-sidebar.html" . }}
+  </aside>
+</div>
+
+<!-- Pagination (if many articles) -->
+{{ if gt (len $allArticles) 12 }}
+<div class="pagination">
+  {{ template "_internal/pagination.html" . }}
+</div>
+{{ end }}
+
+<!-- Category Tab Filtering Script -->
+<script>
+  // Initialize category tab filtering
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.category-tab');
+    
+    tabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        e.preventDefault();
+        const selectedCategory = tab.getAttribute('data-category');
+        
+        // Update active state on all tabs - make sure ALL tabs stay visible
+        tabs.forEach(t => {
+          if (t.getAttribute('data-category') === selectedCategory) {
+            t.classList.add('active');
+          } else {
+            t.classList.remove('active');
+          }
+        });
+        
+        // Filter articles - hide/show based on category
+        // IMPORTANT: Only select .article-card, not all [data-category] (which includes tabs)
+        const articles = document.querySelectorAll('.article-card');
+        articles.forEach(article => {
+          const articleCategory = article.getAttribute('data-category');
+          if (selectedCategory === 'all' || articleCategory === selectedCategory) {
+            article.style.display = '';
+            article.classList.add('fade-in');
+          } else {
+            article.style.display = 'none';
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<!-- Load Article Management Script -->
+<script src="{{ relURL "/js/articles.js" }}"></script>
+
+{{ end }}

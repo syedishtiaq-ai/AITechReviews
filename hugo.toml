@@ -1,24 +1,38 @@
-baseURL = "https://aitechreviews.co.in/"
+baseURL = "http://localhost:1313/"
 languageCode = "en-us"
 title = "AITechReviews"
 enableRobotsTXT = true
 
 googleAnalytics = "G-00D58FDB3V"
 
+# Enable tags taxonomy for article archives
+taxonomies.tag = "tags"
+
+canonifyURLs = true
+enableGitInfo = true
+
 [outputs]
   home = ["HTML", "RSS", "SITEMAP"]
+  section = ["HTML", "RSS"]
+
+[outputFormats.JSON]
+  name = "json"
+  mediaType = "application/json"
+  baseName = "search-index"
+  isPlainText = true
+  notAlternative = true
 
 [sitemap]
   filename = "sitemap.xml"
   changefreq = "weekly"
-  priority = 0.5
+  priority = 0.7
 
 [params]
-  description = "Trusted product reviews and gaming insights"
+  description = "Trusted Buying Guides and gaming insights"
   heroTagline = "Gaming Guides & Product Picks"
   # Configure which top-level sections appear on the homepage and their order.
-  # Example: ["Gaming", "Product Reviews"] will show Gaming first, Product Reviews second.
-  homepageOrder = ["Gaming", "Product Reviews"]
+  # Example: ["Gaming", "Buying Guides"] will show Gaming first, Buying Guides second.
+  homepageOrder = ["Gaming", "Buying Guides"]
   # Toggle which main categories appear in the "What are you looking for?" box.
   [params.showOnHome]
     # Set to true/false to show or hide the section on the homepage
@@ -32,120 +46,91 @@ googleAnalytics = "G-00D58FDB3V"
     weight = 10
 
   [[menus.main]]
-    name = "Product Reviews"
-    identifier = "product-reviews"
-    pageRef = "/product-reviews"
+    name = "Search"
+    pageRef = "/search/"
+    weight = 15
+
+  [[menus.main]]
+    name = "Buying Guides"
+    identifier = "buying-guides"
+    pageRef = "/buying-guides"
     weight = 20
 
   [[menus.main]]
     name = "Electronics"
-    identifier = "electronics"
-    parent = "product-reviews"
-    pageRef = "/product-reviews/electronics"
-    weight = 21
-
-  [[menus.main]]
-    name = "Camera & Photo"
-    parent = "electronics"
-    pageRef = "/product-reviews/electronics/camera-photo"
-    weight = 211
-
-  [[menus.main]]
-    name = "Laptops"
-    parent = "electronics"
-    pageRef = "/product-reviews/electronics/laptops"
-    weight = 212
-
-  [[menus.main]]
-    name = "Desktop Computers"
-    parent = "electronics"
-    pageRef = "/product-reviews/electronics/desktop-computers"
-    weight = 213
-
-  [[menus.main]]
-    name = "Home Audio"
-    parent = "electronics"
-    pageRef = "/product-reviews/electronics/home-audio"
-    weight = 214
-
-  [[menus.main]]
-    name = "TVs"
-    parent = "electronics"
-    pageRef = "/product-reviews/electronics/tvs"
-    weight = 215
-
-  [[menus.main]]
-    name = "Consoles"
-    parent = "electronics"
-    pageRef = "/product-reviews/electronics/consoles"
-    weight = 216
-
-  [[menus.main]]
-    name = "Accessories"
-    parent = "electronics"
-    pageRef = "/product-reviews/electronics/accessories"
-    weight = 217
-
-  [[menus.main]]
-    name = "Power Banks"
-    parent = "electronics"
-    pageRef = "/product-reviews/electronics/power-banks"
-    weight = 218
+    parent = "buying-guides"
+    pageRef = "/buying-guides/electronics"
+    weight = 201
 
   [[menus.main]]
     name = "Home Appliances"
-    parent = "product-reviews"
-    pageRef = "/product-reviews/home-appliances"
-    weight = 22
+    parent = "buying-guides"
+    pageRef = "/buying-guides/home-appliances"
+    weight = 202
+
+  [[menus.main]]
+    name = "Mobile Gadgets"
+    parent = "buying-guides"
+    pageRef = "/buying-guides/mobile-gadgets"
+    weight = 203
 
   [[menus.main]]
     name = "Gaming"
     identifier = "gaming"
     pageRef = "/gaming"
-    weight = 30
+    weight = 25
 
   [[menus.main]]
     name = "Guides"
     parent = "gaming"
     pageRef = "/gaming/guides"
-    weight = 31
+    weight = 251
 
   [[menus.main]]
     name = "Walkthroughs"
     parent = "gaming"
     pageRef = "/gaming/walkthroughs"
-    weight = 32
+    weight = 252
 
   [[menus.main]]
-    name = "Game Reviews"
+    name = "Achievements"
     parent = "gaming"
-    pageRef = "/gaming/game-reviews"
-    weight = 33
+    pageRef = "/gaming/achievements"
+    weight = 253
 
   [[menus.main]]
-    name = "Game Achievements"
-    identifier = "game-achievements"
-    parent = "gaming"
-    pageRef = "/gaming/game-achievements"
-    weight = 34
+    name = "Tutorials & Guides"
+    identifier = "tutorials-guides"
+    pageRef = "/tutorials-guides"
+    weight = 30
 
   [[menus.main]]
-    name = "AC Rogue"
-    parent = "game-achievements"
-    pageRef = "/gaming/game-achievements/ac-rogue"
-    weight = 341
+    name = "Software Tutorials"
+    parent = "tutorials-guides"
+    pageRef = "/tutorials-guides/software"
+    weight = 301
 
   [[menus.main]]
-    name = "AC Origins"
-    parent = "game-achievements"
-    pageRef = "/gaming/game-achievements/ac-origins"
-    weight = 342
+    name = "Repair Guides"
+    parent = "tutorials-guides"
+    pageRef = "/tutorials-guides/repair-guides"
+    weight = 302
 
   [[menus.main]]
-    name = "AC Odyssey"
-    parent = "game-achievements"
-    pageRef = "/gaming/game-achievements/ac-odyssey"
-    weight = 343
+    name = "Equipment"
+    parent = "tutorials-guides"
+    pageRef = "/tutorials-guides/equipment"
+    weight = 303
+
+  [[menus.main]]
+    name = "Archives"
+    pageRef = "/archives"
+    weight = 35
+
+  [[menus.main]]
+    name = "Authors"
+    pageRef = "/authors"
+    weight = 36
 
   [[menus.main]]
     name = "How It Works"

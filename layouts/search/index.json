@@ -1,0 +1,20 @@
+{{ $articles := (where .Site.RegularPages "Type" "articles") }}
+[
+  {{- $first := true }}
+  {{- range $articles }}
+    {{- if $first }}{{ $first = false }}{{ else }},{{ end }}
+    {
+      "slug": {{ .Permalink | jsonify }},
+      "title": {{ .Title | jsonify }},
+      "excerpt": {{ (or .Params.description (plainify .Summary)) | jsonify }},
+      "category": {{ (or .Params.category "Uncategorized") | jsonify }},
+      "author": {{ (or .Params.author "AITechReviews") | jsonify }},
+      "date": {{ .PublishDate.Format "2006-01-02" | jsonify }},
+      "updated": {{ .Date.Format "2006-01-02" | jsonify }},
+      "tags": {{ default (slice) .Params.tags | jsonify }},
+      "readingTime": {{ .Params.readingTime | jsonify }},
+      "featured": {{ (or .Params.featured false) }},
+      "image": {{ .Params.featured_image | jsonify }}
+    }
+  {{- end }}
+]

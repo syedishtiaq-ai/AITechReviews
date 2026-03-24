@@ -1,0 +1,23 @@
+{{- $pages := .Site.RegularPages -}}
+[
+  {{- $first := true }}
+  {{- range $pages }}
+    {{- if and (ne .Type "archives") (ne .Type "search") (ne .Type "authors") }}
+      {{- if $first }}{{ $first = false }}{{ else }},{{ end }}
+      {
+        "slug": {{ .Permalink | jsonify }},
+        "title": {{ .Title | jsonify }},
+        "excerpt": {{ (or .Params.description (plainify .Summary)) | jsonify }},
+        "section": {{ .Type | jsonify }},
+        "content": {{ (plainify .Content) | jsonify }},
+        "author": {{ (or .Params.author "AITechReviews") | jsonify }},
+        "date": {{ .PublishDate.Format "2006-01-02" | jsonify }},
+        "updated": {{ .Date.Format "2006-01-02" | jsonify }},
+        "tags": {{ default (slice) .Params.tags | jsonify }},
+        "readingTime": {{ .Params.readingTime | jsonify }},
+        "featured": {{ (or .Params.featured false) }},
+        "image": {{ .Params.featured_image | jsonify }}
+      }
+    {{- end }}
+  {{- end }}
+]

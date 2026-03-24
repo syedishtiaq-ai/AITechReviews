@@ -1,0 +1,24 @@
+{{ if gt (len .Breadcrumbs) 0 }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "{{ .Site.BaseURL }}"
+    }
+    {{- range $i, $item := .Breadcrumbs }},
+    {
+      "@type": "ListItem",
+      "position": {{ add $i 2 }},
+      "name": {{ $item.Name | jsonify }},
+      "item": {{ $item.URL | jsonify }}
+    }
+    {{- end }}
+  ]
+}
+</script>
+{{ end }}

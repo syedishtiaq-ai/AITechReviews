@@ -15,31 +15,31 @@
 
   
   /**
-   * collect every posts.json file referenced by the main navigation and
-   * also include the root /posts.json. Returns a flat array of post objects.
-   * This is used by the site-wide search popup.
+   * Fetch all pages from the search index (search-index.json)
+   * This is used by the site-wide search popup and returns all searchable content.
    */
   const fetchAllPosts = async () => {
-    const navLinks = document.querySelectorAll(".nav-links > li > a");
-    const urls = new Set();
-    navLinks.forEach((link) => {
-      let href = link.getAttribute("href") || "";
-      if (!href) return;
-      // normalize to trailing slash
-      if (!href.endsWith("/")) href += "/";
-      urls.add(href + "posts.json");
-    });
-    // always include the site root index as a fallback
-    urls.add("/posts.json");
-
-    const results = await Promise.all(
-      Array.from(urls).map((u) =>
-        fetch(u, { cache: "no-store" })
-          .then((r) => (r.ok ? r.json() : []))
-          .catch(() => [])
-      )
-    );
-    return results.flat();
+    try {
+      const response = await fetch("/search/search-index.json");
+      if (!response.ok) {
+        console.warn("Could not fetch search index");
+        return [];
+      }
+      const posts = await response.json();
+      // Map search index fields to expected format for search handlers
+      return posts.map(p => ({
+        title: p.title,
+        link: p.slug,
+        content: p.excerpt,
+        description: p.excerpt,
+        section: p.section,
+        author: p.author,
+        date: p.date
+      }));
+    } catch (error) {
+      console.error("Error fetching search index:", error);
+      return [];
+    }
   };
 
   /**
@@ -286,8 +286,57 @@
     `;
   };
 
+  const createTableHTML = (pageTitle) => {
+    const placeholderText = `Search ${pageTitle}...`;
+    const selectId = `rows-per-page-${pageTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    return `
+<section class="global-table-container" data-articles-table>
+  <div class="global-table-controls">
+    <div class="global-table-search-wrapper">
+      <input type="search" class="js-articles-table-search" placeholder="${escapeHtml(placeholderText)}">
+      <button class="js-articles-table-clear" aria-label="Clear search">✕</button>
+    </div>
+    <div class="global-table-pagination-wrapper">
+      <div class="global-table-rows-control">
+        <label for="${selectId}">Rows:</label>
+        <select class="js-articles-table-rows" id="${selectId}">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <div class="global-table-nav-control">
+        <button class="js-articles-table-prev" disabled>&larr; Prev</button>
+        <span class="js-articles-table-pageinfo">Page 1 of 1</span>
+        <button class="js-articles-table-next" disabled>Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+  <div class="global-table-wrapper">
+    <table class="global-table">
+      <thead>
+        <tr>
+          <th class="is-sortable" data-sort-index="0">Title <span class="sort-indicator"></span></th>
+          <th class="is-sortable" data-sort-index="1">Item <span class="sort-indicator"></span></th>
+          <th class="is-sortable" data-sort-index="2">Description <span class="sort-indicator"></span></th>
+          <th>Link</th>
+          <th class="global-table-iconcell-header">YouTube</th>
+          <th class="global-table-iconcell-header">Instagram</th>
+        </tr>
+      </thead>
+      <tbody class="js-articles-table-body"></tbody>
+    </table>
+  </div>
+  <div class="js-articles-table-no-results" hidden>
+    <p>No results found.</p>
+  </div>
+</section>
+  `;
+  };
+
   const initArticlesTable = (section) => {
-    const dataUrl = section.getAttribute("data-url") || "";
+    let dataUrl = section.getAttribute("data-url") || "";
 
     const searchInput = section.querySelector(".js-articles-table-search");
     const clearBtn = section.querySelector(".js-articles-table-clear");
@@ -299,6 +348,8 @@
     const tbody = section.querySelector(".js-articles-table-body");
 
     if (!tbody || !rowsSelect || !prevBtn || !nextBtn || !pageInfo) return;
+    // Clear any existing content to prevent duplication on re-init
+    tbody.innerHTML = "";
 
     let allPosts = [];
     let currentPage = 1;
@@ -406,6 +457,7 @@
         return;
       }
 
+
       const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
       currentPage = Math.min(currentPage, totalPages);
 
@@ -472,16 +524,61 @@
 
     const load = async () => {
       try {
-        if (!dataUrl) {
+        const cleanPath = window.location.pathname.replace(/(\/index)?\.html$/, "").replace(/\/+$/, "").toLowerCase();
+        let urls = [];
+        if (cleanPath.endsWith("/buying-guides") || cleanPath.endsWith("/tutorials-guides")) {
+          const navLinks = document.querySelectorAll(".nav-links a");
+          const seen = new Set();
+          navLinks.forEach((link) => {
+            const href = (link.getAttribute("href") || "").toLowerCase().replace(/\/+$/, "");
+            if ((href.includes("/buying-guides/") || href.includes("/tutorials-guides/")) && !href.endsWith("/buying-guides") && !href.endsWith("/tutorials-guides")) {
+              seen.add(href + "/posts.json");
+            }
+          });
+          urls = Array.from(seen);
+        } else {
+          urls = [cleanPath + "/posts.json"];
+        }
+        if (urls.length === 0 && dataUrl) urls = [dataUrl];
+        if (urls.length === 0) {
           allPosts = [];
           renderEmptyRow("No results found");
           return;
         }
+        const responses = await Promise.all(urls.map((u) =>
+          fetch(u + "?t=" + Date.now(), { cache: "no-store" })
+          .then(async (r) => {
+            if (r.ok) {
+              const text = await r.text();
+              // Handle empty or malformed JSON gracefully
+              try { return text ? JSON.parse(text) : []; } catch (e) { throw new Error("Invalid JSON"); }
+            }
+            throw new Error(`${r.status} ${r.statusText}`);
+          })
+          .catch((err) => { 
+            console.error(`Error fetching ${u}:`, err); 
+            return { error: err.message, url: u };
+          })
+        ));
 
-        const res = await fetch(dataUrl, { cache: "no-store" });
-        if (!res.ok) throw new Error(`Failed to fetch ${dataUrl}: ${res.status}`);
-        const data = await res.json();
-        allPosts = Array.isArray(data) ? data : [];
+        // Separate valid arrays from error objects
+        const validData = responses.filter(r => Array.isArray(r));
+        const errors = responses.filter(r => r && r.error);
+
+        if (validData.length === 0 && errors.length > 0) {
+           // If all fetches failed, show the error of the first one in the table
+           renderEmptyRow(`Error loading data: ${errors[0].error}`);
+           return;
+        }
+
+        const flat = validData.flat();
+        const seenLinks = new Set();
+        allPosts = flat.filter((p) => {
+          if (!p.link) return false;
+          if (seenLinks.has(p.link)) return false;
+          seenLinks.add(p.link);
+          return true;
+        });
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error(e);
@@ -497,6 +594,168 @@
   };
 
   document.addEventListener("DOMContentLoaded", () => {
+    // Remove "Home Furniture" from navigation menu if present
+    const navItems = document.querySelectorAll(".nav-links > li");
+    navItems.forEach((li) => {
+      const link = li.querySelector("a");
+      if (link && (link.href.includes("home-furniture") || /home[- ]furniture/i.test(link.textContent))) {
+        li.remove();
+      }
+      if (link && (link.href.includes("buying-guides") || /product[- ]reviews/i.test(link.textContent))) {
+        link.href = link.href.replace("buying-guides", "buying-guides");
+        link.textContent = "Buying Guides";
+      }
+    });
+
+    // Inject "Tutorials & Guides" into the main navigation
+    const navList = document.querySelector(".nav-links");
+    if (navList && !Array.from(navList.children).some(li => li.textContent.includes("Tutorials"))) {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = "/tutorials-guides/";
+      a.textContent = "Tutorials & Guides";
+      li.appendChild(a);
+
+      // Add submenu
+      const toggle = document.createElement("button");
+      toggle.className = "submenu-toggle";
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Toggle submenu");
+      li.appendChild(toggle);
+
+      const ul = document.createElement("ul");
+      ul.className = "dropdown";
+
+      const subItems = [
+        { 
+          name: "Software Tutorials", 
+          url: "/tutorials-guides/software/",
+          children: []
+        },
+        { 
+          name: "Repair Guides", 
+          url: "/tutorials-guides/repair-guides/",
+          children: []
+        }
+      ];
+
+      subItems.forEach(item => {
+        const subLi = document.createElement("li");
+        const subA = document.createElement("a");
+        subA.href = item.url;
+        subA.textContent = item.name;
+        subLi.appendChild(subA);
+
+        if (item.children) {
+          subLi.classList.add("has-children");
+
+          const subToggle = document.createElement("button");
+          subToggle.className = "submenu-toggle";
+          subToggle.setAttribute("aria-expanded", "false");
+          subToggle.setAttribute("aria-label", "Toggle submenu");
+          subLi.appendChild(subToggle);
+
+          const subUl = document.createElement("ul");
+          subUl.className = "dropdown";
+
+          item.children.forEach(child => {
+            const childLi = document.createElement("li");
+            const childA = document.createElement("a");
+            childA.href = child.url;
+            childA.textContent = child.name;
+            childLi.appendChild(childA);
+            subUl.appendChild(childLi);
+          });
+          subLi.appendChild(subUl);
+        }
+
+        ul.appendChild(subLi);
+      });
+
+      li.appendChild(ul);
+
+      // Place between Gaming and How It Works (insert before How It Works)
+      const howItWorks = Array.from(navList.children).find(child => /how[- ]it[- ]works/i.test(child.textContent));
+      if (howItWorks) {
+        navList.insertBefore(li, howItWorks);
+      } else {
+        navList.appendChild(li);
+      }
+    }
+
+    // Broadly rename "Buying Guides" to "Buying Guides" in specific UI areas
+    // (Breadcrumbs, Mobile Nav, Page Titles)
+    const textReplacements = document.querySelectorAll(".breadcrumbs a, .breadcrumb a, .mobile-nav a, h1");
+    textReplacements.forEach((el) => {
+      if (/^product[- ]reviews$/i.test(el.textContent.trim())) {
+        el.textContent = "Buying Guides";
+      }
+      if (el.tagName === "A" && el.href.includes("buying-guides")) {
+        el.href = el.href.replace("buying-guides", "buying-guides");
+      }
+    });
+
+    // Inject "Tutorials & Guides" into "What are you looking for?" section on Homepage
+    (() => {
+       const searchHeading = Array.from(document.querySelectorAll('h2, h3, h4'))
+         .find(h => /what are you looking for/i.test(h.textContent));
+       
+       if (!searchHeading) return;
+
+       const section = searchHeading.closest('section') || searchHeading.parentElement;
+       if (!section) return;
+
+       // Find the 'Gaming' card to use as a template
+       const allLinks = Array.from(section.querySelectorAll('a'));
+       const gamingLink = allLinks.find(a => a.getAttribute('href') && a.getAttribute('href').includes('/gaming'));
+       
+       if (!gamingLink) return;
+
+       let card = gamingLink;
+       let grid = card.parentElement;
+       
+       // Traverse up to find the grid container
+       while (grid && grid !== section && grid.children.length < 2) {
+          card = grid;
+          grid = grid.parentElement;
+       }
+       
+       if (!grid || !card || grid.textContent.includes("Tutorials")) return;
+
+       const newCard = card.cloneNode(true);
+       
+       // Update text
+       const walker = document.createTreeWalker(newCard, NodeFilter.SHOW_TEXT);
+       let node;
+       while(node = walker.nextNode()) {
+          if (/Gaming/i.test(node.nodeValue)) {
+             node.nodeValue = "Tutorials & Guides";
+          }
+       }
+       
+       const newLink = newCard.tagName === 'A' ? newCard : newCard.querySelector('a');
+       if (newLink) newLink.href = "/tutorials-guides/";
+       
+       const img = newCard.querySelector('img');
+       if (img) {
+          img.src = "/images/tutorials.jpg"; 
+          img.alt = "Tutorials & Guides";
+          delete img.dataset.checked; // allow error handler to run again if image missing
+       }
+
+       grid.appendChild(newCard);
+    })();
+
+    if (document.getElementById('postContainer')) {
+      initHomePage();
+    }
+    // Table injection disabled - tables are no longer needed on content pages
+    // All pages now use proper grid/list layouts instead of dynamic tables
+
+    document
+      .querySelectorAll("[data-articles-table]")
+      .forEach((section) => initArticlesTable(section));
+
     // global handler: if any <img> fails to load, swap in the placeholder svg
     // (covers unexpected missing files or faulty URLs anywhere on the page).
     document.addEventListener('error', function(e) {
@@ -527,10 +786,6 @@
       btn.addEventListener('click', (e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
     })();
 
-    document
-      .querySelectorAll("[data-articles-table]")
-      .forEach((section) => initArticlesTable(section));
-
     // ---------- homepage dynamic sections ----------------
     const initHomePage = () => {
       const postContainer = document.getElementById("postContainer");
@@ -554,12 +809,13 @@
         const text = link.textContent.trim();
         // skip obvious non-content links
         if (!href || href === "/" || href === "/index.html") return;
-        if (/contact|about|how[- ]it[- ]works|site[- ]map/i.test(text)) return;
+        if (/contact|about|how[- ]it[- ]works|site[- ]map|home[- ]furniture/i.test(text)) return;
         categories.push({ href, text });
       });
 
-      const fetchJson = (url) => fetch(url)
+      const fetchJson = (url) => fetch(url + "?t=" + Date.now())
         .then((r) => (r.ok ? r.json() : []))
+        .then((data) => (Array.isArray(data) ? data : []))
         .catch(() => []);
 
       const jsonUrlForHref = (href) => {
@@ -733,7 +989,7 @@
           </div>`;
               })
               .join("");
-            const groupId = `group-${category.replace(/\s+/g, "-").toLowerCase()}`;
+            const groupId = `group-${category.replace(/[^a-z0-9]+/gi, "-").replace(/^-+|-+$/g, "").toLowerCase()}`;
             return `
         <section class="category-block post-group" id="${groupId}">
           <div class="post-group-header">
@@ -790,6 +1046,10 @@
         });
 
         buildSections(orderedMap);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (postContainer) postContainer.innerHTML = "";
       });
     };
 

@@ -1,0 +1,92 @@
+{{ define "main" }}
+
+<div class="articles-page-with-sidebar">
+  <!-- Main Content -->
+  <main class="articles-main-content">
+    <!-- Page Header -->
+    <header class="articles-header">
+      <h1>Articles Tagged: <strong>{{ .Title }}</strong></h1>
+      <p class="articles-description">
+        Showing {{ len .Pages }} article{{ if ne (len .Pages) 1 }}s{{ end }} tagged with "{{ .Title }}"
+      </p>
+    </header>
+
+    <!-- Articles Grid -->
+    <div class="articles-grid">
+      {{ if .Pages }}
+        {{ range .Pages }}
+          {{ partial "article-card.html" . }}
+        {{ end }}
+      {{ else }}
+        <div class="no-articles">
+          <p><strong>No articles found</strong></p>
+          <p>No articles are currently tagged with "{{ .Title }}".</p>
+          <a href="/articles/">← Back to all articles</a>
+        </div>
+      {{ end }}
+    </div>
+  </main>
+
+  <!-- Sidebar -->
+  <aside class="articles-sidebar">
+    <div class="articles-filters-sidebar">
+      <!-- Back to Archives -->
+      <div class="filter-section">
+        <a href="/archives/" class="back-link">← Back to Archives</a>
+      </div>
+
+      <!-- Related Tags -->
+      <div class="filter-section">
+        <h3 class="filter-title">Related Tags</h3>
+        <div class="tags-cloud-small">
+          {{ $currentTag := .Title }}
+          {{ $relatedTags := slice }}
+          
+          {{ range .Pages }}
+            {{ with .Params.tags }}
+              {{ range . }}
+                {{ if and (ne . $currentTag) (not (in $relatedTags .)) }}
+                  {{ $relatedTags = $relatedTags | append . }}
+                {{ end }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+          
+          {{ range first 15 (sort $relatedTags) }}
+            <a href="{{ relURL (print "/tags/" (. | urlize) "/") }}" class="tag-small">
+              #{{ . }}
+            </a>
+          {{ end }}
+        </div>
+      </div>
+
+      <!-- All Tags -->
+      <div class="filter-section">
+        <h3 class="filter-title">Browse All Tags</h3>
+        <div class="tags-cloud-small">
+          {{ $allTags := slice }}
+          {{ range where .Site.RegularPages "Section" "in" (slice "buying-guides" "gaming" "tutorials-guides") }}
+            {{ with .Params.tags }}
+              {{ range . }}
+                {{ if not (in $allTags .) }}
+                  {{ $allTags = $allTags | append . }}
+                {{ end }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+          
+          {{ range first 30 (sort $allTags) }}
+            <a href="{{ relURL (print "/tags/" (. | urlize) "/") }}" class="tag-small">
+              #{{ . }}
+            </a>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- Load Article Management Script -->
+<script src="{{ relURL "/js/articles.js" }}"></script>
+
+{{ end }}

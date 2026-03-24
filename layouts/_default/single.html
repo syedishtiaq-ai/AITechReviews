@@ -4,10 +4,6 @@
 
 <h1>{{ .Title }}</h1>
 
-{{ if in .RelPermalink "ac-odyssey" }}
-{{ partial "gaming/guide-navigation.html" . }}
-{{ end }}
-
 {{ if .TableOfContents }}
 <div class="toc">
 <h3>Guide Contents</h3>
@@ -19,41 +15,29 @@
 {{ .Content }}
 </div>
 
-{{/* Related guides partial removed here to avoid showing on non-gaming pages */}}
-
 </article>
 
-<article>
-  {{ .Content }}
-</article>
-{{ if and (eq .Section "gaming") (not (or (eq .RelPermalink "/how-it-works/") (.Params.noRelatedGuides))) }}
-<div class="related-guides">
+<!-- ⭐ SEO SCHEMA MARKUP START -->
 
-<h3>Related Assassin's Creed Odyssey Guides</h3>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Article",
+ "headline": "{{ .Title }}",
+ "author": {
+   "@type": "Organization",
+   "name": "AITechReviews"
+ },
+ "datePublished": "{{ .Date }}",
+ "dateModified": "{{ .Lastmod }}",
+ "mainEntityOfPage": "{{ .Permalink }}",
+ "publisher": {
+   "@type": "Organization",
+   "name": "AITechReviews"
+ }
+}
+</script>
 
-<ul>
-
-{{ $current := . }}
-
-{{ range where .Site.RegularPages "Section" "gaming" }}
-
-  {{ if in .RelPermalink "ac-odyssey" }}
-
-    {{ if ne .Permalink $current.Permalink }}
-
-      <li>
-        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-      </li>
-
-    {{ end }}
-
-  {{ end }}
-
-{{ end }}
-
-</ul>
-
-</div>
-{{ end }}
+<!-- ⭐ SEO SCHEMA MARKUP END -->
 
 {{ end }}

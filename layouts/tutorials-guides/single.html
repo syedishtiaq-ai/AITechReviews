@@ -1,0 +1,139 @@
+{{ define "main" }}
+
+<div class="article-page">
+  <div class="article-container">
+    <article class="article-single"
+      data-current-article="{{ .File.BaseFileName }}"
+      data-article-category="{{ .Params.category }}"
+      data-article-subcategory="{{ .Params.subcategory }}"
+      data-article-tags="{{ if .Params.tags }}{{ delimit .Params.tags "," }}{{ end }}"
+      data-article-slug="{{ .Params.slug }}">
+      <!-- Article Header -->
+      <header class="article-header">
+        <div class="article-meta-top">
+          <span class="article-category">
+            {{ .Params.category }}
+            {{ if .Params.subcategory }}<span class="subcategory-badge"> / {{ .Params.subcategory }}</span>{{ end }}
+          </span>
+          <span class="article-date">{{ .Date.Format "January 2, 2006" }}</span>
+        </div>
+        <h1 class="article-title">{{ .Title }}</h1>
+        <p class="article-excerpt">{{ .Params.excerpt }}</p>
+      </header>
+
+      <!-- Article Featured Image -->
+      {{ if .Params.featuredImage }}
+      <div class="article-featured-image">
+        <img src="{{ .Params.featuredImage | relURL }}" alt="{{ .Title }}" loading="lazy">
+      </div>
+      {{ end }}
+
+      <!-- Article Metadata Bar -->
+      <div class="article-metadata">
+        <div class="metadata-left">
+          {{ if .Params.author }}
+          <span class="article-author">
+            <strong>By</strong> {{ .Params.author }}
+          </span>
+          {{ end }}
+          {{ if .Params.readingTime }}
+          <span class="reading-time">⏱ {{ .Params.readingTime }}</span>
+          {{ end }}
+        </div>
+        <div class="metadata-right">
+          {{ if .Params.lastmod }}
+          {{ $lastmod := time.AsTime .Params.lastmod }}
+          <span class="last-updated">Updated {{ $lastmod.Format "Jan 2, 2006" }}</span>
+          {{ end }}
+        </div>
+        <!-- Social Media Links in Article Meta (Always Visible) -->
+        <div class="article-social-meta">
+          <span class="social-label">Watch:</span>
+          <a {{ if .Params.youtube_url }}href="{{ .Params.youtube_url }}" target="_blank" rel="noopener"{{ end }} class="social-link youtube {{ if not .Params.youtube_url }}disabled{{ end }}" title="{{ if .Params.youtube_url }}Watch on YouTube{{ else }}Video coming soon{{ end }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+          </a>
+          <a {{ if .Params.instagram_url }}href="{{ .Params.instagram_url }}" target="_blank" rel="noopener"{{ end }} class="social-link instagram {{ if not .Params.instagram_url }}disabled{{ end }}" title="{{ if .Params.instagram_url }}Follow on Instagram{{ else }}Video coming soon{{ end }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.521 11.8c.015.462.015.962.015 1.2 0 3.755-2.816 8.047-8.047 8.047-1.6 0-3.087-.469-4.343-1.28.222.025.462.04.691.04 1.325 0 2.55-.433 3.54-1.155-1.24-.025-2.285-.838-2.645-1.955.172.025.345.04.517.04.258 0 .517-.035.76-.1-1.3-.263-2.28-1.405-2.28-2.775v-.035c.385.213.83.345 1.301.36-.765-.51-1.27-1.38-1.27-2.37 0-.52.138-1.01.379-1.43 1.404 1.72 3.504 2.85 5.87 2.975-.05-.213-.076-.433-.076-.659 0-1.6 1.298-2.898 2.898-2.898.833 0 1.587.345 2.115.9.66-.13 1.28-.376 1.835-.71-.215.681-.675 1.255-1.275 1.615.585-.062 1.14-.225 1.66-.459-.391.588-.88 1.1-1.44 1.516z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Table of Contents (if available) -->
+      {{ if .TableOfContents }}
+      <div class="article-toc">
+        <h3>Quick Navigation</h3>
+        {{ .TableOfContents }}
+      </div>
+      {{ end }}
+
+      <!-- Main Article Content -->
+      <div class="article-content">
+        {{ .Content }}
+      </div>
+
+      <!-- Article Footer -->
+      <footer class="article-footer">
+        <div class="article-tags">
+          {{ if .Params.tags }}
+          <strong>Tags:</strong>
+          {{ range .Params.tags }}
+            <a href="{{ relURL (print "/tags/" (. | urlize) "/") }}" class="tag">{{ . }}</a>
+          {{ end }}
+          {{ end }}
+        </div>
+        
+        <div class="article-sharing">
+          <strong>Share:</strong>
+          <a href="https://twitter.com/intent/tweet?url={{ .Permalink }}&text={{ .Title }}" 
+             class="share-btn twitter" target="_blank" rel="noopener">Twitter</a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u={{ .Permalink }}" 
+             class="share-btn facebook" target="_blank" rel="noopener">Facebook</a>
+          <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ .Permalink }}" 
+             class="share-btn linkedin" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+      </footer>
+    </article>
+
+    <!-- Article Sidebar -->
+    {{ partial "article-sidebar.html" . }}
+  </div>
+
+  <!-- Related Articles Section -->
+  {{ partial "related-articles.html" . }}
+</div>
+
+<!-- Article Schema Markup -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ .Title }}",
+  "description": "{{ .Params.description }}",
+  "image": [
+    "{{ .Params.featuredImage | absURL }}"
+  ],
+  "datePublished": "{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}",
+  "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ .Params.author }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ .Site.Title }}",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ .Site.BaseURL }}images/logo.png"
+    }
+  }
+}
+</script>
+
+<!-- Load Article Management Script (for related articles) -->
+<script src="{{ relURL "/js/articles.js" }}"></script>
+
+{{ end }}

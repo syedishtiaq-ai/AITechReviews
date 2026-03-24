@@ -1,0 +1,68 @@
+<aside class="article-sidebar">
+  <!-- Author Box -->
+  {{ if .Params.author }}
+  <div class="sidebar-box author-box">
+    <h4>About the Author</h4>
+    <div class="author-info">
+      <div class="author-name">{{ .Params.author }}</div>
+      {{ range .Site.Params.authors }}
+        {{ if eq .name .Params.author }}
+        <p class="author-bio">{{ .bio }}</p>
+        <div class="author-specialties">
+          <strong>Specializes in:</strong>
+          <ul>
+            {{ range .specialties }}
+            <li>{{ . }}</li>
+            {{ end }}
+          </ul>
+        </div>
+        {{ end }}
+      {{ end }}
+    </div>
+  </div>
+  {{ end }}
+
+  <!-- Article Info Box -->
+  <div class="sidebar-box article-info-box">
+    <h4>Article Info</h4>
+    <dl class="info-list">
+      {{ if .Params.category }}
+      <dt>Category</dt>
+      <dd>{{ .Params.category }}</dd>
+      {{ end }}
+      
+      <dt>Published</dt>
+      <dd>{{ .Date.Format "January 2, 2006" }}</dd>
+      
+      {{ if .Params.lastmod }}
+      <dt>Updated</dt>
+      {{ $lastmod := time.AsTime .Params.lastmod }}
+      <dd>{{ $lastmod.Format "January 2, 2006" }}</dd>
+      {{ end }}
+      
+      {{ if .Params.readingTime }}
+      <dt>Reading Time</dt>
+      <dd>{{ .Params.readingTime }}</dd>
+      {{ end }}
+    </dl>
+  </div>
+
+  <!-- Popular Tags -->
+  {{ if .Params.tags }}
+  <div class="sidebar-box tags-box">
+    <h4>Article Tags</h4>
+    <div class="tags-cloud">
+      {{ range .Params.tags }}
+        <a href="{{ relURL (print "/tags/" (. | urlize) "/") }}" class="tag-link">{{ . }}</a>
+      {{ end }}
+    </div>
+  </div>
+  {{ end }}
+
+  <!-- CTA Box -->
+  <div class="sidebar-box cta-box">
+    <h4>More Resources</h4>
+    <p>Browse all our articles and guides to find the information you need.</p>
+    <a href="/search/" class="btn btn-primary">Search Articles</a>
+  </div>
+</aside>

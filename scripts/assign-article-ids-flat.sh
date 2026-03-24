@@ -19,26 +19,31 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONTENT_DIR="$PROJECT_ROOT/content"
 
 # Category and subcategory code mappings
-declare -A CATEGORY_CODES=(
-    ["buying-guides"]="BG"
-    ["gaming"]="GM"
-    ["tutorials-guides"]="TG"
-)
+# Using functions instead of associative arrays for zsh/bash compatibility
 
-declare -A SUBCATEGORY_CODES=(
-    # Buying Guides
-    ["Electronics"]="EL"
-    ["Home Appliances"]="HA"
-    ["Mobile Gadgets"]="MG"
-    # Gaming
-    ["Achievements"]="AC"
-    ["Guides"]="GD"
-    ["Walkthroughs"]="WK"
-    # Tutorials & Guides
-    ["Equipment"]="EQ"
-    ["Repair Guides"]="RG"
-    ["Software"]="SW"
-)
+get_category_code() {
+    case "$1" in
+        "buying-guides") echo "BG" ;;
+        "gaming") echo "GM" ;;
+        "tutorials-guides") echo "TG" ;;
+        *) echo "" ;;
+    esac
+}
+
+get_subcategory_code() {
+    case "$1" in
+        "Electronics") echo "EL" ;;
+        "Home Appliances") echo "HA" ;;
+        "Mobile Gadgets") echo "MG" ;;
+        "Achievements") echo "AC" ;;
+        "Guides") echo "GD" ;;
+        "Walkthroughs") echo "WK" ;;
+        "Equipment") echo "EQ" ;;
+        "Repair Guides") echo "RG" ;;
+        "Software") echo "SW" ;;
+        *) echo "" ;;
+    esac
+}
 
 print_header() {
     echo -e "\n${BLUE}========================================${NC}"
@@ -74,7 +79,7 @@ extract_and_convert_date() {
     fi
     
     # Extract date part (YYYY-MM-DD)
-    local date_str=$(echo "$date_line" | sed 's/date: "\?\([0-9-]*\).*/\1/')
+    local date_str=$(echo "$date_line" | sed -E 's/date: "?([0-9-]*).*/\1/')
     
     if [ -z "$date_str" ]; then
         date +"%y%m%d"
@@ -82,13 +87,13 @@ extract_and_convert_date() {
     fi
     
     # Convert YYYY-MM-DD to YYMMDD
-    echo "$date_str" | sed 's/20\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)/\1\2\3/'
+    echo "$date_str" | sed -E 's/20([0-9][0-9])-([0-9][0-9])-([0-9][0-9])/\1\2\3/'
 }
 
 # Extract subcategory from front matter
 get_subcategory_from_file() {
     local file="$1"
-    local subcat=$(grep -m1 "^subcategory:" "$file" | sed 's/subcategory: "\?\([^"]*\).*/\1/')
+    local subcat=$(grep -m1 "^subcategory:" "$file" | sed -E 's/subcategory: "?([^"]*).*/\1/')
     echo "$subcat"
 }
 
@@ -103,7 +108,7 @@ get_next_id_number() {
     for file in "$CONTENT_DIR/$section"/*.md; do
         if [ -f "$file" ] && [ "$(basename "$file")" != "_index.md" ]; then
             # Extract article ID from file
-            local existing_id=$(grep -m1 "^article_id:" "$file" 2>/dev/null | sed "s/.*article_id: \"\?\([^\"]*\).*/\1/")
+            local existing_id=$(grep -m1 "^article_id:" "$file" 2>/dev/null | sed -E "s/.*article_id: \"?([^\"]*).*/\1/")
             
             if [[ "$existing_id" =~ ^${cat_code}-${subcat_code}-${date_part}-([0-9]+)$ ]]; then
                 local num="${BASH_REMATCH[1]}"
@@ -146,7 +151,7 @@ for section_path in "$CONTENT_DIR"/*; do
         continue
     fi
     
-    section_code="${CATEGORY_CODES[$section]}"
+    section_code=$(get_category_code "$section")
     
     if [ -z "$section_code" ]; then
         print_warning "No code mapping for section: $section"
@@ -167,7 +172,7 @@ for section_path in "$CONTENT_DIR"/*; do
         subcategory=$(get_subcategory_from_file "$article_file")
         
         # Get subcategory code
-        subcat_code="${SUBCATEGORY_CODES[$subcategory]}"
+        subcat_code=$(get_subcategory_code "$subcategory")
         
         if [ -z "$subcat_code" ]; then
             print_warning "  No code for subcategory '$subcategory' in $(basename "$article_file")"
@@ -176,7 +181,7 @@ for section_path in "$CONTENT_DIR"/*; do
         fi
         
         # Check if article_id already exists
-        existing_id=$(grep -m1 "^article_id:" "$article_file" 2>/dev/null | sed "s/.*article_id: \"\?\([^\"]*\).*/\1/")
+        existing_id=$(grep -m1 "^article_id:" "$article_file" 2>/dev/null | sed -E "s/.*article_id: \"?([^\"]*).*/\1/")
         
         if [ ! -z "$existing_id" ] && [[ "$existing_id" =~ ^[A-Z]+-[A-Z]+-[0-9]+-[0-9]+$ ]]; then
             # Already has proper ID
@@ -198,8 +203,8 @@ for section_path in "$CONTENT_DIR"/*; do
             print_success "  Updated $(basename "$article_file") - ID: $new_article_id"
         else
             # Add article_id after first line (after opening ---)
-            sed -i '' "1a\\
-article_id: \"$new_article_id\"" "$article_file"
+            # Use awk for more reliable newline handling on macOS
+            awk -v id="article_id: \"$new_article_id\"" 'NR==1 {print; print id; next} 1' "$article_file" > "${article_file}.tmp" && mv "${article_file}.tmp" "$article_file"
             print_success "  Added $(basename "$article_file") - ID: $new_article_id"
         fi
         

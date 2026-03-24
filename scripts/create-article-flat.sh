@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ################################################################################
-# AITechReviews - Article Creator (Flat Structure)
-# Creates new articles in section root (flat structure)
+# AITechReviews - Article Creator (Subcategory Structure)
+# Creates new articles in subcategory folders
 # Usage: ./scripts/create-article-flat.sh
 ################################################################################
 
@@ -20,26 +20,37 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONTENT_DIR="$PROJECT_ROOT/content"
 
 # Category and subcategory mappings for article IDs
-declare -A CATEGORY_CODES=(
-    ["buying-guides"]="BG"
-    ["gaming"]="GM"
-    ["tutorials-guides"]="TG"
-)
+# Using functions instead of associative arrays for zsh/bash compatibility
 
-declare -A SUBCATEGORY_CODES=(
-    # Buying Guides
-    ["Electronics"]="EL"
-    ["Home Appliances"]="HA"
-    ["Mobile Gadgets"]="MG"
-    # Gaming
-    ["Achievements"]="AC"
-    ["Guides"]="GD"
-    ["Walkthroughs"]="WK"
-    # Tutorials & Guides
-    ["Equipment"]="EQ"
-    ["Repair Guides"]="RG"
-    ["Software"]="SW"
-)
+# Convert subcategory name to folder slug
+# E.g., "Electronics" -> "electronics", "Repair Guides" -> "repair-guides"
+get_subcategory_slug() {
+    echo "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-+/-/g' | sed 's/^-\|-$//'
+}
+
+get_category_code() {
+    case "$1" in
+        "buying-guides") echo "BG" ;;
+        "gaming") echo "GM" ;;
+        "tutorials-guides") echo "TG" ;;
+        *) echo "" ;;
+    esac
+}
+
+get_subcategory_code() {
+    case "$1" in
+        "Electronics") echo "EL" ;;
+        "Home Appliances") echo "HA" ;;
+        "Mobile Gadgets") echo "MG" ;;
+        "Achievements") echo "AC" ;;
+        "Guides") echo "GD" ;;
+        "Walkthroughs") echo "WK" ;;
+        "Equipment") echo "EQ" ;;
+        "Repair Guides") echo "RG" ;;
+        "Software") echo "SW" ;;
+        *) echo "" ;;
+    esac
+}
 
 ################################################################################
 # Helper Functions
@@ -209,28 +220,33 @@ AUTHOR=${AUTHOR:-"Tech Writer"}
 # Generate slug
 SLUG=$(slugify "$ARTICLE_TITLE")
 
-# Get category codes
-CAT_CODE="${CATEGORY_CODES[$CATEGORY]}"
-SUBCAT_CODE="${SUBCATEGORY_CODES[$SUBCATEGORY]}"
+# Generate article ID
+DATE_PART=$(date +%y%m%d)
+CAT_CODE=$(get_category_code "$CATEGORY")
+SUBCAT_CODE=$(get_subcategory_code "$SUBCATEGORY")
 
 if [ -z "$CAT_CODE" ] || [ -z "$SUBCAT_CODE" ]; then
     print_error "Subcategory not configured for: $CATEGORY > $SUBCATEGORY"
     exit 1
 fi
 
-# Generate article ID
-DATE_PART=$(date +%y%m%d)
-ARTICLE_ID=$(get_next_article_id "$CAT_CODE" "$SUBCAT_CODE" "$DATE_PART" "$CONTENT_DIR/$CATEGORY")
+# Create subcategory folder structure
+SUBCAT_SLUG=$(get_subcategory_slug "$SUBCATEGORY")
+SUBCAT_DIR="$CONTENT_DIR/$CATEGORY/$SUBCAT_SLUG"
+mkdir -p "$SUBCAT_DIR"
 
 # Generate filename
 FILENAME="${SLUG}.md"
-FILEPATH="$CONTENT_DIR/$CATEGORY/$FILENAME"
+FILEPATH="$SUBCAT_DIR/$FILENAME"
 
 # Check if file already exists
 if [ -f "$FILEPATH" ]; then
     print_error "File already exists: $FILENAME"
     exit 1
 fi
+
+# Generate article ID (look in subcategory folder)
+ARTICLE_ID=$(get_next_article_id "$CAT_CODE" "$SUBCAT_CODE" "$DATE_PART" "$SUBCAT_DIR")
 
 # Create article with YAML front matter
 cat > "$FILEPATH" << EOF
@@ -266,10 +282,10 @@ EOF
 
 print_success "Article created: $FILENAME"
 print_info "Article ID: $ARTICLE_ID"
-print_info "Location: content/$CATEGORY/$FILENAME"
+print_info "Location: content/$CATEGORY/$SUBCAT_SLUG/$FILENAME"
 echo ""
 print_info "Next steps:"
-echo "  1. Edit the article: content/$CATEGORY/$FILENAME"
+echo "  1. Edit the article: content/$CATEGORY/$SUBCAT_SLUG/$FILENAME"
 echo "  2. Add tags, dates, and content as needed"
 echo "  3. Run: hugo --cleanDestinationDir"
 echo ""

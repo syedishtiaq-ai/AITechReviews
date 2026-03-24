@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ################################################################################
-# AITechReviews - Assign Article IDs (Flat Structure)
-# Adds/updates unique article IDs to all articles in flat structure
+# AITechReviews - Assign Article IDs (Subcategory Structure)
+# Adds/updates unique article IDs to all articles in subcategory folders
 # Usage: ./scripts/assign-article-ids-flat.sh
 ################################################################################
 
@@ -42,6 +42,23 @@ get_subcategory_code() {
         "Repair Guides") echo "RG" ;;
         "Software") echo "SW" ;;
         *) echo "" ;;
+    esac
+}
+
+# Convert folder slug back to subcategory name
+# E.g., "electronics" -> "Electronics", "repair-guides" -> "Repair Guides"
+get_subcategory_from_slug() {
+    case "$1" in
+        "electronics") echo "Electronics" ;;
+        "home-appliances") echo "Home Appliances" ;;
+        "mobile-gadgets") echo "Mobile Gadgets" ;;
+        "achievements") echo "Achievements" ;;
+        "guides") echo "Guides" ;;
+        "walkthroughs") echo "Walkthroughs" ;;
+        "equipment") echo "Equipment" ;;
+        "repair-guides") echo "Repair Guides" ;;
+        "software"|"software-tutorials") echo "Software" ;;
+        *) echo "$1" ;;
     esac
 }
 
@@ -127,7 +144,7 @@ get_next_id_number() {
 # Main Script
 ################################################################################
 
-print_header "Article ID Assignment (Flat Structure)"
+print_header "Article ID Assignment (Subcategory Structure)"
 
 if [ ! -d "$CONTENT_DIR" ]; then
     print_error "Content directory not found: $CONTENT_DIR"
@@ -160,55 +177,68 @@ for section_path in "$CONTENT_DIR"/*; do
     
     print_info "Processing section: $section"
     
-    # Process all markdown files in section root (flat structure)
-    for article_file in "$section_path"/*.md; do
-        if [ ! -f "$article_file" ] || [ "$(basename "$article_file")" = "_index.md" ]; then
+    # Process subcategory folders within section
+    for subcat_path in "$section_path"/*; do
+        if [ ! -d "$subcat_path" ]; then
             continue
         fi
         
-        ((TOTAL_ARTICLES++))
+        subcat_slug=$(basename "$subcat_path")
         
-        # Get subcategory from YAML
-        subcategory=$(get_subcategory_from_file "$article_file")
+        # Skip special directories
+        if [[ "$subcat_slug" =~ ^(_|files|assets).*$ ]]; then
+            continue
+        fi
+        
+        # Convert slug back to subcategory name
+        subcategory=$(get_subcategory_from_slug "$subcat_slug")
         
         # Get subcategory code
         subcat_code=$(get_subcategory_code "$subcategory")
         
         if [ -z "$subcat_code" ]; then
-            print_warning "  No code for subcategory '$subcategory' in $(basename "$article_file")"
-            ((SKIPPED_ARTICLES++))
+            print_warning "  No code for folder: $subcat_slug"
             continue
         fi
         
-        # Check if article_id already exists
-        existing_id=$(grep -m1 "^article_id:" "$article_file" 2>/dev/null | sed -E "s/.*article_id: \"?([^\"]*).*/\1/")
-        
-        if [ ! -z "$existing_id" ] && [[ "$existing_id" =~ ^[A-Z]+-[A-Z]+-[0-9]+-[0-9]+$ ]]; then
-            # Already has proper ID
-            print_info "  ✓ $(basename "$article_file") - ID: $existing_id"
-            continue
-        fi
-        
-        # Extract date from article
-        date_part=$(extract_and_convert_date "$article_file")
-        
-        # Generate new article ID
-        id_number=$(get_next_id_number "$section_code" "$subcat_code" "$date_part" "$section")
-        new_article_id="$section_code-$subcat_code-$date_part-$id_number"
-        
-        # Update or add article_id in front matter
-        if grep -q "^article_id:" "$article_file"; then
-            # Replace existing article_id
-            sed -i '' "s/^article_id:.*/article_id: \"$new_article_id\"/" "$article_file"
-            print_success "  Updated $(basename "$article_file") - ID: $new_article_id"
-        else
-            # Add article_id after first line (after opening ---)
-            # Use awk for more reliable newline handling on macOS
-            awk -v id="article_id: \"$new_article_id\"" 'NR==1 {print; print id; next} 1' "$article_file" > "${article_file}.tmp" && mv "${article_file}.tmp" "$article_file"
-            print_success "  Added $(basename "$article_file") - ID: $new_article_id"
-        fi
-        
-        ((UPDATED_ARTICLES++))
+        # Process all markdown files in subcategory folder
+        for article_file in "$subcat_path"/*.md; do
+            if [ ! -f "$article_file" ] || [ "$(basename "$article_file")" = "_index.md" ]; then
+                continue
+            fi
+            
+            ((TOTAL_ARTICLES++))
+            
+            # Check if article_id already exists
+            existing_id=$(grep -m1 "^article_id:" "$article_file" 2>/dev/null | sed -E "s/.*article_id: \"?([^\"]*).*/\1/")
+            
+            if [ ! -z "$existing_id" ] && [[ "$existing_id" =~ ^[A-Z]+-[A-Z]+-[0-9]+-[0-9]+$ ]]; then
+                # Already has proper ID
+                print_info "  ✓ $(basename "$article_file") - ID: $existing_id"
+                continue
+            fi
+            
+            # Extract date from article
+            date_part=$(extract_and_convert_date "$article_file")
+            
+            # Generate new article ID
+            id_number=$(get_next_id_number "$section_code" "$subcat_code" "$date_part" "$subcat_path")
+            new_article_id="$section_code-$subcat_code-$date_part-$id_number"
+            
+            # Update or add article_id in front matter
+            if grep -q "^article_id:" "$article_file"; then
+                # Replace existing article_id
+                sed -i '' "s/^article_id:.*/article_id: \"$new_article_id\"/" "$article_file"
+                print_success "  Updated $(basename "$article_file") - ID: $new_article_id"
+            else
+                # Add article_id after first line (after opening ---)
+                # Use awk for more reliable newline handling on macOS
+                awk -v id="article_id: \"$new_article_id\"" 'NR==1 {print; print id; next} 1' "$article_file" > "${article_file}.tmp" && mv "${article_file}.tmp" "$article_file"
+                print_success "  Added $(basename "$article_file") - ID: $new_article_id"
+            fi
+            
+            ((UPDATED_ARTICLES++))
+        done
     done
     
     echo ""

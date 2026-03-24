@@ -1,13 +1,12 @@
 #!/bin/bash
 
 ################################################################################
-# AITechReviews - Quick Article Adder (Flat Structure)
+# AITechReviews - Quick Article Adder (Subcategory Structure)
 # Quickly add new articles to existing sections
 # Usage: ./scripts/add-articles-flat.sh
 # 
-# NOTE: This script works with the flat article structure where articles
-# are placed directly in section roots (e.g., content/buying-guides/*.md)
-# NOT in subcategory subfolders.
+# NOTE: This script creates articles in subcategory folders
+# (e.g., content/tutorials-guides/equipment/article.md)
 ################################################################################
 
 set -e
@@ -24,23 +23,36 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONTENT_DIR="$PROJECT_ROOT/content"
 
 # Category and subcategory code mappings
-declare -A CATEGORY_CODES=(
-    ["buying-guides"]="BG"
-    ["gaming"]="GM"
-    ["tutorials-guides"]="TG"
-)
+# Using variables instead of associative arrays for zsh/bash compatibility
 
-declare -A SUBCATEGORY_CODES=(
-    ["Electronics"]="EL"
-    ["Home Appliances"]="HA"
-    ["Mobile Gadgets"]="MG"
-    ["Achievements"]="AC"
-    ["Guides"]="GD"
-    ["Walkthroughs"]="WK"
-    ["Equipment"]="EQ"
-    ["Repair Guides"]="RG"
-    ["Software"]="SW"
-)
+get_section_code() {
+    case "$1" in
+        "buying-guides") echo "BG" ;;
+        "gaming") echo "GM" ;;
+        "tutorials-guides") echo "TG" ;;
+        *) echo "" ;;
+    esac
+}
+
+get_subcategory_code() {
+    case "$1" in
+        "Electronics") echo "EL" ;;
+        "Home Appliances") echo "HA" ;;
+        "Mobile Gadgets") echo "MG" ;;
+        "Achievements") echo "AC" ;;
+        "Guides") echo "GD" ;;
+        "Walkthroughs") echo "WK" ;;
+        "Equipment") echo "EQ" ;;
+        "Repair Guides") echo "RG" ;;
+        "Software") echo "SW" ;;
+        *) echo "" ;;
+    esac
+}
+
+# Convert subcategory name to folder slug
+get_subcategory_slug() {
+    echo "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-+/-/g' | sed 's/^-\|-$//'
+}
 
 ################################################################################
 # Helper Functions
@@ -143,7 +155,7 @@ fi
 print_info "Creating $NUM_ARTICLES article templates..."
 echo ""
 
-SECTION_CODE="${CATEGORY_CODES[$SECTION]}"
+SECTION_CODE=$(get_section_code "$SECTION")
 
 if [ -z "$SECTION_CODE" ]; then
     print_error "Section code not configured"
@@ -168,7 +180,17 @@ for i in $(seq 1 $NUM_ARTICLES); do
     
     # Generate filename and slug
     FILENAME=$(generate_filename "$TITLE")
-    FILEPATH="$CONTENT_DIR/$SECTION/$FILENAME"
+    
+    # Build path with subcategory folder if provided
+    if [ ! -z "$SUBCAT" ]; then
+        SUBCAT_SLUG=$(get_subcategory_slug "$SUBCAT")
+        SUBCAT_DIR="$CONTENT_DIR/$SECTION/$SUBCAT_SLUG"
+        mkdir -p "$SUBCAT_DIR"
+        FILEPATH="$SUBCAT_DIR/$FILENAME"
+    else
+        print_warning "Subcategory required for each article"
+        continue
+    fi
     
     # Check if file exists
     if [ -f "$FILEPATH" ]; then
@@ -179,7 +201,7 @@ for i in $(seq 1 $NUM_ARTICLES); do
     # Get subcategory code if provided
     SUBCAT_CODE=""
     if [ ! -z "$SUBCAT" ]; then
-        SUBCAT_CODE="${SUBCATEGORY_CODES[$SUBCAT]}"
+        SUBCAT_CODE=$(get_subcategory_code "$SUBCAT")
     fi
     
     # Create article

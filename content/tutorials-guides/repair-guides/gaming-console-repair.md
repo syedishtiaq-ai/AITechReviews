@@ -14,7 +14,7 @@ tags:
   - "Troubleshooting"
   - "DIY"
 youtube_url: "https://www.youtube.com"
-instagram_url: "https://www.instagram.com/gaming_tech_support/"
+instagram_url: "https://www.instagram.com"
 date: "2026-03-18T12:20:00.000Z"
 lastmod: "2026-03-22T09:45:00.000Z"
 draft: false

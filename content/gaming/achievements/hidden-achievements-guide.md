@@ -12,7 +12,7 @@ tags:
   - "Achievements"
   - "Secrets"
   - "Hidden Content"
-instagram_url: "https://www.instagram.com/gaming_secrets/"
+instagram_url: "https://www.instagram.com"
 date: "2026-03-18T14:20:00.000Z"
 lastmod: "2026-03-21T10:15:00.000Z"
 draft: false

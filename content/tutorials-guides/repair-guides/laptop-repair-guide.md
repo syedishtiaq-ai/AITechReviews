@@ -14,7 +14,7 @@ tags:
   - "Hardware"
   - "DIY"
 youtube_url: "https://www.youtube.com"
-instagram_url: "https://www.instagram.com/computer_repairs/"
+instagram_url: "https://www.instagram.com"
 date: "2026-03-19T14:45:00.000Z"
 lastmod: "2026-03-22T11:30:00.000Z"
 draft: false

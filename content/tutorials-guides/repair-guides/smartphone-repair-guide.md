@@ -13,7 +13,7 @@ tags:
   - "Troubleshooting"
   - "DIY"
 youtube_url: "https://www.youtube.com"
-instagram_url: "https://www.instagram.com/tech_repairs/"
+instagram_url: "https://www.instagram.com"
 date: "2026-03-20T10:30:00.000Z"
 lastmod: "2026-03-22T14:15:00.000Z"
 draft: false

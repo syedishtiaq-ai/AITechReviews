@@ -14,7 +14,7 @@ tags:
   - "Puzzle"
   - "Boss Battle"
 youtube_url: "https://www.youtube.com"
-instagram_url: "https://www.instagram.com/game_walkthroughs/"
+instagram_url: "https://www.instagram.com"
 date: "2026-03-16T16:00:00.000Z"
 lastmod: "2026-03-22T12:30:00.000Z"
 draft: false

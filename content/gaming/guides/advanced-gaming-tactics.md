@@ -13,7 +13,7 @@ tags:
   - "Strategy"
   - "Tactics"
   - "Competitive"
-youtube_url: "https://www.youtube.com/watch?v=advancedgaming"
+youtube_url: "https://www.youtube.com"
 instagram_url: "https://www.instagram.com/pro_gaming/"
 date: "2026-03-17T13:30:00.000Z"
 lastmod: "2026-03-21T15:45:00.000Z"

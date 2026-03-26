@@ -14,7 +14,7 @@ tags:
   - "Review"
   - "Guide"
 featuredImage: "images/best-washing-machines.jpg"
-youtube_url: "https://www.youtube.com/watch?v=TEST123"
+youtube_url: "https://www.youtube.com"
 instagram_url: "https://www.instagram.com/aitech_reviews/"
 date: "2026-03-14T15:30:00.000Z"
 lastmod: "2026-03-21T20:37:46.045Z"

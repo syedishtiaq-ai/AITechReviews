@@ -13,7 +13,7 @@ tags:
   - "Speedrun"
   - "100% Completion"
   - "Strategy"
-youtube_url: "https://www.youtube.com/watch?v=dungeoncrawler"
+youtube_url: "https://www.youtube.com"
 date: "2026-03-15T11:15:00.000Z"
 lastmod: "2026-03-21T09:45:00.000Z"
 draft: false

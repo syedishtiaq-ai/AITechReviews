@@ -12,7 +12,7 @@ tags:
   - "Beginner"
   - "Guide"
   - "Tips"
-youtube_url: "https://www.youtube.com/watch?v=gaming123"
+youtube_url: "https://www.youtube.com"
 date: "2026-03-19T09:45:00.000Z"
 lastmod: "2026-03-22T11:20:00.000Z"
 draft: false

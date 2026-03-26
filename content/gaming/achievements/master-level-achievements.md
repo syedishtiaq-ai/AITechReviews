@@ -12,7 +12,7 @@ tags:
   - "Achievements"
   - "Guides"
   - "Strategy"
-youtube_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+youtube_url: "https://www.youtube.com"
 instagram_url: "https://www.instagram.com/gaming_tips/"
 date: "2026-03-20T10:15:00.000Z"
 lastmod: "2026-03-22T14:30:00.000Z"

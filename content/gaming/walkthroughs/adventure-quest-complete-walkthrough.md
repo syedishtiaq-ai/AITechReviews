@@ -13,7 +13,7 @@ tags:
   - "Guide"
   - "Puzzle"
   - "Boss Battle"
-youtube_url: "https://www.youtube.com/watch?v=adventurequest"
+youtube_url: "https://www.youtube.com"
 instagram_url: "https://www.instagram.com/game_walkthroughs/"
 date: "2026-03-16T16:00:00.000Z"
 lastmod: "2026-03-22T12:30:00.000Z"

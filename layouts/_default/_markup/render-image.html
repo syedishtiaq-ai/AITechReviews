@@ -1,0 +1,13 @@
+{{- $url := .Destination -}}
+{{- $title := .Title -}}
+{{- $alt := .Text -}}
+
+{{- /* Add lazy loading and async decoding to all images */ -}}
+<img 
+  src="{{ $url }}" 
+  alt="{{ $alt }}"
+  {{ if $title }}title="{{ $title }}"{{ end }}
+  loading="lazy"
+  decoding="async"
+  style="max-width: 100%; height: auto;"
+/>

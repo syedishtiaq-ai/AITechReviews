@@ -1357,4 +1357,76 @@
     });
   })();
 
+    // ===== TABLE OF CONTENTS ACTIVE LINK TRACKING =====
+    const initTocTracking = () => {
+      const toc = document.querySelector('.article-toc');
+      if (!toc) return; // TOC not on this page
+
+      // Get all heading IDs from the document
+      const headings = document.querySelectorAll('.article-content h1, .article-content h2, .article-content h3');
+      if (headings.length === 0) return;
+
+      // Get all TOC links
+      const tocLinks = toc.querySelectorAll('a');
+      
+      // Create map of heading IDs to their positions
+      const headingMap = new Map();
+      headings.forEach(heading => {
+        if (heading.id) {
+          headingMap.set(heading.id, heading);
+        }
+      });
+
+      // Update active link on scroll
+      const updateActiveLink = () => {
+        let activeId = null;
+        let minDistance = Infinity;
+
+        // Find which heading is closest to top of viewport
+        headingMap.forEach((element, id) => {
+          const rect = element.getBoundingClientRect();
+          const distance = Math.abs(rect.top - 100); // 100px offset from top
+
+          if (rect.top < window.innerHeight && distance < minDistance) {
+            minDistance = distance;
+            activeId = id;
+          }
+        });
+
+        // Update TOC link styling
+        tocLinks.forEach(link => {
+          link.classList.remove('active');
+          const href = link.getAttribute('href');
+          if (href && activeId && href === '#' + activeId) {
+            link.classList.add('active');
+          }
+        });
+      };
+
+      // Listen for scroll events with passive listener for performance
+      window.addEventListener('scroll', updateActiveLink, { passive: true });
+      
+      // Update on page load
+      updateActiveLink();
+
+      // Add smooth scroll behavior for TOC links
+      tocLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          const href = link.getAttribute('href');
+          if (href && href.startsWith('#')) {
+            e.preventDefault();
+            const targetId = href.substring(1);
+            const target = document.getElementById(targetId);
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              window.history.pushState(null, '', href);
+            }
+          }
+        });
+      });
+    };
+
+    // Initialize TOC tracking when DOM is ready
+    initTocTracking();
+
 })();

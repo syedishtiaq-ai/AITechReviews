@@ -1482,26 +1482,54 @@
       const itemsSelectBottom = document.getElementById('items-select-bottom');
       const sortSelect = document.getElementById('sort-select');
       const articlesCountDisplay = document.getElementById('articles-count');
+      const articleSearchInput = document.getElementById('article-search-input');
 
       if (!articlesContainer || !prevBtn || !nextBtn) return; // Pagination not on this page
 
       // Pagination state
       let allArticles = [];
+      let filteredArticles = [];
       let currentPage = 1;
       let itemsPerPage = 50;
       let currentSort = 'date-desc';
+      let searchTerm = '';
 
       // Get all article cards from the container
       const loadArticles = () => {
         allArticles = Array.from(articlesContainer.querySelectorAll('.article-card'));
+        filteredArticles = [...allArticles];
         return allArticles;
+      };
+
+      // Filter articles by search term
+      const filterArticles = (term) => {
+        searchTerm = term.toLowerCase();
+        
+        if (!searchTerm.trim()) {
+          filteredArticles = [...allArticles];
+        } else {
+          filteredArticles = allArticles.filter(article => {
+            const title = (article.querySelector('h3.card-title')?.textContent || '').toLowerCase();
+            const excerpt = (article.getAttribute('data-excerpt') || '').toLowerCase();
+            const category = (article.getAttribute('data-category') || '').toLowerCase();
+            const tags = (article.getAttribute('data-tags') || '').toLowerCase();
+            
+            return title.includes(searchTerm) || 
+                   excerpt.includes(searchTerm) || 
+                   category.includes(searchTerm) || 
+                   tags.includes(searchTerm);
+          });
+        }
+        
+        currentPage = 1; // Reset to first page after search
+        displayPage();
       };
 
       // Sort articles
       const sortArticles = (sortType) => {
         currentSort = sortType;
         
-        allArticles.sort((a, b) => {
+        filteredArticles.sort((a, b) => {
           let aValue, bValue;
           
           if (sortType === 'date-desc' || sortType === 'date-asc') {
@@ -1511,9 +1539,9 @@
             
             return sortType === 'date-desc' ? bValue - aValue : aValue - bValue;
           } else if (sortType === 'title-asc') {
-            // Get title from article
-            aValue = (a.querySelector('h3')?.textContent || a.querySelector('h2')?.textContent || '').toLowerCase();
-            bValue = (b.querySelector('h3')?.textContent || b.querySelector('h2')?.textContent || '').toLowerCase();
+            // Get title from article card
+            aValue = (a.querySelector('h3.card-title')?.textContent || a.querySelector('h3')?.textContent || '').toLowerCase().trim();
+            bValue = (b.querySelector('h3.card-title')?.textContent || b.querySelector('h3')?.textContent || '').toLowerCase().trim();
             
             return aValue.localeCompare(bValue);
           }
@@ -1525,16 +1553,16 @@
         displayPage();
       };
 
-      // Calculate total pages
+      // Calculate total pages based on filtered articles
       const calculateTotalPages = () => {
-        return Math.max(1, Math.ceil(allArticles.length / itemsPerPage));
+        return Math.max(1, Math.ceil(filteredArticles.length / itemsPerPage));
       };
 
-      // Get articles for current page
+      // Get articles for current page from filtered articles
       const getPaginatedItems = () => {
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        return allArticles.slice(startIndex, endIndex);
+        return filteredArticles.slice(startIndex, endIndex);
       };
 
       // Display articles for current page
@@ -1542,8 +1570,9 @@
         const totalPages = calculateTotalPages();
         const paginatedArticles = getPaginatedItems();
         const totalArticles = allArticles.length;
-        const startCount = (currentPage - 1) * itemsPerPage + 1;
-        const endCount = Math.min(currentPage * itemsPerPage, totalArticles);
+        const filteredCount = filteredArticles.length;
+        const startCount = filteredCount === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+        const endCount = Math.min(currentPage * itemsPerPage, filteredCount);
 
         // Hide all articles
         allArticles.forEach(article => {
@@ -1557,12 +1586,17 @@
           article.classList.add('fade-in');
         });
 
-        // Update articles count display in sidebar
+        // Update articles count display in sidebar - show filtered count
         if (articlesCountDisplay) {
-          if (totalArticles === 0) {
-            articlesCountDisplay.textContent = 'No articles';
+          if (searchTerm.trim() === '') {
+            // No search term - show "0 of X articles"
+            articlesCountDisplay.textContent = `0 of ${totalArticles} articles`;
+          } else if (filteredCount === 0) {
+            // Search active but no results
+            articlesCountDisplay.textContent = 'No matching articles';
           } else {
-            articlesCountDisplay.textContent = `Showing ${startCount} of ${totalArticles} articles`;
+            // Show filtered results
+            articlesCountDisplay.textContent = `Showing ${startCount} of ${filteredCount} articles`;
           }
         }
 
@@ -1641,6 +1675,14 @@
         sortSelect.addEventListener('change', (e) => {
           const newSort = e.target.value;
           sortArticles(newSort);
+        });
+      }
+
+      // Search event listener
+      if (articleSearchInput) {
+        articleSearchInput.addEventListener('input', (e) => {
+          const term = e.target.value;
+          filterArticles(term);
         });
       }
 

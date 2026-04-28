@@ -664,6 +664,23 @@
   outline: none;
 }
 
+.reading-time-filter {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  color: #0f172a;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.reading-time-filter:hover,
+.reading-time-filter:focus {
+  border-color: #463aa1;
+  outline: none;
+}
+
 /* Articles Grid */
 .articles-grid {
   display: grid;

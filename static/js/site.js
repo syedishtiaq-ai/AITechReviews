@@ -1608,6 +1608,84 @@
         displayPage();
       };
 
+      // Extract reading time in minutes from text like "5 min read"
+      const extractReadingTime = (readingTimeText) => {
+        if (!readingTimeText) return 0;
+        const match = readingTimeText.match(/\d+/);
+        return match ? parseInt(match[0], 10) : 0;
+      };
+
+      // Filter articles by reading time range
+      let currentReadingTimeFilter = 'all';
+      const filterByReadingTime = (readingTimeRange) => {
+        currentReadingTimeFilter = readingTimeRange;
+        
+        filteredArticles = allArticles.filter(article => {
+          // Apply search filter if active
+          if (searchTerm.trim() !== '') {
+            const title = (article.querySelector('h3.card-title')?.textContent || '').toLowerCase();
+            const excerpt = (article.getAttribute('data-excerpt') || '').toLowerCase();
+            const category = (article.getAttribute('data-category') || '').toLowerCase();
+            const tags = (article.getAttribute('data-tags') || '').toLowerCase();
+            
+            if (!title.includes(searchTerm) && 
+                !excerpt.includes(searchTerm) && 
+                !category.includes(searchTerm) && 
+                !tags.includes(searchTerm)) {
+              return false;
+            }
+          }
+
+          // Apply date filter if not 'all'
+          if (currentDateFilter !== 'all') {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            let startDate;
+
+            switch(currentDateFilter) {
+              case 'week':
+                startDate = new Date(today);
+                startDate.setDate(startDate.getDate() - 7);
+                break;
+              case 'month':
+                startDate = new Date(today);
+                startDate.setMonth(startDate.getMonth() - 1);
+                break;
+              case 'quarter':
+                startDate = new Date(today);
+                startDate.setMonth(startDate.getMonth() - 3);
+                break;
+              case 'year':
+                startDate = new Date(today);
+                startDate.setFullYear(startDate.getFullYear() - 1);
+                break;
+              default:
+                startDate = new Date(0);
+            }
+
+            const articleDate = new Date(article.getAttribute('data-date'));
+            if (articleDate < startDate) return false;
+          }
+
+          // Apply reading time filter
+          if (readingTimeRange === 'all') return true;
+
+          const readingTimeText = article.querySelector('[class*="reading-time"]')?.textContent || '';
+          const readingTime = extractReadingTime(readingTimeText);
+
+          switch(readingTimeRange) {
+            case 'short': return readingTime < 5;
+            case 'medium': return readingTime >= 5 && readingTime < 10;
+            case 'long': return readingTime >= 10 && readingTime < 15;
+            case 'verylong': return readingTime >= 15;
+            default: return true;
+          }
+        });
+
+        currentPage = 1; // Reset to first page after filter
+        displayPage();
+      };
+
       // Calculate total pages based on filtered articles
       const calculateTotalPages = () => {
         return Math.max(1, Math.ceil(filteredArticles.length / itemsPerPage));
@@ -1739,6 +1817,15 @@
         dateFilter.addEventListener('change', (e) => {
           const dateRange = e.target.value;
           filterByDateRange(dateRange);
+        });
+      }
+
+      // Reading time filter event listener
+      const readingTimeFilter = document.getElementById('reading-time-filter');
+      if (readingTimeFilter) {
+        readingTimeFilter.addEventListener('change', (e) => {
+          const readingTimeRange = e.target.value;
+          filterByReadingTime(readingTimeRange);
         });
       }
 

@@ -1347,4 +1347,33 @@
     }, { passive: true });
   })();
 
+  /* ================================================================
+     SCROLL-TO-TOP BUTTON
+     ================================================================
+     Shows button when user scrolls down, smooth scroll to top on click
+     ================================================================ */
+  
+  (function initScrollToTop() {
+    const scrollTopBtn = document.getElementById('scrollTop');
+    
+    if (!scrollTopBtn) return; // Button not on this page
+    
+    // Show/hide button based on scroll position
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        scrollTopBtn.classList.add('show');
+      } else {
+        scrollTopBtn.classList.remove('show');
+      }
+    }, { passive: true });
+    
+    // Smooth scroll to top on click
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  })();
+
 })();

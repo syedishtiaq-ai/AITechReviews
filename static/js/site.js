@@ -1483,6 +1483,7 @@
       const sortSelect = document.getElementById('sort-select');
       const articlesCountDisplay = document.getElementById('articles-count');
       const articleSearchInput = document.getElementById('article-search-input');
+      const clearArticleSearchBtn = document.getElementById('clearArticleSearch');
 
       if (!articlesContainer || !prevBtn || !nextBtn) return; // Pagination not on this page
 
@@ -1683,6 +1684,14 @@
         articleSearchInput.addEventListener('input', (e) => {
           const term = e.target.value;
           filterArticles(term);
+        });
+      }
+
+      // Clear search button listener
+      if (clearArticleSearchBtn) {
+        clearArticleSearchBtn.addEventListener('click', () => {
+          articleSearchInput.value = '';
+          filterArticles('');
         });
       }
 

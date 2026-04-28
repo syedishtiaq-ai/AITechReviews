@@ -1466,4 +1466,117 @@
       window.addEventListener('load', trackPerformanceMetrics, { once: true });
     }
 
+    // ============ ARTICLES PAGE PAGINATION ============
+    // Implements pagination for article lists with 50 items per page
+    const initArticlesPagination = () => {
+      const articlesContainer = document.getElementById('articles-container');
+      const prevBtn = document.getElementById('prev-page');
+      const nextBtn = document.getElementById('next-page');
+      const currentPageSpan = document.getElementById('current-page');
+      const totalPagesSpan = document.getElementById('total-pages');
+      const itemsSelect = document.getElementById('items-select');
+
+      if (!articlesContainer || !prevBtn || !nextBtn) return; // Pagination not on this page
+
+      // Pagination state
+      let allArticles = [];
+      let currentPage = 1;
+      let itemsPerPage = 50;
+
+      // Get all article cards from the container
+      const loadArticles = () => {
+        allArticles = Array.from(articlesContainer.querySelectorAll('.article-card'));
+        return allArticles;
+      };
+
+      // Calculate total pages
+      const calculateTotalPages = () => {
+        return Math.max(1, Math.ceil(allArticles.length / itemsPerPage));
+      };
+
+      // Get articles for current page
+      const getPaginatedItems = () => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return allArticles.slice(startIndex, endIndex);
+      };
+
+      // Display articles for current page
+      const displayPage = () => {
+        const totalPages = calculateTotalPages();
+        const paginatedArticles = getPaginatedItems();
+
+        // Hide all articles
+        allArticles.forEach(article => {
+          article.style.display = 'none';
+          article.classList.remove('fade-in');
+        });
+
+        // Show articles for current page
+        paginatedArticles.forEach(article => {
+          article.style.display = '';
+          article.classList.add('fade-in');
+        });
+
+        // Update pagination info
+        if (currentPageSpan) currentPageSpan.textContent = currentPage;
+        if (totalPagesSpan) totalPagesSpan.textContent = totalPages;
+
+        // Update button states
+        prevBtn.disabled = currentPage <= 1;
+        nextBtn.disabled = currentPage >= totalPages;
+
+        // Scroll to top of articles container
+        articlesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+
+      // Go to next page
+      const nextPage = () => {
+        const totalPages = calculateTotalPages();
+        if (currentPage < totalPages) {
+          currentPage += 1;
+          displayPage();
+        }
+      };
+
+      // Go to previous page
+      const previousPage = () => {
+        if (currentPage > 1) {
+          currentPage -= 1;
+          displayPage();
+        }
+      };
+
+      // Change items per page
+      const changeItemsPerPage = (newItemsPerPage) => {
+        itemsPerPage = newItemsPerPage;
+        currentPage = 1; // Reset to first page
+        displayPage();
+      };
+
+      // Event listeners
+      prevBtn.addEventListener('click', previousPage);
+      nextBtn.addEventListener('click', nextPage);
+
+      if (itemsSelect) {
+        itemsSelect.addEventListener('change', (e) => {
+          const newValue = parseInt(e.target.value, 10);
+          changeItemsPerPage(newValue);
+        });
+      }
+
+      // Initialize pagination
+      loadArticles();
+      displayPage();
+    };
+
+    // Initialize pagination when DOM is ready
+    document.addEventListener('DOMContentLoaded', initArticlesPagination, { once: true });
+    // Also try to initialize immediately if DOM is already loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initArticlesPagination, { once: true });
+    } else {
+      initArticlesPagination();
+    }
+
 })();

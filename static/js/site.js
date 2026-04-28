@@ -1523,7 +1523,7 @@
         }
         
         currentPage = 1; // Reset to first page after search
-        displayPage();
+        displayPage(true);
       };
 
       // Sort articles
@@ -1551,7 +1551,7 @@
         });
         
         currentPage = 1; // Reset to first page after sort
-        displayPage();
+        displayPage(true);
       };
 
       // Filter articles by date range
@@ -1605,7 +1605,7 @@
         });
 
         currentPage = 1; // Reset to first page after filter
-        displayPage();
+        displayPage(true);
       };
 
       // Extract reading time in minutes from text like "5 min read"
@@ -1683,7 +1683,7 @@
         });
 
         currentPage = 1; // Reset to first page after filter
-        displayPage();
+        displayPage(true);
       };
 
       // Extract author name from article
@@ -1808,7 +1808,7 @@
         });
 
         currentPage = 1; // Reset to first page after filter
-        displayPage();
+        displayPage(true);
       };
 
       // Update category counts based on current filters
@@ -1993,7 +1993,7 @@
         });
 
         currentPage = 1; // Reset to first page after filter
-        displayPage();
+        displayPage(true);
       };
 
       // Calculate total pages based on filtered articles
@@ -2009,7 +2009,7 @@
       };
 
       // Display articles for current page
-      const displayPage = () => {
+      const displayPage = (shouldScroll = false) => {
         const totalPages = calculateTotalPages();
         const paginatedArticles = getPaginatedItems();
         const totalArticles = allArticles.length;
@@ -2063,8 +2063,10 @@
         if (itemsSelect) itemsSelect.value = itemsPerPage;
         if (itemsSelectBottom) itemsSelectBottom.value = itemsPerPage;
 
-        // Scroll to top of articles container
-        articlesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Scroll to top of articles container (only if explicitly requested)
+        if (shouldScroll && articlesContainer) {
+          articlesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       };
 
       // Go to next page
@@ -2072,7 +2074,7 @@
         const totalPages = calculateTotalPages();
         if (currentPage < totalPages) {
           currentPage += 1;
-          displayPage();
+          displayPage(true);
         }
       };
 
@@ -2080,7 +2082,7 @@
       const previousPage = () => {
         if (currentPage > 1) {
           currentPage -= 1;
-          displayPage();
+          displayPage(true);
         }
       };
 
@@ -2088,7 +2090,7 @@
       const changeItemsPerPage = (newItemsPerPage) => {
         itemsPerPage = newItemsPerPage;
         currentPage = 1; // Reset to first page
-        displayPage();
+        displayPage(true);
       };
 
       // Event listeners (top)

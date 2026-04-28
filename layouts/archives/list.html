@@ -15,14 +15,6 @@
 
       <!-- Archive Content -->
       <main class="archive-main">
-        <!-- Page Header -->
-        <div class="archive-header">
-          <h1>{{ .Title }}</h1>
-          {{ if .Params.description }}
-          <p class="archive-description">{{ .Params.description }}</p>
-          {{ end }}
-        </div>
-
         <!-- Archive Filters -->
         {{ if not .IsHome }}
         <div class="archive-filters">

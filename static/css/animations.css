@@ -77,3 +77,25 @@ html {
     scroll-behavior: auto !important;
   }
 }
+
+/* ================================================================
+   5. READING PROGRESS BAR
+   ================================================================ */
+
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  width: 0%;
+  z-index: 1000;
+  transition: width 0.1s ease;
+}
+
+/* Hide progress bar on small screens */
+@media (max-width: 768px) {
+  .reading-progress {
+    height: 2px;
+  }
+}

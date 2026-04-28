@@ -1324,4 +1324,27 @@
 
     })();
   });
+
+  /* ================================================================
+     READING PROGRESS BAR
+     ================================================================
+     Displays reading progress as user scrolls through articles
+     ================================================================ */
+  
+  (function initReadingProgress() {
+    const progressBar = document.getElementById('readingProgress');
+    
+    if (!progressBar) return; // Progress bar not on this page
+    
+    window.addEventListener('scroll', () => {
+      // Calculate scroll progress
+      const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrolled = window.scrollY;
+      const progress = windowHeight > 0 ? (scrolled / windowHeight) * 100 : 0;
+      
+      // Update progress bar width
+      progressBar.style.width = Math.min(progress, 100) + '%';
+    }, { passive: true });
+  })();
+
 })();

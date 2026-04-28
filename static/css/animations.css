@@ -137,3 +137,84 @@ html {
 .scroll-to-top:active {
   transform: translateY(-2px);
 }
+
+/* ================================================================
+   7. SOCIAL SHARE BUTTONS
+   ================================================================ */
+
+.share-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+  padding: 24px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  flex-wrap: wrap;
+}
+
+.share-label {
+  margin: 0;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.share-btn.twitter {
+  background: #1DA1F2;
+}
+
+.share-btn.facebook {
+  background: #1877F2;
+}
+
+.share-btn.linkedin {
+  background: #0A66C2;
+}
+
+.share-btn.email {
+  background: #666;
+}
+
+.share-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.share-btn:active {
+  transform: translateY(-2px);
+}
+
+/* Responsive: Stack on mobile */
+@media (max-width: 480px) {
+  .share-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .share-label {
+    width: 100%;
+  }
+  
+  .share-btn {
+    width: 44px;
+    height: 44px;
+  }
+}

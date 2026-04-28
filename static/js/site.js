@@ -1579,4 +1579,52 @@
       initArticlesPagination();
     }
 
+    // ============ ARTICLE CARDS LAZY LOADING ============
+    // Lazy load article cards using Intersection Observer API
+    const initArticlesLazyLoading = () => {
+      const articlesContainer = document.getElementById('articles-container');
+      if (!articlesContainer) return; // Not on articles page
+
+      // Intersection Observer configuration
+      const observerOptions = {
+        root: null,
+        rootMargin: '50px', // Start loading 50px before card appears
+        threshold: 0.01
+      };
+
+      // Create observer callback
+      const observerCallback = (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const card = entry.target;
+            // Add loaded class to trigger fade-in animation
+            card.classList.add('loaded');
+            // Stop observing this card
+            observer.unobserve(card);
+          }
+        });
+      };
+
+      // Create observer
+      const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+      // Observe all article cards
+      const articleCards = articlesContainer.querySelectorAll('.article-card');
+      articleCards.forEach(card => {
+        // Set initial opacity to 0
+        card.classList.add('lazy-load');
+        // Start observing
+        observer.observe(card);
+      });
+    };
+
+    // Initialize lazy loading when DOM is ready
+    document.addEventListener('DOMContentLoaded', initArticlesLazyLoading, { once: true });
+    // Also try to initialize immediately if DOM is already loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initArticlesLazyLoading, { once: true });
+    } else {
+      initArticlesLazyLoading();
+    }
+
 })();

@@ -1917,3 +1917,30 @@
   }
 }
 
+/* ===== LAZY LOADING STYLES ===== */
+
+.article-card.lazy-load {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.article-card.lazy-load.loaded {
+  opacity: 1;
+}
+
+/* Smooth fade-in animation for loaded cards */
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.article-card.lazy-load.loaded {
+  animation: fadeInCard 0.5s ease-out;
+}
+

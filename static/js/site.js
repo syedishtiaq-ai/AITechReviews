@@ -767,25 +767,6 @@
       }
     }, true);
 
-    // Back-to-top button (reintroduced safely). Minimal behavior only.
-    (function() {
-      const btn = document.getElementById('backToTop');
-      if (!btn) return;
-      const isScrollable = () => document.documentElement.scrollHeight > window.innerHeight + 10;
-      const update = () => {
-        if (!isScrollable()) {
-          btn.classList.remove('visible');
-          return;
-        }
-        if (window.pageYOffset > 300) btn.classList.add('visible');
-        else btn.classList.remove('visible');
-      };
-      update();
-      window.addEventListener('scroll', update, { passive: true });
-      window.addEventListener('resize', update);
-      btn.addEventListener('click', (e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
-    })();
-
     // ---------- homepage dynamic sections ----------------
     const initHomePage = () => {
       const postContainer = document.getElementById("postContainer");

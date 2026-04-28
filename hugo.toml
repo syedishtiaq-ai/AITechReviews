@@ -11,6 +11,19 @@ taxonomies.tag = "tags"
 canonifyURLs = true
 enableGitInfo = true
 
+[minify]
+  minifyOutput = true
+  [minify.tdewolff]
+    [minify.tdewolff.css]
+      precision = 0
+      version = 3
+    [minify.tdewolff.html]
+      keepComments = false
+      keepConditionals = false
+    [minify.tdewolff.json]
+    [minify.tdewolff.svg]
+    [minify.tdewolff.xml]
+
 [outputs]
   home = ["HTML", "RSS", "SITEMAP"]
   section = ["HTML", "RSS"]

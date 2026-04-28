@@ -1,14 +1,19 @@
 <div class="articles-filters-sidebar">
+  <!-- Search Box (Moved to Top) -->
+  <div class="filter-section">
+    <h3 class="filter-title">Search Articles</h3>
+    <div class="search-box-small">
+      <input type="text" 
+             id="article-search-input" 
+             placeholder="Search articles…" 
+             class="search-input"
+             aria-label="Search articles">
+    </div>
+  </div>
+
   <!-- Results Count -->
   <div class="filter-section">
     <p class="results-count" id="articles-count">Showing articles</p>
-  </div>
-
-  <!-- Clear Filters Button -->
-  <div class="filter-section">
-    <button id="clear-filters-btn" class="clear-filters-btn" style="display: none;">
-      Clear All Filters
-    </button>
   </div>
 
   <!-- Tag Cloud (if on articles page) -->
@@ -40,15 +45,10 @@
   </div>
   {{ end }}
 
-  <!-- Search Box -->
+  <!-- Clear Filters Button -->
   <div class="filter-section">
-    <h3 class="filter-title">Search Articles</h3>
-    <div class="search-box-small">
-      <input type="text" 
-             id="article-search-input" 
-             placeholder="Search articles…" 
-             class="search-input"
-             aria-label="Search articles">
-    </div>
+    <button id="clear-filters-btn" class="clear-filters-btn" style="display: none;">
+      Clear All Filters
+    </button>
   </div>
 </div>

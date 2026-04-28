@@ -1480,6 +1480,8 @@
       const totalPagesSpanBottom = document.getElementById('total-pages-bottom');
       const itemsSelect = document.getElementById('items-select');
       const itemsSelectBottom = document.getElementById('items-select-bottom');
+      const sortSelect = document.getElementById('sort-select');
+      const articlesCountDisplay = document.getElementById('articles-count');
 
       if (!articlesContainer || !prevBtn || !nextBtn) return; // Pagination not on this page
 
@@ -1487,11 +1489,40 @@
       let allArticles = [];
       let currentPage = 1;
       let itemsPerPage = 50;
+      let currentSort = 'date-desc';
 
       // Get all article cards from the container
       const loadArticles = () => {
         allArticles = Array.from(articlesContainer.querySelectorAll('.article-card'));
         return allArticles;
+      };
+
+      // Sort articles
+      const sortArticles = (sortType) => {
+        currentSort = sortType;
+        
+        allArticles.sort((a, b) => {
+          let aValue, bValue;
+          
+          if (sortType === 'date-desc' || sortType === 'date-asc') {
+            // Get date from article element (look for date attribute or data-date)
+            aValue = new Date(a.getAttribute('data-date') || a.querySelector('[class*="date"]')?.textContent || 0);
+            bValue = new Date(b.getAttribute('data-date') || b.querySelector('[class*="date"]')?.textContent || 0);
+            
+            return sortType === 'date-desc' ? bValue - aValue : aValue - bValue;
+          } else if (sortType === 'title-asc') {
+            // Get title from article
+            aValue = (a.querySelector('h3')?.textContent || a.querySelector('h2')?.textContent || '').toLowerCase();
+            bValue = (b.querySelector('h3')?.textContent || b.querySelector('h2')?.textContent || '').toLowerCase();
+            
+            return aValue.localeCompare(bValue);
+          }
+          
+          return 0;
+        });
+        
+        currentPage = 1; // Reset to first page after sort
+        displayPage();
       };
 
       // Calculate total pages
@@ -1510,6 +1541,9 @@
       const displayPage = () => {
         const totalPages = calculateTotalPages();
         const paginatedArticles = getPaginatedItems();
+        const totalArticles = allArticles.length;
+        const startCount = (currentPage - 1) * itemsPerPage + 1;
+        const endCount = Math.min(currentPage * itemsPerPage, totalArticles);
 
         // Hide all articles
         allArticles.forEach(article => {
@@ -1522,6 +1556,15 @@
           article.style.display = '';
           article.classList.add('fade-in');
         });
+
+        // Update articles count display in sidebar
+        if (articlesCountDisplay) {
+          if (totalArticles === 0) {
+            articlesCountDisplay.textContent = 'No articles';
+          } else {
+            articlesCountDisplay.textContent = `Showing ${startCount} of ${totalArticles} articles`;
+          }
+        }
 
         // Update pagination info (top)
         if (currentPageSpan) currentPageSpan.textContent = currentPage;
@@ -1590,6 +1633,14 @@
         itemsSelectBottom.addEventListener('change', (e) => {
           const newValue = parseInt(e.target.value, 10);
           changeItemsPerPage(newValue);
+        });
+      }
+
+      // Sort event listener
+      if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+          const newSort = e.target.value;
+          sortArticles(newSort);
         });
       }
 

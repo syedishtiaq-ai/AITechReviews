@@ -1466,4 +1466,244 @@
       window.addEventListener('load', trackPerformanceMetrics, { once: true });
     }
 
+    // ============ ARTICLES PAGE PAGINATION ============
+    // Implements pagination for article lists with 50 items per page
+    const initArticlesPagination = () => {
+      const articlesContainer = document.getElementById('articles-container');
+      const prevBtn = document.getElementById('prev-page');
+      const nextBtn = document.getElementById('next-page');
+      const prevBtnBottom = document.getElementById('prev-page-bottom');
+      const nextBtnBottom = document.getElementById('next-page-bottom');
+      const currentPageSpan = document.getElementById('current-page');
+      const totalPagesSpan = document.getElementById('total-pages');
+      const currentPageSpanBottom = document.getElementById('current-page-bottom');
+      const totalPagesSpanBottom = document.getElementById('total-pages-bottom');
+      const itemsSelect = document.getElementById('items-select');
+      const itemsSelectBottom = document.getElementById('items-select-bottom');
+      const sortSelect = document.getElementById('sort-select');
+      const articlesCountDisplay = document.getElementById('articles-count');
+
+      if (!articlesContainer || !prevBtn || !nextBtn) return; // Pagination not on this page
+
+      // Pagination state
+      let allArticles = [];
+      let currentPage = 1;
+      let itemsPerPage = 50;
+      let currentSort = 'date-desc';
+
+      // Get all article cards from the container
+      const loadArticles = () => {
+        allArticles = Array.from(articlesContainer.querySelectorAll('.article-card'));
+        return allArticles;
+      };
+
+      // Sort articles
+      const sortArticles = (sortType) => {
+        currentSort = sortType;
+        
+        allArticles.sort((a, b) => {
+          let aValue, bValue;
+          
+          if (sortType === 'date-desc' || sortType === 'date-asc') {
+            // Get date from article element (look for date attribute or data-date)
+            aValue = new Date(a.getAttribute('data-date') || a.querySelector('[class*="date"]')?.textContent || 0);
+            bValue = new Date(b.getAttribute('data-date') || b.querySelector('[class*="date"]')?.textContent || 0);
+            
+            return sortType === 'date-desc' ? bValue - aValue : aValue - bValue;
+          } else if (sortType === 'title-asc') {
+            // Get title from article
+            aValue = (a.querySelector('h3')?.textContent || a.querySelector('h2')?.textContent || '').toLowerCase();
+            bValue = (b.querySelector('h3')?.textContent || b.querySelector('h2')?.textContent || '').toLowerCase();
+            
+            return aValue.localeCompare(bValue);
+          }
+          
+          return 0;
+        });
+        
+        currentPage = 1; // Reset to first page after sort
+        displayPage();
+      };
+
+      // Calculate total pages
+      const calculateTotalPages = () => {
+        return Math.max(1, Math.ceil(allArticles.length / itemsPerPage));
+      };
+
+      // Get articles for current page
+      const getPaginatedItems = () => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return allArticles.slice(startIndex, endIndex);
+      };
+
+      // Display articles for current page
+      const displayPage = () => {
+        const totalPages = calculateTotalPages();
+        const paginatedArticles = getPaginatedItems();
+        const totalArticles = allArticles.length;
+        const startCount = (currentPage - 1) * itemsPerPage + 1;
+        const endCount = Math.min(currentPage * itemsPerPage, totalArticles);
+
+        // Hide all articles
+        allArticles.forEach(article => {
+          article.style.display = 'none';
+          article.classList.remove('fade-in');
+        });
+
+        // Show articles for current page
+        paginatedArticles.forEach(article => {
+          article.style.display = '';
+          article.classList.add('fade-in');
+        });
+
+        // Update articles count display in sidebar
+        if (articlesCountDisplay) {
+          if (totalArticles === 0) {
+            articlesCountDisplay.textContent = 'No articles';
+          } else {
+            articlesCountDisplay.textContent = `Showing ${startCount} of ${totalArticles} articles`;
+          }
+        }
+
+        // Update pagination info (top)
+        if (currentPageSpan) currentPageSpan.textContent = currentPage;
+        if (totalPagesSpan) totalPagesSpan.textContent = totalPages;
+
+        // Update pagination info (bottom)
+        if (currentPageSpanBottom) currentPageSpanBottom.textContent = currentPage;
+        if (totalPagesSpanBottom) totalPagesSpanBottom.textContent = totalPages;
+
+        // Update button states (top)
+        if (prevBtn) prevBtn.disabled = currentPage <= 1;
+        if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+        // Update button states (bottom)
+        if (prevBtnBottom) prevBtnBottom.disabled = currentPage <= 1;
+        if (nextBtnBottom) nextBtnBottom.disabled = currentPage >= totalPages;
+
+        // Sync select dropdowns
+        if (itemsSelect) itemsSelect.value = itemsPerPage;
+        if (itemsSelectBottom) itemsSelectBottom.value = itemsPerPage;
+
+        // Scroll to top of articles container
+        articlesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+
+      // Go to next page
+      const nextPage = () => {
+        const totalPages = calculateTotalPages();
+        if (currentPage < totalPages) {
+          currentPage += 1;
+          displayPage();
+        }
+      };
+
+      // Go to previous page
+      const previousPage = () => {
+        if (currentPage > 1) {
+          currentPage -= 1;
+          displayPage();
+        }
+      };
+
+      // Change items per page
+      const changeItemsPerPage = (newItemsPerPage) => {
+        itemsPerPage = newItemsPerPage;
+        currentPage = 1; // Reset to first page
+        displayPage();
+      };
+
+      // Event listeners (top)
+      if (prevBtn) prevBtn.addEventListener('click', previousPage);
+      if (nextBtn) nextBtn.addEventListener('click', nextPage);
+
+      if (itemsSelect) {
+        itemsSelect.addEventListener('change', (e) => {
+          const newValue = parseInt(e.target.value, 10);
+          changeItemsPerPage(newValue);
+        });
+      }
+
+      // Event listeners (bottom)
+      if (prevBtnBottom) prevBtnBottom.addEventListener('click', previousPage);
+      if (nextBtnBottom) nextBtnBottom.addEventListener('click', nextPage);
+
+      if (itemsSelectBottom) {
+        itemsSelectBottom.addEventListener('change', (e) => {
+          const newValue = parseInt(e.target.value, 10);
+          changeItemsPerPage(newValue);
+        });
+      }
+
+      // Sort event listener
+      if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+          const newSort = e.target.value;
+          sortArticles(newSort);
+        });
+      }
+
+      // Initialize pagination
+      loadArticles();
+      displayPage();
+    };
+
+    // Initialize pagination when DOM is ready
+    document.addEventListener('DOMContentLoaded', initArticlesPagination, { once: true });
+    // Also try to initialize immediately if DOM is already loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initArticlesPagination, { once: true });
+    } else {
+      initArticlesPagination();
+    }
+
+    // ============ ARTICLE CARDS LAZY LOADING ============
+    // Lazy load article cards using Intersection Observer API
+    const initArticlesLazyLoading = () => {
+      const articlesContainer = document.getElementById('articles-container');
+      if (!articlesContainer) return; // Not on articles page
+
+      // Intersection Observer configuration
+      const observerOptions = {
+        root: null,
+        rootMargin: '50px', // Start loading 50px before card appears
+        threshold: 0.01
+      };
+
+      // Create observer callback
+      const observerCallback = (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const card = entry.target;
+            // Add loaded class to trigger fade-in animation
+            card.classList.add('loaded');
+            // Stop observing this card
+            observer.unobserve(card);
+          }
+        });
+      };
+
+      // Create observer
+      const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+      // Observe all article cards
+      const articleCards = articlesContainer.querySelectorAll('.article-card');
+      articleCards.forEach(card => {
+        // Set initial opacity to 0
+        card.classList.add('lazy-load');
+        // Start observing
+        observer.observe(card);
+      });
+    };
+
+    // Initialize lazy loading when DOM is ready
+    document.addEventListener('DOMContentLoaded', initArticlesLazyLoading, { once: true });
+    // Also try to initialize immediately if DOM is already loaded
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initArticlesLazyLoading, { once: true });
+    } else {
+      initArticlesLazyLoading();
+    }
+
 })();

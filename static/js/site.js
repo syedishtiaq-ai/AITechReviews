@@ -1686,6 +1686,131 @@
         displayPage();
       };
 
+      // Extract author name from article
+      const extractAuthor = (article) => {
+        const authorElement = article.querySelector('[class*="author"]');
+        if (authorElement) {
+          const text = authorElement.textContent;
+          return text.replace(/👤\s*/g, '').trim();
+        }
+        return '';
+      };
+
+      // Get unique authors from all articles
+      const getUniqueAuthors = () => {
+        const authors = new Set();
+        allArticles.forEach(article => {
+          const author = extractAuthor(article);
+          if (author) authors.add(author);
+        });
+        return Array.from(authors).sort();
+      };
+
+      // Populate author filter dropdown
+      const populateAuthorFilter = () => {
+        const authorFilter = document.getElementById('author-filter');
+        if (!authorFilter) return;
+
+        const uniqueAuthors = getUniqueAuthors();
+        
+        // Clear existing options (except "All Authors")
+        while (authorFilter.options.length > 1) {
+          authorFilter.remove(1);
+        }
+
+        // Add author options
+        uniqueAuthors.forEach(author => {
+          const option = document.createElement('option');
+          option.value = author;
+          option.textContent = author;
+          authorFilter.appendChild(option);
+        });
+      };
+
+      // Filter articles by author
+      let currentAuthorFilter = '';
+      const filterByAuthor = (selectedAuthor) => {
+        currentAuthorFilter = selectedAuthor;
+
+        filteredArticles = allArticles.filter(article => {
+          // Apply search filter if active
+          if (searchTerm.trim() !== '') {
+            const title = (article.querySelector('h3.card-title')?.textContent || '').toLowerCase();
+            const excerpt = (article.getAttribute('data-excerpt') || '').toLowerCase();
+            const category = (article.getAttribute('data-category') || '').toLowerCase();
+            const tags = (article.getAttribute('data-tags') || '').toLowerCase();
+            
+            if (!title.includes(searchTerm) && 
+                !excerpt.includes(searchTerm) && 
+                !category.includes(searchTerm) && 
+                !tags.includes(searchTerm)) {
+              return false;
+            }
+          }
+
+          // Apply date filter if not 'all'
+          if (currentDateFilter !== 'all') {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            let startDate;
+
+            switch(currentDateFilter) {
+              case 'week':
+                startDate = new Date(today);
+                startDate.setDate(startDate.getDate() - 7);
+                break;
+              case 'month':
+                startDate = new Date(today);
+                startDate.setMonth(startDate.getMonth() - 1);
+                break;
+              case 'quarter':
+                startDate = new Date(today);
+                startDate.setMonth(startDate.getMonth() - 3);
+                break;
+              case 'year':
+                startDate = new Date(today);
+                startDate.setFullYear(startDate.getFullYear() - 1);
+                break;
+              default:
+                startDate = new Date(0);
+            }
+
+            const articleDate = new Date(article.getAttribute('data-date'));
+            if (articleDate < startDate) return false;
+          }
+
+          // Apply reading time filter if not 'all'
+          if (currentReadingTimeFilter !== 'all') {
+            const readingTimeText = article.querySelector('[class*="reading-time"]')?.textContent || '';
+            const readingTime = extractReadingTime(readingTimeText);
+
+            switch(currentReadingTimeFilter) {
+              case 'short': 
+                if (readingTime >= 5) return false;
+                break;
+              case 'medium': 
+                if (readingTime < 5 || readingTime >= 10) return false;
+                break;
+              case 'long': 
+                if (readingTime < 10 || readingTime >= 15) return false;
+                break;
+              case 'verylong': 
+                if (readingTime < 15) return false;
+                break;
+            }
+          }
+
+          // Apply author filter
+          if (selectedAuthor === '') return true; // "All Authors" selected
+          
+          const author = extractAuthor(article);
+          return author === selectedAuthor;
+        });
+
+        currentPage = 1; // Reset to first page after filter
+        displayPage();
+      };
+
       // Calculate total pages based on filtered articles
       const calculateTotalPages = () => {
         return Math.max(1, Math.ceil(filteredArticles.length / itemsPerPage));
@@ -1826,6 +1951,16 @@
         readingTimeFilter.addEventListener('change', (e) => {
           const readingTimeRange = e.target.value;
           filterByReadingTime(readingTimeRange);
+        });
+      }
+
+      // Populate and setup author filter
+      populateAuthorFilter();
+      const authorFilter = document.getElementById('author-filter');
+      if (authorFilter) {
+        authorFilter.addEventListener('change', (e) => {
+          const selectedAuthor = e.target.value;
+          filterByAuthor(selectedAuthor);
         });
       }
 

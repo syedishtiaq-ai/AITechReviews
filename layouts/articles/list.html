@@ -41,20 +41,22 @@
       {{ end }}
     </div>
 
-    <!-- Filters & Sorting -->
-    <div class="articles-filters">
-      <div class="filter-group">
-        <label for="sort-select">Sort by:</label>
-        <select id="sort-select" class="sort-select">
-          <option value="date-desc">Newest First</option>
-          <option value="date-asc">Oldest First</option>
-          <option value="title-asc">Title (A-Z)</option>
-        </select>
+    <!-- Filters & Pagination Control Row -->
+    <div class="articles-controls-row">
+      <!-- Filters & Sorting -->
+      <div class="articles-filters">
+        <div class="filter-group">
+          <label for="sort-select">Sort by:</label>
+          <select id="sort-select" class="sort-select">
+            <option value="date-desc">Newest First</option>
+            <option value="date-asc">Oldest First</option>
+            <option value="title-asc">Title (A-Z)</option>
+          </select>
+        </div>
       </div>
-    </div>
 
-    <!-- Pagination Controls (Top) -->
-    <div class="articles-pagination">
+      <!-- Pagination Controls (Top) -->
+      <div class="articles-pagination">
       <div class="pagination-left">
         <button id="prev-page" class="pagination-btn" disabled>← Previous</button>
       </div>
@@ -74,6 +76,7 @@
       <div class="pagination-right">
         <button id="next-page" class="pagination-btn">Next →</button>
       </div>
+    </div>
     </div>
 
     <!-- Articles Grid -->
@@ -95,7 +98,7 @@
     </div>
 
     <!-- Pagination Controls (Bottom) -->
-    <div class="articles-pagination">
+    <div class="articles-pagination-bottom">
       <div class="pagination-left">
         <button id="prev-page-bottom" class="pagination-btn" disabled>← Previous</button>
       </div>

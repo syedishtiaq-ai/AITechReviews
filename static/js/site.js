@@ -1595,8 +1595,8 @@
             // Search active but no results
             articlesCountDisplay.textContent = 'No matching articles';
           } else {
-            // Show filtered results
-            articlesCountDisplay.textContent = `Showing ${startCount} of ${filteredCount} articles`;
+            // Show filtered results: "X of Y articles" where X = filtered count, Y = total
+            articlesCountDisplay.textContent = `Showing ${filteredCount} of ${totalArticles} articles`;
           }
         }
 

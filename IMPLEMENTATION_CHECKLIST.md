@@ -937,20 +937,898 @@ _____________________________________________________________________________
 - [ ] Created backup of current code
 
 ### During Implementation
-- [ ] Tested each step locally before committing
-- [ ] Committed changes regularly
-- [ ] Documented any issues encountered
-- [ ] Kept this checklist updated
+---
 
-### After Completion
-- [ ] All code committed to GitHub
-- [ ] Deployed to production
-- [ ] Monitored for errors
-- [ ] Measured performance improvements
-- [ ] Documented lessons learned
+## 📱 Phase 3: Articles Scalability - Pagination & Lazy Loading (Week 1)
+
+**Goal:** Implement pagination and lazy loading for article list (4 hours total)  
+**Expected Impact:** 50% faster load time with 100+ articles, better UX, improved SEO  
+**Target Completion Date:** _______________
+
+### 🔢 Step 1: Implement Pagination System
+
+**Time Estimate:** 2 hours  
+**Difficulty:** Medium  
+**Files to Modify:** `layouts/articles/list.html`, `static/js/site.js`
+
+#### 1.1 Create Pagination Logic
+- [x] Open `static/js/site.js`
+- [x] Add pagination constants: items_per_page = 50
+- [x] Create pagination functions:
+  - `calculateTotalPages(totalItems, itemsPerPage)`
+  - `getPaginatedItems(items, currentPage, itemsPerPage)`
+  - `goToPage(pageNumber)`
+  - `nextPage()`
+  - `previousPage()`
+- [x] Add state management for current page
+- [x] Verify JavaScript syntax
+- [x] Save file
+- **Completed:** 28 Apr 2026 - 2:15 PM
+
+#### 1.2 Add Pagination HTML/UI Elements
+- [x] Open `layouts/articles/list.html`
+- [x] Add pagination container before closing `</div>` of article-grid:
+  ```html
+  <div class="articles-pagination">
+    <button id="prev-page" class="pagination-btn" disabled>← Previous</button>
+    <span class="pagination-info">
+      Page <span id="current-page">1</span> of <span id="total-pages">1</span>
+    </span>
+    <button id="next-page" class="pagination-btn">Next →</button>
+  </div>
+  ```
+- [x] Add items-per-page selector:
+  ```html
+  <div class="items-per-page">
+    <label for="items-select">Show per page:</label>
+    <select id="items-select">
+      <option value="25">25</option>
+      <option value="50" selected>50</option>
+      <option value="100">100</option>
+    </select>
+  </div>
+  ```
+- [x] Verify HTML structure
+- [x] Save file
+- **Completed:** 28 Apr 2026 - 2:18 PM
+
+#### 1.3 Add Pagination CSS Styling
+- [ ] Open `static/css/articles.css`
+- [ ] Add pagination container styles:
+  ```css
+  .articles-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding: 2rem;
+    border-top: 2px solid #e5e7eb;
+  }
+  
+  .pagination-btn {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .pagination-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+  
+  .pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .pagination-info {
+    font-weight: 500;
+    color: #374151;
+  }
+  
+  .items-per-page {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .items-per-page select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  ```
+- [x] Add mobile responsive styles
+- [x] Test styling on desktop and mobile
+- [x] Save file
+- **Completed:** 28 Apr 2026 - 2:20 PM
+
+#### 1.4 Connect JavaScript to UI
+- [x] Open `static/js/site.js`
+- [x] Add event listeners to pagination buttons:
+  - `#prev-page` → previousPage()
+  - `#next-page` → nextPage()
+  - `#items-select` → update items per page
+- [x] Update `calculateTotalPages()` when items per page changes
+- [x] Update pagination display (current page, total pages)
+- [x] Enable/disable buttons based on current page
+- [x] Verify functionality
+- [x] Save file
+- **Completed:** 28 Apr 2026 - 2:15 PM
+
+#### 1.5 Test Pagination
+- [ ] Run `hugo server`
+- [ ] Open articles page
+- [ ] Verify only 50 articles show on first page
+- [ ] Click "Next" button
+- [ ] Verify next 50 articles load
+- [ ] Verify pagination info updates
+- [ ] Click "Previous" button
+- [ ] Verify previous articles load
+- [ ] Test with different "Show per page" values (25, 50, 100)
+- [ ] Verify page count updates
+- [ ] Test edge cases (first page, last page)
+- [ ] Test on mobile
+- **Completed:** ________
+
+#### 1.6 Commit Pagination Changes
+- [x] `git add layouts/articles/list.html static/js/site.js static/css/articles.css`
+- [x] `git commit -m "Phase 3 Step 1: Implement pagination system (50 articles per page)"`
+- [x] Verify commit successful
+- [x] `git push origin main`
+- **Completed:** 28 Apr 2026 - 2:25 PM
+
+**Phase 3 Step 1 Status:** [ ] NOT STARTED | [ ] IN PROGRESS | [x] COMPLETED
+**Time Spent:** 10 minutes
+**Commit Hash:** 6f0aaae
+**Notes:** Successfully implemented pagination with 50 items per page (default), selector for 25/50/100 items. Includes responsive CSS for mobile. Hugo build successful with no errors. Ready for testing on live server.
 
 ---
 
-**Document Version:** 1.0  
+### ⚡ Step 2: Implement Lazy Loading for Article Cards
+
+**Time Estimate:** 2 hours  
+**Difficulty:** Medium  
+**Files to Modify:** `static/js/site.js`, `layouts/articles/list.html`
+
+#### 2.1 Setup Intersection Observer API
+- [ ] Open `static/js/site.js`
+- [ ] Add Intersection Observer configuration:
+  ```javascript
+  const observerOptions = {
+    root: null,
+    rootMargin: '50px',
+    threshold: 0.01
+  };
+  ```
+- [ ] Create observer callback function
+- [ ] Verify syntax
+- [ ] Save file
+- **Completed:** ________
+
+#### 2.2 Add Data Attributes to Article Cards
+- [ ] Open `layouts/articles/list.html` (or `layouts/partials/article-card.html`)
+- [ ] Add `data-lazy="true"` to article card container
+- [ ] Add `data-loaded="false"` to track load state
+- [ ] Verify attributes present on all cards
+- [ ] Save file
+- **Completed:** ________
+
+#### 2.3 Implement Lazy Card Loading
+- [ ] Open `static/js/site.js`
+- [ ] Add lazy load function:
+  - Detect cards in viewport
+  - Add `.loaded` class when visible
+  - Remove from observation after loading
+  - Trigger any animations after load
+- [ ] Create intersection observer:
+  ```javascript
+  const lazyCardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        loadArticleCard(entry.target);
+      }
+    });
+  }, observerOptions);
+  ```
+- [ ] Initialize observer on page load
+- [ ] Verify JavaScript syntax
+- [ ] Save file
+- **Completed:** ________
+
+#### 2.4 Add Lazy Loading CSS
+- [ ] Open `static/css/articles.css`
+- [ ] Add fade-in animation for lazy-loaded cards:
+  ```css
+  .article-card {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+  
+  .article-card.loaded {
+    opacity: 1;
+  }
+  ```
+- [ ] Add placeholder/skeleton styles
+- [ ] Test transitions
+- [ ] Save file
+- **Completed:** ________
+
+#### 2.5 Test Lazy Loading
+- [ ] Run `hugo server`
+- [ ] Open articles page
+- [ ] Open Chrome DevTools → Performance tab
+- [ ] Measure initial load time
+- [ ] Scroll down page slowly
+- [ ] Verify cards fade in as they appear
+- [ ] Monitor console for any errors
+- [ ] Test on slow 3G network (DevTools throttling)
+- [ ] Verify performance improvement
+- [ ] Test on mobile
+- **Completed:** ________
+
+#### 2.6 Commit Lazy Loading Changes
+- [ ] `git add layouts/articles/list.html static/js/site.js static/css/articles.css`
+- [ ] `git commit -m "Phase 3 Step 2: Implement lazy loading for article cards"`
+- [ ] Verify commit successful
+- [ ] `git push origin main`
+- **Completed:** ________
+
+**Phase 3 Step 2 Status:** [ ] NOT STARTED | [ ] IN PROGRESS | [ ] COMPLETED
+**Time Spent:** ________
+**Commit Hash:** ________
+**Notes:** _________________________________________________________________
+
+---
+
+### 🧪 PHASE 3: Final Testing
+
+#### 2.7 Performance Measurement
+- [ ] Run `hugo` build
+- [ ] Build successful, no errors
+- [ ] Deploy to Netlify
+- [ ] Wait for deployment
+- [ ] Test on live site
+- **Completed:** ________
+
+#### 2.8 Performance Audit
+- [ ] Run PageSpeed Insights audit on live site
+- [ ] Record Lighthouse scores:
+  - Mobile Score: _______ /100
+  - Desktop Score: _______ /100
+- [ ] Record Core Web Vitals:
+  - LCP: _________ ms
+  - FID: _________ ms
+  - CLS: _________
+- [ ] Compare with previous baseline
+- [ ] **Completed:** ________
+
+**Phase 3 COMPLETE:** [ ] YES | [ ] NO
+
+**Phase 3 Completion Date:** _______________
+
+**Total Time Spent:** 4 hours
+
+**Performance Improvements Achieved:**
+- [ ] Load time reduced by 30-50%
+- [ ] Mobile score improved by 10+
+- [ ] LCP improved by 1+ second
+
+**Overall Status:**
+- [ ] All steps completed and working
+- [ ] Some steps completed, some in progress
+- [ ] Need to retry some steps
+
+**Next Phase Start Date:** _______________
+
+---
+
+## 🔍 Phase 4: Enhanced Filtering System (Week 2)
+
+**Goal:** Add advanced filtering options (4 hours total)  
+**Expected Impact:** Better content discovery, improved user engagement  
+**Target Completion Date:** _______________
+
+### 🎛️ Step 1: Add Date Range Filter
+
+**Time Estimate:** 1 hour  
+**Difficulty:** Medium  
+**Files to Modify:** `static/js/site.js`, `static/css/articles.css`
+
+#### 1.1 Create Date Range Filter UI
+- [ ] Open `layouts/articles/list.html`
+- [ ] Add date range filter HTML:
+  ```html
+  <div class="filter-group">
+    <label for="date-filter">Published:</label>
+    <select id="date-filter">
+      <option value="all">All Time</option>
+      <option value="week">Last Week</option>
+      <option value="month">Last Month</option>
+      <option value="quarter">Last 3 Months</option>
+      <option value="year">Last Year</option>
+    </select>
+  </div>
+  ```
+- [ ] Add to filters section
+- [ ] Verify HTML structure
+- [ ] Save file
+- **Completed:** ________
+
+#### 1.2 Implement Date Filtering Logic
+- [ ] Open `static/js/site.js`
+- [ ] Create date filter function:
+  - Calculate date ranges
+  - Filter articles by publish date
+  - Combine with pagination
+- [ ] Add event listener to date filter select
+- [ ] Update article display when filter changes
+- [ ] Reset pagination to page 1 when filter changes
+- [ ] Verify logic
+- [ ] Save file
+- **Completed:** ________
+
+#### 1.3 Add Date Filter Styling
+- [ ] Open `static/css/articles.css`
+- [ ] Add styles for date filter select
+- [ ] Ensure consistency with other filters
+- [ ] Test responsive design
+- [ ] Save file
+- **Completed:** ________
+
+#### 1.4 Test Date Range Filter
+- [ ] Run `hugo server`
+- [ ] Open articles page
+- [ ] Select "Last Week" from date filter
+- [ ] Verify only recent articles show
+- [ ] Select "Last Month"
+- [ ] Verify article set changes
+- [ ] Verify pagination resets
+- [ ] Test combination with other filters
+- [ ] **Completed:** ________
+
+**Phase 4 Step 1 Status:** [ ] NOT STARTED | [ ] IN PROGRESS | [ ] COMPLETED
+**Notes:** _________________________________________________________________
+
+---
+
+### ⏱️ Step 2: Add Reading Time Filter
+
+**Time Estimate:** 1 hour  
+**Difficulty:** Medium  
+**Files to Modify:** `static/js/site.js`, `static/css/articles.css`
+
+#### 2.1 Create Reading Time Filter UI
+- [ ] Open `layouts/articles/list.html`
+- [ ] Add reading time filter HTML:
+  ```html
+  <div class="filter-group">
+    <label for="reading-time-filter">Reading Time:</label>
+    <select id="reading-time-filter">
+      <option value="all">All</option>
+      <option value="short">Under 5 min</option>
+      <option value="medium">5-10 min</option>
+      <option value="long">10-15 min</option>
+      <option value="verylong">15+ min</option>
+    </select>
+  </div>
+  ```
+- [ ] Add to filters section
+- [ ] Verify HTML structure
+- [ ] Save file
+- **Completed:** ________
+
+#### 2.2 Implement Reading Time Filtering
+- [ ] Open `static/js/site.js`
+- [ ] Create reading time filter function:
+  - Parse reading time from article metadata
+  - Filter by time ranges
+  - Combine with other filters
+- [ ] Add event listener to reading time filter
+- [ ] Update display when filter changes
+- [ ] Verify logic
+- [ ] Save file
+- **Completed:** ________
+
+#### 2.3 Add Filter Styling
+- [ ] Open `static/css/articles.css`
+- [ ] Add styles for reading time filter
+- [ ] Ensure visual consistency
+- [ ] Test responsive design
+- [ ] Save file
+- **Completed:** ________
+
+#### 2.4 Test Reading Time Filter
+- [ ] Run `hugo server`
+- [ ] Select "Under 5 min" reading time
+- [ ] Verify only short articles show
+- [ ] Select "10-15 min"
+- [ ] Verify article set changes
+- [ ] Test combination with date filter
+- [ ] **Completed:** ________
+
+**Phase 4 Step 2 Status:** [ ] NOT STARTED | [ ] IN PROGRESS | [ ] COMPLETED
+**Notes:** _________________________________________________________________
+
+---
+
+### 👤 Step 3: Add Author Filter
+
+**Time Estimate:** 1 hour  
+**Difficulty:** Easy  
+**Files to Modify:** `static/js/site.js`, `static/css/articles.css`
+
+#### 3.1 Create Author Filter UI
+- [ ] Open `layouts/articles/list.html`
+- [ ] Dynamically generate author list from articles
+- [ ] Add author filter HTML:
+  ```html
+  <div class="filter-group" id="author-filter-group">
+    <label for="author-filter">Author:</label>
+    <select id="author-filter">
+      <option value="">All Authors</option>
+      <!-- Populated by JavaScript -->
+    </select>
+  </div>
+  ```
+- [ ] Save file
+- **Completed:** ________
+
+#### 3.2 Populate Author Filter
+- [ ] Open `static/js/site.js`
+- [ ] Create function to extract unique authors:
+  - Get all articles
+  - Extract author field
+  - Remove duplicates
+  - Sort alphabetically
+- [ ] Populate select dropdown with authors
+- [ ] Add event listener to author filter
+- [ ] Verify filter updates article list
+- [ ] Save file
+- **Completed:** ________
+
+#### 3.3 Add Filter Styling
+- [ ] Open `static/css/articles.css`
+- [ ] Add styles for author filter
+- [ ] Match other filter styling
+- [ ] Test responsive design
+- [ ] Save file
+- **Completed:** ________
+
+#### 3.4 Test Author Filter
+- [ ] Run `hugo server`
+- [ ] Verify author dropdown populated
+- [ ] Select an author
+- [ ] Verify only that author's articles show
+- [ ] Test combination with other filters
+- [ ] **Completed:** ________
+
+**Phase 4 Step 3 Status:** [ ] NOT STARTED | [ ] IN PROGRESS | [ ] COMPLETED
+**Notes:** _________________________________________________________________
+
+---
+
+### 🎯 Step 4: Add Category Filter Enhancements
+
+**Time Estimate:** 1 hour  
+**Difficulty:** Easy  
+**Files to Modify:** `static/js/site.js`, `static/css/articles.css`
+
+#### 4.1 Enhance Category Tabs
+- [ ] Open `layouts/articles/list.html`
+- [ ] Enhance category tabs with count display:
+  ```html
+  <a href="#" class="category-tab active" data-category="all">
+    All Articles <span class="count">(142)</span>
+  </a>
+  ```
+- [ ] Add dynamic count generation
+- [ ] Update counts when filters change
+- [ ] Verify display
+- [ ] Save file
+- **Completed:** ________
+
+#### 4.2 Add Subcategory Filtering
+- [ ] Open `static/js/site.js`
+- [ ] Enhance category filter to support subcategories
+- [ ] Allow multi-select categories (optional)
+- [ ] Update article display
+- [ ] Verify logic
+- [ ] Save file
+- **Completed:** ________
+
+#### 4.3 Test Enhanced Categories
+- [ ] Run `hugo server`
+- [ ] Verify category counts display
+- [ ] Click different categories
+- [ ] Verify articles update
+- [ ] Test with other filters
+- [ ] **Completed:** ________
+
+**Phase 4 Step 4 Status:** [ ] NOT STARTED | [ ] IN PROGRESS | [ ] COMPLETED
+**Notes:** _________________________________________________________________
+
+---
+
+### 🧪 PHASE 4: Final Testing
+
+#### 4.5 Comprehensive Filter Testing
+- [ ] Run `hugo` build
+- [ ] Build successful, no errors
+- [ ] Test all filter combinations:
+  - Date + Reading Time
+  - Date + Author
+  - Reading Time + Author
+  - All three combined
+- [ ] Verify pagination works with all filters
+- [ ] Test on mobile
+- [ ] **Completed:** ________
+
+#### 4.6 Deploy and Monitor
+- [ ] Deploy to Netlify
+- [ ] Wait for deployment
+- [ ] Test on live site
+- [ ] Monitor for errors
+- [ ] Collect user feedback
+- [ ] **Completed:** ________
+
+**Phase 4 COMPLETE:** [ ] YES | [ ] NO
+
+**Phase 4 Completion Date:** _______________
+
+**Total Time Spent:** 4 hours
+
+**Overall Status:**
+- [ ] All steps completed and working
+- [ ] Some steps completed, some in progress
+- [ ] Need to retry some steps
+
+**Next Phase Start Date:** _______________
+
+---
+
+## 🔎 Phase 5: Search & Analytics (Week 3)
+
+**Goal:** Implement full-text search and analytics tracking (4 hours total)  
+**Expected Impact:** Better content discoverability, usage insights, engagement metrics  
+**Target Completion Date:** _______________
+
+### 🔍 Step 1: Implement Full-Text Search
+
+**Time Estimate:** 2 hours  
+**Difficulty:** Medium-Hard  
+**Files to Modify:** `static/js/site.js`, `layouts/articles/list.html`
+
+#### 1.1 Create Search Index
+- [ ] Open `static/js/site.js`
+- [ ] Create function to build article index:
+  - Index title, content, excerpt, tags
+  - Create searchable fields
+  - Pre-compute index on page load
+- [ ] Add search metadata to articles
+- [ ] Verify index creation
+- [ ] Save file
+- **Completed:** ________
+
+#### 1.2 Implement Search Algorithm
+- [ ] Add search function:
+  - Split query into terms
+  - Implement fuzzy matching (optional)
+  - Rank results by relevance
+  - Limit to top 50 results
+- [ ] Add highlighting for matching terms
+- [ ] Implement search suggestions
+- [ ] Verify accuracy
+- [ ] Save file
+- **Completed:** ________
+
+#### 1.3 Create Search UI
+- [ ] Open `layouts/articles/list.html`
+- [ ] Add search input HTML:
+  ```html
+  <div class="articles-search">
+    <input type="text" id="article-search" placeholder="Search articles...">
+    <button id="search-clear" class="search-clear-btn">✕</button>
+  </div>
+  ```
+- [ ] Add search results container
+- [ ] Add to filter section
+- [ ] Verify HTML
+- [ ] Save file
+- **Completed:** ________
+
+#### 1.4 Add Search Styling
+- [ ] Open `static/css/articles.css`
+- [ ] Add search input styles
+- [ ] Add results highlighting
+- [ ] Add mobile responsive styles
+- [ ] Test styling
+- [ ] Save file
+- **Completed:** ________
+
+#### 1.5 Connect Search to UI
+- [ ] Open `static/js/site.js`
+- [ ] Add event listeners to search input:
+  - Debounce search input (250ms)
+  - Update results on each keystroke
+  - Clear results on clear button
+- [ ] Update article display based on search
+- [ ] Reset pagination when search changes
+- [ ] Highlight matching terms
+- [ ] Verify functionality
+- [ ] Save file
+- **Completed:** ________
+
+#### 1.6 Test Search Functionality
+- [ ] Run `hugo server`
+- [ ] Search for common terms
+- [ ] Verify matching articles appear
+- [ ] Test autocomplete suggestions
+- [ ] Test special characters
+- [ ] Test search + other filters combination
+- [ ] Test on mobile
+- [ ] **Completed:** ________
+
+#### 1.7 Commit Search Changes
+- [ ] `git add layouts/articles/list.html static/js/site.js static/css/articles.css`
+- [ ] `git commit -m "Phase 5 Step 1: Implement full-text search for articles"`
+- [ ] Verify commit successful
+- [ ] `git push origin main`
+- **Completed:** ________
+
+**Phase 5 Step 1 Status:** [ ] NOT STARTED | [ ] IN PROGRESS | [ ] COMPLETED
+**Notes:** _________________________________________________________________
+
+---
+
+### 📊 Step 2: Add Article Statistics Display
+
+**Time Estimate:** 1 hour  
+**Difficulty:** Easy  
+**Files to Modify:** `layouts/partials/article-card.html`, `static/css/articles.css`
+
+#### 2.1 Add View Count Tracking
+- [ ] Open `layouts/partials/article-card.html`
+- [ ] Add view count display:
+  ```html
+  <span class="article-stat views">
+    👁 {{ .Params.views | default 0 }} views
+  </span>
+  ```
+- [ ] Add comment count display
+- [ ] Add reading time display
+- [ ] Verify display
+- [ ] Save file
+- **Completed:** ________
+
+#### 2.2 Add Statistics to Card
+- [ ] Open `layouts/partials/article-card.html`
+- [ ] Update card footer with statistics:
+  ```html
+  <div class="article-stats">
+    <span>👁 Views: {{ .Params.views }}</span>
+    <span>⏱ Read: {{ .Params.readingTime }}</span>
+    <span>💬 Comments: {{ .Params.comments }}</span>
+  </div>
+  ```
+- [ ] Style statistics display
+- [ ] Ensure responsive
+- [ ] Save file
+- **Completed:** ________
+
+#### 2.3 Add Statistics Styling
+- [ ] Open `static/css/articles.css`
+- [ ] Add styles for article-stats
+- [ ] Add icon styling
+- [ ] Add mobile responsive styles
+- [ ] Test styling
+- [ ] Save file
+- **Completed:** ________
+
+#### 2.4 Test Statistics Display
+- [ ] Run `hugo server`
+- [ ] Verify statistics appear on cards
+- [ ] Verify statistics are readable
+- [ ] Test responsive layout
+- [ ] **Completed:** ________
+
+**Phase 5 Step 2 Status:** [ ] NOT STARTED | [ ] IN PROGRESS | [ ] COMPLETED
+**Notes:** _________________________________________________________________
+
+---
+
+### 📈 Step 3: Add Analytics Tracking
+
+**Time Estimate:** 1 hour  
+**Difficulty:** Medium  
+**Files to Modify:** `static/js/site.js`, `layouts/articles/list.html`
+
+#### 3.1 Setup Google Analytics Events
+- [ ] Open `static/js/site.js`
+- [ ] Add function to track article events:
+  - Track article views
+  - Track filter usage
+  - Track search queries
+  - Track pagination usage
+- [ ] Create gtag event calls:
+  ```javascript
+  window.gtag('event', 'article_view', {
+    'article_title': articleTitle,
+    'article_category': category
+  });
+  ```
+- [ ] Verify syntax
+- [ ] Save file
+- **Completed:** ________
+
+#### 3.2 Add Article Click Tracking
+- [ ] Add event listener to article cards
+- [ ] Track clicks on article titles
+- [ ] Track clicks on "Read More" buttons
+- [ ] Include article metadata in events
+- [ ] Verify tracking fires
+- [ ] Save file
+- **Completed:** ________
+
+#### 3.3 Add Filter Usage Tracking
+- [ ] Add event tracking to filter changes
+- [ ] Track which filters are used most
+- [ ] Track filter combinations
+- [ ] Include event data with timestamp
+- [ ] Verify tracking
+- [ ] Save file
+- **Completed:** ________
+
+#### 3.4 Add Search Tracking
+- [ ] Add event tracking to search input
+- [ ] Track search terms
+- [ ] Track search result clicks
+- [ ] Track zero-result searches
+- [ ] Verify tracking
+- [ ] Save file
+- **Completed:** ________
+
+#### 3.5 Test Analytics Tracking
+- [ ] Run `hugo server`
+- [ ] Open Google Analytics real-time
+- [ ] Interact with articles page
+- [ ] Verify events appear in Analytics
+- [ ] Test different interactions
+- [ ] Verify event data includes details
+- [ ] **Completed:** ________
+
+#### 3.6 Commit Analytics Changes
+- [ ] `git add static/js/site.js`
+- [ ] `git commit -m "Phase 5 Step 3: Add analytics event tracking for articles page"`
+- [ ] Verify commit successful
+- [ ] `git push origin main`
+- **Completed:** ________
+
+**Phase 5 Step 3 Status:** [ ] NOT STARTED | [ ] IN PROGRESS | [ ] COMPLETED
+**Notes:** _________________________________________________________________
+
+---
+
+### 🧪 PHASE 5: Final Testing & Analysis
+
+#### 3.7 Performance Audit
+- [ ] Run `hugo` build
+- [ ] Build successful, no errors
+- [ ] Deploy to Netlify
+- [ ] Wait for deployment
+- [ ] **Completed:** ________
+
+#### 3.8 Analytics Baseline
+- [ ] Wait 24 hours for analytics data
+- [ ] Review Google Analytics:
+  - Most viewed articles
+  - Most used filters
+  - Search queries
+  - User engagement metrics
+- [ ] Record baseline metrics:
+  - Avg session duration: _________
+  - Pages per session: _________
+  - Bounce rate: _________
+- [ ] **Completed:** ________
+
+#### 3.9 User Testing
+- [ ] Have 5+ users test articles page
+- [ ] Collect feedback on:
+  - Search usability
+  - Filter effectiveness
+  - Pagination experience
+  - Overall experience
+- [ ] Document feedback
+- [ ] Identify improvements
+- [ ] **Completed:** ________
+
+#### 3.10 Performance Measurement
+- [ ] Run PageSpeed Insights
+- [ ] Record final metrics:
+  - Mobile Score: _______ /100
+  - Desktop Score: _______ /100
+  - LCP: _________ ms
+  - FID: _________ ms
+  - CLS: _________
+- [ ] Compare with Phase 3 metrics
+- [ ] Calculate improvements
+- [ ] **Completed:** ________
+
+**Phase 5 COMPLETE:** [ ] YES | [ ] NO
+
+**Phase 5 Completion Date:** _______________
+
+**Total Time Spent:** 4 hours
+
+**Analytics Insights:**
+- Most viewed article: _____________________________
+- Most popular filter: _____________________________
+- Top search term: _____________________________
+- Avg session duration: _________ seconds
+- Pages per session: _________
+
+**Performance Summary:**
+- Phase 3 Mobile Score: _______ → Phase 5: _______  (Δ _______ )
+- Phase 3 Desktop Score: _______ → Phase 5: _______  (Δ _______ )
+- LCP improvement: _________ %
+- User engagement improvement: _________ %
+
+**User Feedback Summary:**
+_____________________________________________________________________________
+_____________________________________________________________________________
+
+**Overall Status:**
+- [ ] All phases completed successfully
+- [ ] Most features working, minor issues remaining
+- [ ] Significant work needed
+
+**Next Steps After Phase 5:**
+- [ ] Monitor analytics trends
+- [ ] Gather ongoing user feedback
+- [ ] Plan Phase 6 (Advanced Features)
+- [ ] Consider additional optimizations
+
+---
+
+---
+
+## 📊 Updated Progress Summary
+
+### Phase Completion Status
+| Phase | Status | Date | Time |
+|-------|--------|------|------|
+| Phase 1 | [x] COMPLETE | 28 Apr 2026 | 3 hrs |
+| Phase 2 | [x] COMPLETE | 28 Apr 2026 | 1 hr |
+| Phase 3 | [ ] PENDING | ____________ | 4 hrs |
+| Phase 4 | [ ] PENDING | ____________ | 4 hrs |
+| Phase 5 | [ ] PENDING | ____________ | 4 hrs |
+
+### Scalability Roadmap
+```
+Articles Count    Phase        Status       Target Timeline
+────────────────  ──────────   ──────────   ────────────────
+0-50 articles     Phase 1-2    ✅ DONE      Apr 28
+50-200 articles   Phase 3      🔄 TODO      May 5-10
+200-500 articles  Phase 4      🔄 TODO      May 12-17
+500+ articles     Phase 5      🔄 TODO      May 19-24
+Future scaling    Phase 6      📋 PLANNED   May 26+
+```
+
+### Key Metrics to Track
+- **Performance:** LCP, FID, CLS scores
+- **Engagement:** Session duration, pages per session
+- **Search:** Top queries, zero-result searches
+- **Filters:** Most used filters, filter combinations
+- **Content:** Most viewed articles, popular categories
+
+---
+
+**Document Version:** 2.0  
 **Last Updated:** 28 April 2026  
-**Purpose:** Track implementation progress for Phases 1 & 2 of AITechReviews optimization
+**Purpose:** Track implementation progress for Phases 1, 2, 3, 4, & 5 of AITechReviews optimization and articles scalability

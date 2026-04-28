@@ -1429,4 +1429,41 @@
     // Initialize TOC tracking when DOM is ready
     initTocTracking();
 
+    // ============ Core Web Vitals Tracking ============
+    // Send additional metrics to Google Analytics for monitoring
+    const trackPerformanceMetrics = () => {
+      if (window.performance && window.performance.timing) {
+        const timing = window.performance.timing;
+        const navigation = window.performance.navigation;
+        
+        // Calculate key performance metrics
+        const pageLoadTime = timing.loadEventEnd - timing.navigationStart;
+        const connectTime = timing.responseEnd - timing.requestStart;
+        const renderTime = timing.domComplete - timing.domLoading;
+        
+        if (window.gtag) {
+          window.gtag('event', 'page_performance', {
+            'page_load_time': pageLoadTime,
+            'connect_time': connectTime,
+            'render_time': renderTime,
+            'navigation_type': navigation.type
+          });
+        }
+        
+        console.log('Performance Metrics:', {
+          pageLoadTime,
+          connectTime,
+          renderTime,
+          navigationType: navigation.type
+        });
+      }
+    };
+    
+    // Track metrics after page load
+    if (document.readyState === 'complete') {
+      trackPerformanceMetrics();
+    } else {
+      window.addEventListener('load', trackPerformanceMetrics, { once: true });
+    }
+
 })();

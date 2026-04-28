@@ -35,6 +35,36 @@
   }
   </script>
 
+  <!-- Web Vitals Monitoring -->
+  <script>
+    // Measure Web Vitals and send to Google Analytics
+    const vitals = {};
+    const sendWebVital = (name, value, delta) => {
+      vitals[name] = { value, delta };
+      // Send to Google Analytics
+      if (window.gtag) {
+        window.gtag('event', name, {
+          value: value,
+          delta: delta,
+          event_category: 'Web Vitals',
+          non_interaction: true
+        });
+      }
+      // Log to console for debugging
+      console.log(`${name}:`, { value, delta });
+    };
+  </script>
+  <script src="https://unpkg.com/web-vitals@3/dist/web-vitals.iife.js"></script>
+  <script>
+    if (window.webVitals) {
+      window.webVitals.getCLS(sendWebVital);
+      window.webVitals.getFID(sendWebVital);
+      window.webVitals.getFCP(sendWebVital);
+      window.webVitals.getLCP(sendWebVital);
+      window.webVitals.getTTFB(sendWebVital);
+    }
+  </script>
+
   <!-- Google Analytics GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-00D58FDB3V"></script>
   <script>

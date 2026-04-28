@@ -251,7 +251,7 @@
     if (!url) return "";
 
     const safeHref = escapeHtml(url);
-    const iconSrc = kind === "youtube" ? "/images/youtube.png" : "/images/instagram.png";
+    const iconSrc = kind === "youtube" ? "/images/ui/youtube.png" : "/images/ui/instagram.png";
     const alt = kind === "youtube" ? "YouTube" : "Instagram";
     return `
       <a class="global-table-iconlink" href="${safeHref}" target="_blank" rel="noopener noreferrer" aria-label="Open ${alt}">
@@ -738,7 +738,7 @@
        
        const img = newCard.querySelector('img');
        if (img) {
-          img.src = "/images/tutorials.jpg"; 
+          img.src = "/images/categories/tutorials.jpg"; 
           img.alt = "Tutorials & Guides";
           delete img.dataset.checked; // allow error handler to run again if image missing
        }
@@ -763,7 +763,7 @@
       if (tgt && tgt.tagName === 'IMG' && !tgt.dataset.checked) {
         // avoid infinite loop if placeholder also missing
         tgt.dataset.checked = '1';
-        tgt.src = '/images/placeholder.svg';
+        tgt.src = '/images/ui/placeholder.svg';
       }
     }, true);
 
@@ -973,14 +973,14 @@
             const cardsHtml = posts
               .map((p) => {
                 // use SVG placeholder; if actual image URL 404s we'll replace on error
-                const imgPath = p.image ? escapeHtml(p.image) : "/images/placeholder.svg";
+                const imgPath = p.image ? escapeHtml(p.image) : "/images/ui/placeholder.svg";
                 const img = imgPath;
                 const title = escapeHtml(p.title || "");
                 const link = escapeHtml(p.link || "#");
                 const desc = escapeHtml((p.description || p.content || "").slice(0, 120));
                 return `
           <div class="card">
-            <img src="${img}" alt="${title}" onerror="this.onerror=null;this.src='/images/placeholder.svg';">
+            <img src="${img}" alt="${title}" onerror="this.onerror=null;this.src='/images/ui/placeholder.svg';">
             <div class="card-content">
               <h3 class="card-title"><a href="${link}">${title}</a></h3>
               <p class="card-desc">${desc}${(p.description || p.content || "").length > 120 ? "..." : ""}</p>

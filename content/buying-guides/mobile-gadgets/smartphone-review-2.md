@@ -13,7 +13,7 @@ tags:
   - "Comparison"
   - "Budget-Friendly"
   - "Review"
-featuredImage: "images/midrange-phones-2026.jpg"
+featuredImage: "images/categories/midrange-phones-2026.jpg"
 date: "2026-02-22T10:00:00.000Z"
 lastmod: "2026-03-22T10:00:00.000Z"
 draft: false

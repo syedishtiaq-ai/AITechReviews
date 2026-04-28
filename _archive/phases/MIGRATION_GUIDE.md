@@ -118,7 +118,7 @@ For each item in posts.json, convert it:
   "title": "Accessories - 1",
   "item": "Head Phone - 1 - Item category",
   "description": "High-fidelity wireless headphones with noise cancellation",
-  "image": "images/computer-2026-01.jpg",
+  "image": "images/categories/computer-2026-01.jpg",
   "link": "/buying-guides/electronics/accessories/headphone-1/",
   "category": "Accessories",
   "publish_date": "2026-02-27T12:00:00Z"
@@ -131,7 +131,7 @@ For each item in posts.json, convert it:
   "description": "Expert review of premium wireless headphones with noise cancellation and high-fidelity sound. Features, comparison, and buying guide.",
   "excerpt": "Discover the best high-fidelity wireless headphones with advanced noise cancellation. Read our expert review covering features, pricing, and recommendations...",
   "content": "# High-Fidelity Wireless Headphones: Premium Audio Review\n\n## Overview\nThese premium wireless headphones deliver exceptional audio quality...\n\n## Key Features\n- Noise cancellation technology\n- Premium audio drivers\n- Long battery life\n- Comfortable design\n\n## Performance Review\n### Sound Quality\nThe audio reproduction is clear and detailed...\n\n### Noise Cancellation\nEffective active noise cancellation...\n\n### Battery Life\nUp to 30 hours of playback...\n\n## Verdict\nRecommended for audiophiles and professionals who demand quality sound.*",
-  "featuredimage": "images/computer-2026-01.jpg",
+  "featuredimage": "images/categories/computer-2026-01.jpg",
   "author": "Tech Reviewer",
   "category": "Electronics",
   "tags": ["Wireless Headphones", "Audio", "Electronics", "Reviews"],
@@ -181,7 +181,7 @@ function convertToArticle(item, author, category) {
     description: (item.description || '').substring(0, 160),
     excerpt: (item.description || '').substring(0, 200) + '...',
     content: content,
-    featuredimage: item.image || 'images/placeholder.svg',
+    featuredimage: item.image || 'images/ui/placeholder.svg',
     author: author,
     category: category,
     tags: [

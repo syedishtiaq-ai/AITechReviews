@@ -13,7 +13,7 @@ tags:
   - "Buying Guide"
   - "Productivity"
   - "Review"
-featuredImage: "images/tablet-2026-01.jpg"
+featuredImage: "images/categories/tablet-2026-01.jpg"
 date: "2026-02-24T10:00:00.000Z"
 lastmod: "2026-03-22T10:00:00.000Z"
 draft: false

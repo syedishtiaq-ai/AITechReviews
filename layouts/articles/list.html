@@ -23,21 +23,21 @@
     <!-- Category Tabs Filter -->
     <!-- Generate tabs from unique categories in all articles -->
     <div class="articles-category-tabs">
-      <a href="#" class="category-tab active" data-category="all">All Articles</a>
+      <a href="#" class="category-tab active" data-category="all">All Articles <span class="category-count" id="count-all"></span></a>
       
       {{ $buyingGuides := where (where .Site.RegularPages "Section" "=" "buying-guides") "Type" "ne" "list" }}
       {{ if $buyingGuides }}
-      <a href="#" class="category-tab" data-category="Buying Guides">Buying Guides</a>
+      <a href="#" class="category-tab" data-category="Buying Guides">Buying Guides <span class="category-count" id="count-buying-guides"></span></a>
       {{ end }}
       
       {{ $gaming := where (where .Site.RegularPages "Section" "=" "gaming") "Type" "ne" "list" }}
       {{ if $gaming }}
-      <a href="#" class="category-tab" data-category="Gaming">Gaming</a>
+      <a href="#" class="category-tab" data-category="Gaming">Gaming <span class="category-count" id="count-gaming"></span></a>
       {{ end }}
       
       {{ $tutorials := where (where .Site.RegularPages "Section" "=" "tutorials-guides") "Type" "ne" "list" }}
       {{ if $tutorials }}
-      <a href="#" class="category-tab" data-category="Tutorials &amp; Guides">Tutorials & Guides</a>
+      <a href="#" class="category-tab" data-category="Tutorials &amp; Guides">Tutorials & Guides <span class="category-count" id="count-tutorials"></span></a>
       {{ end }}
     </div>
 
@@ -164,36 +164,8 @@
 <script>
   // Initialize category tab filtering
   document.addEventListener('DOMContentLoaded', function() {
-    const tabs = document.querySelectorAll('.category-tab');
-    
-    tabs.forEach(tab => {
-      tab.addEventListener('click', (e) => {
-        e.preventDefault();
-        const selectedCategory = tab.getAttribute('data-category');
-        
-        // Update active state on all tabs - make sure ALL tabs stay visible
-        tabs.forEach(t => {
-          if (t.getAttribute('data-category') === selectedCategory) {
-            t.classList.add('active');
-          } else {
-            t.classList.remove('active');
-          }
-        });
-        
-        // Filter articles - hide/show based on category
-        // IMPORTANT: Only select .article-card, not all [data-category] (which includes tabs)
-        const articles = document.querySelectorAll('.article-card');
-        articles.forEach(article => {
-          const articleCategory = article.getAttribute('data-category');
-          if (selectedCategory === 'all' || articleCategory === selectedCategory) {
-            article.style.display = '';
-            article.classList.add('fade-in');
-          } else {
-            article.style.display = 'none';
-          }
-        });
-      });
-    });
+    // This will be handled by the initArticlesPagination function in site.js
+    // which now includes category filter support
   });
 </script>
 

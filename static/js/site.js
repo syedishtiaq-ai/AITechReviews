@@ -1811,6 +1811,191 @@
         displayPage();
       };
 
+      // Update category counts based on current filters
+      let currentCategoryFilter = 'all';
+      const updateCategoryCounts = () => {
+        const categories = ['all', 'Buying Guides', 'Gaming', 'Tutorials & Guides'];
+        
+        categories.forEach(category => {
+          const countArticles = allArticles.filter(article => {
+            // Apply search filter
+            if (searchTerm.trim() !== '') {
+              const title = (article.querySelector('h3.card-title')?.textContent || '').toLowerCase();
+              const excerpt = (article.getAttribute('data-excerpt') || '').toLowerCase();
+              const categoryAttr = (article.getAttribute('data-category') || '').toLowerCase();
+              const tags = (article.getAttribute('data-tags') || '').toLowerCase();
+              
+              if (!title.includes(searchTerm) && 
+                  !excerpt.includes(searchTerm) && 
+                  !categoryAttr.includes(searchTerm) && 
+                  !tags.includes(searchTerm)) {
+                return false;
+              }
+            }
+
+            // Apply date filter
+            if (currentDateFilter !== 'all') {
+              const now = new Date();
+              const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+              let startDate;
+
+              switch(currentDateFilter) {
+                case 'week':
+                  startDate = new Date(today);
+                  startDate.setDate(startDate.getDate() - 7);
+                  break;
+                case 'month':
+                  startDate = new Date(today);
+                  startDate.setMonth(startDate.getMonth() - 1);
+                  break;
+                case 'quarter':
+                  startDate = new Date(today);
+                  startDate.setMonth(startDate.getMonth() - 3);
+                  break;
+                case 'year':
+                  startDate = new Date(today);
+                  startDate.setFullYear(startDate.getFullYear() - 1);
+                  break;
+                default:
+                  startDate = new Date(0);
+              }
+
+              const articleDate = new Date(article.getAttribute('data-date'));
+              if (articleDate < startDate) return false;
+            }
+
+            // Apply reading time filter
+            if (currentReadingTimeFilter !== 'all') {
+              const readingTimeText = article.querySelector('[class*="reading-time"]')?.textContent || '';
+              const readingTime = extractReadingTime(readingTimeText);
+
+              switch(currentReadingTimeFilter) {
+                case 'short': 
+                  if (readingTime >= 5) return false;
+                  break;
+                case 'medium': 
+                  if (readingTime < 5 || readingTime >= 10) return false;
+                  break;
+                case 'long': 
+                  if (readingTime < 10 || readingTime >= 15) return false;
+                  break;
+                case 'verylong': 
+                  if (readingTime < 15) return false;
+                  break;
+              }
+            }
+
+            // Apply author filter
+            if (currentAuthorFilter !== '') {
+              const author = extractAuthor(article);
+              if (author !== currentAuthorFilter) return false;
+            }
+
+            // Apply category filter
+            if (category !== 'all') {
+              const articleCategory = article.getAttribute('data-category') || '';
+              return articleCategory === category;
+            }
+
+            return true;
+          });
+
+          const countElement = document.getElementById(`count-${category.toLowerCase().replace(/\s+&/g, '').replace(/\s+/g, '-').replace('guides', 'guides').replace('buying-guides', 'buying-guides').replace('tutorials-guides', 'tutorials')}`);
+          if (countElement) {
+            countElement.textContent = `(${countArticles.length})`;
+          }
+        });
+      };
+
+      // Filter articles by category
+      const filterByCategory = (selectedCategory) => {
+        currentCategoryFilter = selectedCategory;
+        
+        filteredArticles = allArticles.filter(article => {
+          // Apply search filter if active
+          if (searchTerm.trim() !== '') {
+            const title = (article.querySelector('h3.card-title')?.textContent || '').toLowerCase();
+            const excerpt = (article.getAttribute('data-excerpt') || '').toLowerCase();
+            const category = (article.getAttribute('data-category') || '').toLowerCase();
+            const tags = (article.getAttribute('data-tags') || '').toLowerCase();
+            
+            if (!title.includes(searchTerm) && 
+                !excerpt.includes(searchTerm) && 
+                !category.includes(searchTerm) && 
+                !tags.includes(searchTerm)) {
+              return false;
+            }
+          }
+
+          // Apply date filter if not 'all'
+          if (currentDateFilter !== 'all') {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            let startDate;
+
+            switch(currentDateFilter) {
+              case 'week':
+                startDate = new Date(today);
+                startDate.setDate(startDate.getDate() - 7);
+                break;
+              case 'month':
+                startDate = new Date(today);
+                startDate.setMonth(startDate.getMonth() - 1);
+                break;
+              case 'quarter':
+                startDate = new Date(today);
+                startDate.setMonth(startDate.getMonth() - 3);
+                break;
+              case 'year':
+                startDate = new Date(today);
+                startDate.setFullYear(startDate.getFullYear() - 1);
+                break;
+              default:
+                startDate = new Date(0);
+            }
+
+            const articleDate = new Date(article.getAttribute('data-date'));
+            if (articleDate < startDate) return false;
+          }
+
+          // Apply reading time filter if not 'all'
+          if (currentReadingTimeFilter !== 'all') {
+            const readingTimeText = article.querySelector('[class*="reading-time"]')?.textContent || '';
+            const readingTime = extractReadingTime(readingTimeText);
+
+            switch(currentReadingTimeFilter) {
+              case 'short': 
+                if (readingTime >= 5) return false;
+                break;
+              case 'medium': 
+                if (readingTime < 5 || readingTime >= 10) return false;
+                break;
+              case 'long': 
+                if (readingTime < 10 || readingTime >= 15) return false;
+                break;
+              case 'verylong': 
+                if (readingTime < 15) return false;
+                break;
+            }
+          }
+
+          // Apply author filter
+          if (currentAuthorFilter !== '') {
+            const author = extractAuthor(article);
+            if (author !== currentAuthorFilter) return false;
+          }
+
+          // Apply category filter
+          if (selectedCategory === 'all') return true;
+          
+          const articleCategory = article.getAttribute('data-category') || '';
+          return articleCategory === selectedCategory;
+        });
+
+        currentPage = 1; // Reset to first page after filter
+        displayPage();
+      };
+
       // Calculate total pages based on filtered articles
       const calculateTotalPages = () => {
         return Math.max(1, Math.ceil(filteredArticles.length / itemsPerPage));
@@ -1961,14 +2146,41 @@
         authorFilter.addEventListener('change', (e) => {
           const selectedAuthor = e.target.value;
           filterByAuthor(selectedAuthor);
+          updateCategoryCounts();
         });
       }
+
+      // Setup category tab filtering
+      const categoryTabs = document.querySelectorAll('.category-tab');
+      categoryTabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          e.preventDefault();
+          const selectedCategory = tab.getAttribute('data-category');
+          
+          // Update active state
+          categoryTabs.forEach(t => {
+            if (t.getAttribute('data-category') === selectedCategory) {
+              t.classList.add('active');
+            } else {
+              t.classList.remove('active');
+            }
+          });
+          
+          // Filter by category
+          filterByCategory(selectedCategory);
+          updateCategoryCounts();
+        });
+      });
+
+      // Initial count update
+      updateCategoryCounts();
 
       // Search event listener
       if (articleSearchInput) {
         articleSearchInput.addEventListener('input', (e) => {
           const term = e.target.value;
           filterArticles(term);
+          updateCategoryCounts();
         });
       }
 

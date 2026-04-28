@@ -1472,9 +1472,14 @@
       const articlesContainer = document.getElementById('articles-container');
       const prevBtn = document.getElementById('prev-page');
       const nextBtn = document.getElementById('next-page');
+      const prevBtnBottom = document.getElementById('prev-page-bottom');
+      const nextBtnBottom = document.getElementById('next-page-bottom');
       const currentPageSpan = document.getElementById('current-page');
       const totalPagesSpan = document.getElementById('total-pages');
+      const currentPageSpanBottom = document.getElementById('current-page-bottom');
+      const totalPagesSpanBottom = document.getElementById('total-pages-bottom');
       const itemsSelect = document.getElementById('items-select');
+      const itemsSelectBottom = document.getElementById('items-select-bottom');
 
       if (!articlesContainer || !prevBtn || !nextBtn) return; // Pagination not on this page
 
@@ -1518,13 +1523,25 @@
           article.classList.add('fade-in');
         });
 
-        // Update pagination info
+        // Update pagination info (top)
         if (currentPageSpan) currentPageSpan.textContent = currentPage;
         if (totalPagesSpan) totalPagesSpan.textContent = totalPages;
 
-        // Update button states
-        prevBtn.disabled = currentPage <= 1;
-        nextBtn.disabled = currentPage >= totalPages;
+        // Update pagination info (bottom)
+        if (currentPageSpanBottom) currentPageSpanBottom.textContent = currentPage;
+        if (totalPagesSpanBottom) totalPagesSpanBottom.textContent = totalPages;
+
+        // Update button states (top)
+        if (prevBtn) prevBtn.disabled = currentPage <= 1;
+        if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+        // Update button states (bottom)
+        if (prevBtnBottom) prevBtnBottom.disabled = currentPage <= 1;
+        if (nextBtnBottom) nextBtnBottom.disabled = currentPage >= totalPages;
+
+        // Sync select dropdowns
+        if (itemsSelect) itemsSelect.value = itemsPerPage;
+        if (itemsSelectBottom) itemsSelectBottom.value = itemsPerPage;
 
         // Scroll to top of articles container
         articlesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1554,12 +1571,23 @@
         displayPage();
       };
 
-      // Event listeners
-      prevBtn.addEventListener('click', previousPage);
-      nextBtn.addEventListener('click', nextPage);
+      // Event listeners (top)
+      if (prevBtn) prevBtn.addEventListener('click', previousPage);
+      if (nextBtn) nextBtn.addEventListener('click', nextPage);
 
       if (itemsSelect) {
         itemsSelect.addEventListener('change', (e) => {
+          const newValue = parseInt(e.target.value, 10);
+          changeItemsPerPage(newValue);
+        });
+      }
+
+      // Event listeners (bottom)
+      if (prevBtnBottom) prevBtnBottom.addEventListener('click', previousPage);
+      if (nextBtnBottom) nextBtnBottom.addEventListener('click', nextPage);
+
+      if (itemsSelectBottom) {
+        itemsSelectBottom.addEventListener('change', (e) => {
           const newValue = parseInt(e.target.value, 10);
           changeItemsPerPage(newValue);
         });

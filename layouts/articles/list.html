@@ -53,25 +53,7 @@
       </div>
     </div>
 
-    <!-- Articles Grid -->
-    <div class="articles-grid" id="articles-container">
-      <!-- Query ONLY articles from actual article sections -->
-      <!-- This includes: buying-guides, gaming, tutorials-guides, and gaming subcategories -->
-      {{ $allArticles := where (where .Site.RegularPages "Section" "in" (slice "buying-guides" "gaming" "tutorials-guides" "guides" "achievements" "walkthroughs")) "Type" "ne" "list" }}
-      {{ $allArticles = sort $allArticles "Date" "desc" }}
-      
-      {{ if $allArticles }}
-        {{ range $allArticles }}
-          {{ partial "article-card.html" . }}
-        {{ end }}
-      {{ else }}
-        <div class="no-articles">
-          <p>No articles found.</p>
-        </div>
-      {{ end }}
-    </div>
-
-    <!-- Pagination Controls -->
+    <!-- Pagination Controls (Top) -->
     <div class="articles-pagination">
       <div class="pagination-left">
         <button id="prev-page" class="pagination-btn" disabled>← Previous</button>
@@ -91,6 +73,47 @@
       </div>
       <div class="pagination-right">
         <button id="next-page" class="pagination-btn">Next →</button>
+      </div>
+    </div>
+
+    <!-- Articles Grid -->
+    <div class="articles-grid" id="articles-container">
+      <!-- Query ONLY articles from actual article sections -->
+      <!-- This includes: buying-guides, gaming, tutorials-guides, and gaming subcategories -->
+      {{ $allArticles := where (where .Site.RegularPages "Section" "in" (slice "buying-guides" "gaming" "tutorials-guides" "guides" "achievements" "walkthroughs")) "Type" "ne" "list" }}
+      {{ $allArticles = sort $allArticles "Date" "desc" }}
+      
+      {{ if $allArticles }}
+        {{ range $allArticles }}
+          {{ partial "article-card.html" . }}
+        {{ end }}
+      {{ else }}
+        <div class="no-articles">
+          <p>No articles found.</p>
+        </div>
+      {{ end }}
+    </div>
+
+    <!-- Pagination Controls (Bottom) -->
+    <div class="articles-pagination">
+      <div class="pagination-left">
+        <button id="prev-page-bottom" class="pagination-btn" disabled>← Previous</button>
+      </div>
+      <div class="pagination-center">
+        <span class="pagination-info">
+          Page <span id="current-page-bottom">1</span> of <span id="total-pages-bottom">1</span>
+        </span>
+        <div class="items-per-page">
+          <label for="items-select-bottom">Show per page:</label>
+          <select id="items-select-bottom">
+            <option value="25">25</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+      </div>
+      <div class="pagination-right">
+        <button id="next-page-bottom" class="pagination-btn">Next →</button>
       </div>
     </div>
   </main>

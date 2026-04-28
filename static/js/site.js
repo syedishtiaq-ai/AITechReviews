@@ -1536,7 +1536,7 @@
           if (sortType === 'date-desc' || sortType === 'date-asc') {
             // Get date from article element (look for date attribute or data-date)
             aValue = new Date(a.getAttribute('data-date') || a.querySelector('[class*="date"]')?.textContent || 0);
-            bValue = new Date(b.getAttribute('data-date') || b.querySelector('[class*="date"]')?.textContent || 0);
+            bValue = new Date(b.getAttribute('data-date') || b.getAttribute('data-date') || b.querySelector('[class*="date"]')?.textContent || 0);
             
             return sortType === 'date-desc' ? bValue - aValue : aValue - bValue;
           } else if (sortType === 'title-asc') {
@@ -1551,6 +1551,60 @@
         });
         
         currentPage = 1; // Reset to first page after sort
+        displayPage();
+      };
+
+      // Filter articles by date range
+      let currentDateFilter = 'all';
+      const filterByDateRange = (dateRange) => {
+        currentDateFilter = dateRange;
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        let startDate;
+
+        switch(dateRange) {
+          case 'week':
+            startDate = new Date(today);
+            startDate.setDate(startDate.getDate() - 7);
+            break;
+          case 'month':
+            startDate = new Date(today);
+            startDate.setMonth(startDate.getMonth() - 1);
+            break;
+          case 'quarter':
+            startDate = new Date(today);
+            startDate.setMonth(startDate.getMonth() - 3);
+            break;
+          case 'year':
+            startDate = new Date(today);
+            startDate.setFullYear(startDate.getFullYear() - 1);
+            break;
+          default: // 'all'
+            startDate = new Date(0); // Beginning of time
+        }
+
+        filteredArticles = allArticles.filter(article => {
+          if (searchTerm.trim() !== '') {
+            // If search is active, apply search filter first
+            const title = (article.querySelector('h3.card-title')?.textContent || '').toLowerCase();
+            const excerpt = (article.getAttribute('data-excerpt') || '').toLowerCase();
+            const category = (article.getAttribute('data-category') || '').toLowerCase();
+            const tags = (article.getAttribute('data-tags') || '').toLowerCase();
+            
+            if (!title.includes(searchTerm) && 
+                !excerpt.includes(searchTerm) && 
+                !category.includes(searchTerm) && 
+                !tags.includes(searchTerm)) {
+              return false;
+            }
+          }
+
+          // Apply date filter
+          const articleDate = new Date(article.getAttribute('data-date'));
+          return articleDate >= startDate;
+        });
+
+        currentPage = 1; // Reset to first page after filter
         displayPage();
       };
 
@@ -1676,6 +1730,15 @@
         sortSelect.addEventListener('change', (e) => {
           const newSort = e.target.value;
           sortArticles(newSort);
+        });
+      }
+
+      // Date filter event listener
+      const dateFilter = document.getElementById('date-filter');
+      if (dateFilter) {
+        dateFilter.addEventListener('change', (e) => {
+          const dateRange = e.target.value;
+          filterByDateRange(dateRange);
         });
       }
 

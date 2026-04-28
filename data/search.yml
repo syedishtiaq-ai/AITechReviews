@@ -16,5 +16,5 @@ articles:
     {{- end }}
     readingTime: "{{ with .Params.readingTime }}{{ . }}{{ else }}N/A{{ end }}"
     featured: {{ with .Params.featured }}{{ . }}{{ else }}false{{ end }}
-    image: "{{ with .Params.featured_image }}{{ . }}{{ else }}{{ end }}"
+    image: "{{ with .Params.featuredimage }}{{ . }}{{ else }}{{ end }}"
   {{- end }}

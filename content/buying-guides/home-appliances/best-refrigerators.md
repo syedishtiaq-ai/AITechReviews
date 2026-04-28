@@ -1,7 +1,7 @@
 ---
 article_id: "BG-HA-260317-001"
 title: "Best Refrigerators 2026"
-featured_image: "/images/articles/best-refrigerators.svg"
+featuredimage: "/images/articles/best-refrigerators.svg"
 description: "Complete refrigerator buying guide comparing capacity, energy efficiency, and advanced features"
 excerpt: "Find the perfect refrigerator with our expert reviews of the best models for different kitchen sizes..."
 author: "Home Appliances Expert"

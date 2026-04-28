@@ -1,0 +1,203 @@
+# CloudCannon Configuration for AITechReviews Hugo Site
+# This file tells CloudCannon how to handle your content and build settings
+
+# Site build settings
+collections_config:
+  gaming:
+    path: content/gaming
+    icon: "rocket"
+    name: "Gaming"
+    filter:
+      base: "content/gaming"
+    add_options:
+      - name: "Add Gaming Guide"
+        base_path: "content/gaming/guides"
+        template: "gaming_guide_template"
+      - name: "Add Gaming Walkthrough"
+        base_path: "content/gaming/walkthroughs"
+        template: "gaming_walkthrough_template"
+      - name: "Add Gaming Achievement"
+        base_path: "content/gaming/achievements"
+        template: "gaming_achievement_template"
+
+  buying_guides:
+    path: content/buying-guides
+    icon: "shopping-cart"
+    name: "Buying Guides"
+    filter:
+      base: "content/buying-guides"
+    add_options:
+      - name: "Add Electronics Guide"
+        base_path: "content/buying-guides/electronics"
+        template: "buying_guide_template"
+      - name: "Add Home Appliances Guide"
+        base_path: "content/buying-guides/home-appliances"
+        template: "buying_guide_template"
+      - name: "Add Mobile Gadgets Guide"
+        base_path: "content/buying-guides/mobile-gadgets"
+        template: "buying_guide_template"
+
+  tutorials:
+    path: content/tutorials-guides
+    icon: "book"
+    name: "Tutorials & Guides"
+    filter:
+      base: "content/tutorials-guides"
+    add_options:
+      - name: "Add Software Tutorial"
+        base_path: "content/tutorials-guides/software"
+        template: "tutorial_template"
+      - name: "Add Equipment Tutorial"
+        base_path: "content/tutorials-guides/equipment"
+        template: "tutorial_template"
+      - name: "Add Repair Guide"
+        base_path: "content/tutorials-guides/repair-guides"
+        template: "tutorial_template"
+
+  pages:
+    path: content
+    filter:
+      base: "content"
+      exclude:
+        - "gaming"
+        - "buying-guides"
+        - "tutorials-guides"
+        - "articles"
+        - "authors"
+        - "archives"
+        - "search"
+    icon: "file"
+    name: "Pages"
+
+# Paths
+source: content
+collections_dir: content
+data_dir: data
+
+# Build and preview
+build:
+  command: hugo
+  output: public
+
+preview:
+  command: hugo server --disableFastRender --cleanDestinationDir
+  port: 1313
+  browser: true
+
+# Media management
+media:
+  path: static/images
+  relative_path: /images/
+
+# Editor UI configuration
+_inputs:
+  title:
+    type: text
+    required: true
+  description:
+    type: textarea
+    required: true
+    label: "Meta Description (155-160 characters for SEO)"
+  excerpt:
+    type: textarea
+    required: true
+    label: "Excerpt (2-3 sentences for preview)"
+  author:
+    type: text
+    required: true
+  category:
+    type: select
+    options:
+      values:
+        - "Gaming"
+        - "Buying Guides"
+        - "Tutorials & Guides"
+      label: "Category"
+  subcategory:
+    type: select
+    options:
+      values:
+        - "Guides"
+        - "Walkthroughs"
+        - "Achievements"
+        - "Electronics"
+        - "Home Appliances"
+        - "Mobile Gadgets"
+        - "Software"
+        - "Equipment"
+        - "Repair Guides"
+      label: "Subcategory"
+  tags:
+    type: array
+    required: true
+    label: "Tags (5-7 recommended)"
+  featuredImage:
+    type: image
+    required: true
+    label: "Featured Image"
+  draft:
+    type: checkbox
+    label: "Save as Draft (unchecked = published)"
+  readingTime:
+    type: text
+    comment: "e.g., '12 min read'"
+  date:
+    type: datetime
+    required: true
+  lastmod:
+    type: datetime
+    required: true
+  article_id:
+    type: text
+    required: true
+    comment: "Format: CAT-SUB-DDMMYY-XXX"
+  layout:
+    type: hidden
+    value: "single"
+  content:
+    type: markdown
+    required: true
+    label: "Article Content"
+
+# Editor settings
+_editor:
+  default_path: "/"
+  preview:
+    text: "Live Preview"
+    size: "50%"
+  styles: "/css/main.css"
+  toolbar:
+    - heading
+    - bold
+    - italic
+    - link
+    - image
+    - code
+    - ul
+    - ol
+
+# Timezone
+timezone: "UTC"
+
+# Hosting integrations (choose one to enable auto-deployment)
+hosting:
+  # Uncomment and configure based on your hosting provider
+  
+  # For Netlify deployment:
+  # netlify:
+  #   token: "your_netlify_token"
+  #   site_id: "your_site_id"
+  
+  # For Cloudflare Pages:
+  # cloudflare:
+  #   account_id: "your_account_id"
+  #   project_name: "your_project_name"
+  #   api_token: "your_api_token"
+
+# Version control settings
+version_control:
+  branch: main
+  pull_request_branch_prefix: "cloudcannon/"
+
+# File naming strategy
+slug_style: ascii

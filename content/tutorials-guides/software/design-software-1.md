@@ -1,7 +1,7 @@
 ---
 article_id: "TG-SW-260225-001"
 title: "Creative Design Software Comparison"
-featured_image: "/images/articles/software-3.svg"
+featuredimage: "/images/articles/software-3.svg"
 description: "In-depth comparison of leading creative design software for professionals and beginners"
 excerpt: "Compare top design software tools including Figma, Adobe XD, Affinity, and more..."
 author: "Software Expert"

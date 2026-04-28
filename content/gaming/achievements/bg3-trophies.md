@@ -1,7 +1,6 @@
 ---
 article_id: "GM-AC-260310-001"
 title: "Baldur's Gate 3 Trophy Guide"
-featured_image: "/images/articles/bg3-trophies.svg"
 description: "Complete trophy and achievement guide for Baldur's Gate 3 with all secret trophies"
 excerpt: "Unlock all Baldur's Gate 3 trophies with our detailed achievement guide..."
 author: "Gaming Guide"
@@ -13,6 +12,8 @@ tags:
   - "Baldur's Gate 3"
   - "Trophies"
 featuredImage: "images/bg3-trophies.jpg"
+youtube_url: "https://www.youtube.com"
+instagram_url: "https://www.instagram.com"
 date: "2026-03-10T14:30:00.000Z"
 lastmod: "2026-03-21T20:37:46.045Z"
 draft: false

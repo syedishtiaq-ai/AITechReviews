@@ -1,7 +1,7 @@
 ---
 article_id: "GM-GD-260317-001"
 title: "Advanced Gaming Tactics - Level Up Your Gameplay"
-featured_image: "/images/articles/advanced-gaming.svg"
+featuredimage: "/images/articles/advanced-gaming.svg"
 description: "Master advanced gaming tactics and strategies to become a pro player in competitive games"
 excerpt: "Take your gaming skills to the next level with advanced tactics, strategies, and pro player techniques..."
 author: "Gaming Expert"

@@ -1,7 +1,7 @@
 ---
 article_id: "GM-WK-260315-001"
 title: "Dungeon Crawler Pro Tips - Speed Run and 100% Guide"
-featured_image: "/images/articles/dungeon-crawler.svg"
+featuredimage: "/images/articles/dungeon-crawler.svg"
 description: "Pro tips and strategies for completing Dungeon Crawler with 100% completion and speedrun tactics"
 excerpt: "Master Dungeon Crawler with our expert tips covering speedrun strategies and 100% completion guidance..."
 author: "Gaming Guide Writer"
@@ -14,6 +14,7 @@ tags:
   - "100% Completion"
   - "Strategy"
 youtube_url: "https://www.youtube.com"
+instagram_url: "https://www.instagram.com"
 date: "2026-03-15T11:15:00.000Z"
 lastmod: "2026-03-21T09:45:00.000Z"
 draft: false

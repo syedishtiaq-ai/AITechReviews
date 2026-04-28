@@ -1,7 +1,7 @@
 ---
 article_id: "TG-RG-260223-001"
 title: "Laptop Screen Replacement Step-by-Step Guide"
-featured_image: "/images/tutorials/laptop-screen.svg"
+featuredimage: "/images/tutorials/laptop-screen.svg"
 description: "Complete guide to safely replacing your laptop screen with proper techniques and safety measures"
 excerpt: "Learn how to replace a damaged or broken laptop screen yourself and save on repair costs..."
 author: "Home Expert"

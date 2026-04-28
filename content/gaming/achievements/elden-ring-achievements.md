@@ -1,7 +1,6 @@
 ---
 article_id: "GM-AC-260315-001"
 title: "Elden Ring Achievement Hunting Guide"
-featured_image: "/images/articles/elden-ring-achievements.svg"
 description: "Complete guide to finding and unlocking all Elden Ring achievements and trophies"
 excerpt: "Master Elden Ring achievements with our comprehensive guide covering all trophy locations and strategies..."
 author: "Gaming Guide"
@@ -14,6 +13,8 @@ tags:
   - "Guide"
   - "Trophies"
 featuredImage: "images/elden-ring-achievements.jpg"
+youtube_url: "https://www.youtube.com"
+instagram_url: "https://www.instagram.com"
 date: "2026-03-15T10:00:00.000Z"
 lastmod: "2026-03-21T20:37:46.045Z"
 draft: false

@@ -1,7 +1,7 @@
 ---
 article_id: "TG-SW-260221-002"
 title: "Linux Command Line Essentials for Beginners"
-featured_image: "/images/tutorials/linux-commands.svg"
+featuredimage: "/images/tutorials/linux-commands.svg"
 description: "Comprehensive beginner's guide to essential Linux commands and command-line navigation"
 excerpt: "Learn fundamental Linux commands to navigate, manage files, and control your system..."
 author: "Software Expert"

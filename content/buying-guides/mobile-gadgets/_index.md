@@ -1,6 +1,6 @@
 ---
 title: "Mobile Gadgets"
-featured_image: "/images/articles/mobile.svg"
+featuredimage: "/images/articles/mobile.svg"
 description: "Latest mobile device reviews, comparisons, and buying guides"
 excerpt: "Comprehensive mobile device articles and reviews..."
 author: "Mobile Specialist"

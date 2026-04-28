@@ -1,7 +1,7 @@
 ---
 article_id: "TG-RG-260320-001"
 title: "How to Repair Common Smartphone Issues"
-featured_image: "/images/articles/smartphone-repair.svg"
+featuredimage: "/images/articles/smartphone-repair.svg"
 description: "Step-by-step guide to fixing common smartphone problems including screen cracks, battery issues, and software glitches"
 excerpt: "Learn to troubleshoot and repair common smartphone issues at home with our comprehensive repair guide..."
 author: "Tech Repair Expert"

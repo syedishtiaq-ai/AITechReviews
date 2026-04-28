@@ -1,7 +1,7 @@
 ---
 article_id: "BG-EL-260316-001"
 title: "Best Laptops for 2026"
-featured_image: "/images/articles/best-laptops.svg"
+featuredimage: "/images/articles/best-laptops.svg"
 description: "Comprehensive laptop reviews comparing performance, portability, and value across all price ranges"
 excerpt: "Discover the best laptops for work, gaming, and content creation with our detailed comparison guide..."
 author: "Electronics Reviewer"

@@ -1,7 +1,6 @@
 ---
 article_id: "GM-AC-260320-001"
 title: "Master Level Gaming Achievements - Complete Guide"
-featured_image: "/images/articles/gaming-achievements.svg"
 description: "Comprehensive guide to unlocking and mastering the most challenging gaming achievements"
 excerpt: "Learn the strategies and techniques to unlock master level achievements across popular games..."
 author: "Gaming Expert"
@@ -12,6 +11,7 @@ tags:
   - "Achievements"
   - "Guides"
   - "Strategy"
+featuredImage: "images/bg3-trophies.jpg"
 youtube_url: "https://www.youtube.com"
 instagram_url: "https://www.instagram.com"
 date: "2026-03-20T10:15:00.000Z"

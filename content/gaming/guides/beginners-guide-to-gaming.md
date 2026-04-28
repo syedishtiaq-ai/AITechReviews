@@ -1,7 +1,7 @@
 ---
 article_id: "GM-GD-260319-001"
 title: "Beginner's Guide to Gaming - Getting Started Right"
-featured_image: "/images/articles/beginner-gaming.svg"
+featuredimage: "/images/articles/beginner-gaming.svg"
 description: "Complete beginner's guide to gaming with tips on choosing games, equipment, and building skills"
 excerpt: "New to gaming? Start your journey with our comprehensive beginner's guide covering everything you need to know..."
 author: "Gaming Expert"
@@ -13,6 +13,7 @@ tags:
   - "Guide"
   - "Tips"
 youtube_url: "https://www.youtube.com"
+instagram_url: "https://www.instagram.com"
 date: "2026-03-19T09:45:00.000Z"
 lastmod: "2026-03-22T11:20:00.000Z"
 draft: false

@@ -1,7 +1,7 @@
 ---
 article_id: "TG-SW-260219-001"
 title: "Windows 10 Performance Optimization Guide"
-featured_image: "/images/tutorials/windows-optimization.svg"
+featuredimage: "/images/tutorials/windows-optimization.svg"
 description: "Complete guide to optimizing Windows 10 for faster performance and improved system responsiveness"
 excerpt: "Learn proven techniques to speed up Windows 10 and eliminate sluggish performance..."
 author: "Tech Tutor"

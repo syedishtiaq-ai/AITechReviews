@@ -1,7 +1,7 @@
 ---
 article_id: "TG-SW-260221-001"
 title: "Best Productivity Software for 2026"
-featured_image: "/images/articles/software-1.svg"
+featuredimage: "/images/articles/software-1.svg"
 description: "Comprehensive review of top productivity software tools to boost your workflow efficiency"
 excerpt: "Discover the best productivity software applications to streamline your work and maximize output..."
 author: "Software Expert"

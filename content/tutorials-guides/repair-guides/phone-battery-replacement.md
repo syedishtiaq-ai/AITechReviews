@@ -1,7 +1,7 @@
 ---
 article_id: "TG-RG-260222-001"
 title: "How to Replace Smartphone Battery Safely"
-featured_image: "/images/tutorials/phone-battery.svg"
+featuredimage: "/images/tutorials/phone-battery.svg"
 description: "Step-by-step guide to safely replace a smartphone battery with proper tools and precautions"
 excerpt: "Learn the proper procedure to replace your smartphone battery and extend device lifespan..."
 author: "Home Expert"

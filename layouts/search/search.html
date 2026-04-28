@@ -128,7 +128,7 @@ window.ARTICLE_INDEX = [
         tags: [{{ range $i, $tag := .Params.tags }}{{ if gt $i 0 }}, {{ end }}"{{ $tag | replaceRE "\"" "\\\"" }}"{{ end }}],
         readingTime: "{{ .Params.readingTime }}",
         featured: {{ (or .Params.featured false) }},
-        image: "{{ .Params.featured_image }}"
+        image: "{{ .Params.featuredimage }}"
       }
     {{- end }}
   {{- end }}

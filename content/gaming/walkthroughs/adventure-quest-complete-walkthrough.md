@@ -1,7 +1,7 @@
 ---
 article_id: "GM-WK-260316-001"
 title: "Complete Walkthrough - Adventure Quest Story Guide"
-featured_image: "/images/articles/adventure-quest.svg"
+featuredimage: "/images/articles/adventure-quest.svg"
 description: "Step-by-step walkthrough for Adventure Quest with solutions to all puzzles and boss fights"
 excerpt: "Get through Adventure Quest with our detailed walkthrough covering every level, puzzle, and boss battle..."
 author: "Gaming Guide Writer"

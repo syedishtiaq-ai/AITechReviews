@@ -48,7 +48,7 @@
 <section class="latest-articles-section">
   <h2>Latest Articles</h2>
   <div class="articles-showcase">
-    {{ $allArticles := where .Site.RegularPages "Section" "in" (slice "buying-guides" "gaming" "tutorials-guides") }}
+    {{ $allArticles := where .Site.RegularPages "Section" "in" (slice "buying-guides" "gaming" "tutorials-guides" "guides" "achievements" "walkthroughs") }}
     {{ $allArticles = sort $allArticles "Date" "desc" }}
     {{ range first 6 $allArticles }}
       {{ partial "article-card.html" . }}

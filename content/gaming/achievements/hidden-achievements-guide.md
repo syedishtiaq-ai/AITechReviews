@@ -1,7 +1,6 @@
 ---
 article_id: "GM-AC-260318-001"
 title: "Hidden Achievements - How to Find Secret Unlocks"
-featured_image: "/images/articles/hidden-achievements.svg"
 description: "Guide to discovering and unlocking secret achievements hidden throughout your favorite games"
 excerpt: "Discover the secrets hidden in your favorite games with our comprehensive hidden achievements guide..."
 author: "Gaming Expert"
@@ -12,6 +11,8 @@ tags:
   - "Achievements"
   - "Secrets"
   - "Hidden Content"
+featuredImage: "images/bg3-trophies.jpg"
+youtube_url: "https://www.youtube.com"
 instagram_url: "https://www.instagram.com"
 date: "2026-03-18T14:20:00.000Z"
 lastmod: "2026-03-21T10:15:00.000Z"

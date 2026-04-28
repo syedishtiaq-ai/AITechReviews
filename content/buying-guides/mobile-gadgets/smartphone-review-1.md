@@ -1,7 +1,7 @@
 ---
 article_id: "BG-MG-260220-001"
 title: "Latest Flagship Smartphone Review"
-featured_image: "/images/articles/smartphone-1.svg"
+featuredimage: "/images/articles/smartphone-1.svg"
 description: "Comprehensive analysis of the latest flagship smartphone with camera, performance, and battery testing"
 excerpt: "In-depth review of the latest flagship smartphone featuring advanced camera system and powerful performance..."
 author: "Mobile Specialist"

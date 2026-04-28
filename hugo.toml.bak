@@ -1,0 +1,151 @@
+baseURL = "http://localhost:1313/"
+languageCode = "en-us"
+title = "AITechReviews"
+enableRobotsTXT = true
+
+googleAnalytics = "G-00D58FDB3V"
+
+# Enable tags taxonomy for article archives
+taxonomies.tag = "tags"
+
+canonifyURLs = true
+enableGitInfo = true
+
+[outputs]
+  home = ["HTML", "RSS", "SITEMAP"]
+  section = ["HTML", "RSS"]
+  page = ["HTML"]
+
+[outputFormats.JSON]
+  name = "json"
+  mediaType = "application/json"
+  baseName = "search-index"
+  isPlainText = true
+  notAlternative = true
+
+[sitemap]
+  filename = "sitemap.xml"
+  changefreq = "weekly"
+  priority = 0.7
+
+[params]
+  description = "Trusted Buying Guides and gaming insights"
+  heroTagline = "Gaming Guides & Product Picks"
+  # Configure which top-level sections appear on the homepage and their order.
+  # Example: ["Gaming", "Buying Guides"] will show Gaming first, Buying Guides second.
+  homepageOrder = ["Gaming", "Buying Guides"]
+  # Toggle which main categories appear in the "What are you looking for?" box.
+  [params.showOnHome]
+    # Set to true/false to show or hide the section on the homepage
+    gaming = true
+    productReviews = true
+
+[menus]
+  [[menus.main]]
+    name = "Home"
+    pageRef = "/"
+    weight = 10
+
+  [[menus.main]]
+    name = "Search"
+    pageRef = "/search/"
+    weight = 15
+
+  [[menus.main]]
+    name = "Buying Guides"
+    identifier = "buying-guides"
+    pageRef = "/buying-guides"
+    weight = 20
+
+  [[menus.main]]
+    name = "Electronics"
+    parent = "buying-guides"
+    pageRef = "/buying-guides/electronics"
+    weight = 201
+
+  [[menus.main]]
+    name = "Home Appliances"
+    parent = "buying-guides"
+    pageRef = "/buying-guides/home-appliances"
+    weight = 202
+
+  [[menus.main]]
+    name = "Mobile Gadgets"
+    parent = "buying-guides"
+    pageRef = "/buying-guides/mobile-gadgets"
+    weight = 203
+
+  [[menus.main]]
+    name = "Gaming"
+    identifier = "gaming"
+    pageRef = "/gaming"
+    weight = 25
+
+  [[menus.main]]
+    name = "Guides"
+    parent = "gaming"
+    pageRef = "/gaming/guides"
+    weight = 251
+
+  [[menus.main]]
+    name = "Walkthroughs"
+    parent = "gaming"
+    pageRef = "/gaming/walkthroughs"
+    weight = 252
+
+  [[menus.main]]
+    name = "Achievements"
+    parent = "gaming"
+    pageRef = "/gaming/achievements"
+    weight = 253
+
+  [[menus.main]]
+    name = "Tutorials & Guides"
+    identifier = "tutorials-guides"
+    pageRef = "/tutorials-guides"
+    weight = 30
+
+  [[menus.main]]
+    name = "Software Tutorials"
+    parent = "tutorials-guides"
+    pageRef = "/tutorials-guides/software"
+    weight = 301
+
+  [[menus.main]]
+    name = "Repair Guides"
+    parent = "tutorials-guides"
+    pageRef = "/tutorials-guides/repair-guides"
+    weight = 302
+
+  [[menus.main]]
+    name = "Equipment"
+    parent = "tutorials-guides"
+    pageRef = "/tutorials-guides/equipment"
+    weight = 303
+
+  [[menus.main]]
+    name = "Reviews"
+    identifier = "product-reviews"
+    pageRef = "/product-reviews"
+    weight = 32
+
+  [[menus.main]]
+    name = "Hunter 350"
+    parent = "product-reviews"
+    pageRef = "/reviews/hunter-350"
+    weight = 321
+
+  [[menus.main]]
+    name = "Archives"
+    pageRef = "/archives"
+    weight = 35
+
+  [[menus.main]]
+    name = "Authors"
+    pageRef = "/authors"
+    weight = 36
+
+  [[menus.main]]
+    name = "How It Works"
+    pageRef = "/how-it-works"
+    weight = 40

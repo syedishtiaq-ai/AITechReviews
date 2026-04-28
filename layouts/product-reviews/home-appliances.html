@@ -1,0 +1,76 @@
+{{ define "main" }}
+  {{ $posts := slice }}
+  {{ $jsonPath := "content/buying-guides/home-appliances/posts.json" }}
+  {{ with (readFile $jsonPath | transform.Unmarshal) }}
+    {{ $posts = . }}
+  {{ end }}
+
+  <section class="electronics-groups" aria-label="Home Appliances categories">
+    {{/* Render groups in the same order as the existing home-appliances sub-sections */}}
+    {{ range .Sections }}
+      {{ $slug := (path.Base .File.Dir) | urlize }}
+      {{ $slugNorm := replace $slug "-and-" "-" }}
+      {{ $groupURL := .RelPermalink }}
+      {{ $items := slice }}
+      {{ range $posts }}
+        {{ $catSlug := replace (((.category | default "") | urlize)) "-and-" "-" }}
+        {{ if eq $catSlug $slugNorm }}
+          {{ $items = append $items (slice .) }}
+        {{ end }}
+      {{ end }}
+
+      {{ if gt (len $items) 0 }}
+        {{ $sorted := sort $items "publish_date" "desc" }}
+
+        <div class="electronics-group">
+          <div class="electronics-group-head">
+            <h2 class="electronics-group-title">{{ .Title }}</h2>
+          </div>
+
+          <ul class="electronics-posts" aria-label="Posts for {{ .Title }}">
+            {{ range $sorted }}
+              {{ $readMore := .link | default "" }}
+              {{ $youtube := .youtube | default "" }}
+              {{ $insta := or (.instagram | default "") (.insta | default "") }}
+              {{ $displayName := .item | default .title | default "" }}
+
+              <li class="electronics-post">
+                <div class="electronics-post-main">
+                  {{ if $readMore }}
+                    <a class="electronics-post-title" href="{{ $readMore | relURL }}">{{ $displayName }}</a>
+                  {{ else }}
+                    <span class="electronics-post-title">{{ $displayName }}</span>
+                  {{ end }}
+
+                  {{ with .publish_date }}
+                    <div class="electronics-post-date">{{ . | time | dateFormat "Jan 2, 2006" }}</div>
+                  {{ end }}
+                </div>
+
+                <div class="electronics-post-actions">
+                  {{ if $groupURL }}
+                    <a class="global-table-readmore" href="{{ $groupURL }}">View All</a>
+                  {{ else if $readMore }}
+                    <a class="global-table-readmore" href="{{ $readMore | relURL }}">View All</a>
+                  {{ end }}
+
+                  {{ if $youtube }}
+                    <a class="global-table-iconlink" href="{{ $youtube }}" target="_blank" rel="noopener noreferrer" aria-label="Open YouTube">
+                      <img class="global-table-icon" src="/images/youtube.png" alt="YouTube">
+                    </a>
+                  {{ end }}
+
+                  {{ if $insta }}
+                    <a class="global-table-iconlink" href="{{ $insta }}" target="_blank" rel="noopener noreferrer" aria-label="Open Instagram">
+                      <img class="global-table-icon" src="/images/instagram.png" alt="Instagram">
+                    </a>
+                  {{ end }}
+                </div>
+              </li>
+            {{ end }}
+          </ul>
+        </div>
+      {{ end }}
+    {{ end }}
+  </section>
+{{ end }}

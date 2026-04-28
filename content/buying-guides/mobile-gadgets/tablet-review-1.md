@@ -1,7 +1,7 @@
 ---
 article_id: "BG-MG-260224-001"
 title: "Premium Tablet Buying Guide"
-featured_image: "/images/articles/tablet-1.svg"
+featuredimage: "/images/articles/tablet-1.svg"
 description: "Complete guide to choosing the right premium tablet for work, creativity, and entertainment"
 excerpt: "Everything you need to know about selecting and purchasing a premium tablet..."
 author: "Mobile Specialist"

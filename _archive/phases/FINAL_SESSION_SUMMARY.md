@@ -128,7 +128,7 @@ category: "gaming|electronics|software|mobile|home-appliances|tutorials"
 author: "Author Name"
 date: YYYY-MM-DD
 updated: YYYY-MM-DD
-featured_image: "/images/article-image.jpg"
+featuredimage: "/images/article-image.jpg"
 readingTime: "N min read"
 ---
 ```

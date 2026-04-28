@@ -1,0 +1,43 @@
+{{ define "main" }}
+
+<article class="article">
+
+<h1>{{ .Title }}</h1>
+
+{{ if .TableOfContents }}
+<div class="toc">
+<h3>Guide Contents</h3>
+{{ .TableOfContents }}
+</div>
+{{ end }}
+
+<div class="article-content">
+{{ .Content }}
+</div>
+
+</article>
+
+<!-- ⭐ SEO SCHEMA MARKUP START -->
+
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Article",
+ "headline": "{{ .Title }}",
+ "author": {
+   "@type": "Organization",
+   "name": "AITechReviews"
+ },
+ "datePublished": "{{ .Date }}",
+ "dateModified": "{{ .Lastmod }}",
+ "mainEntityOfPage": "{{ .Permalink }}",
+ "publisher": {
+   "@type": "Organization",
+   "name": "AITechReviews"
+ }
+}
+</script>
+
+<!-- ⭐ SEO SCHEMA MARKUP END -->
+
+{{ end }}

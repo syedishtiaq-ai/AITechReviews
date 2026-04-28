@@ -1,7 +1,7 @@
 ---
 article_id: "BG-HA-260314-001"
 title: "Best Washing Machines 2026"
-featured_image: "/images/articles/best-washing-machines.svg"
+featuredimage: "/images/articles/best-washing-machines.svg"
 description: "Expert guide to the best washing machines with reviews of top-load, front-load, and compact models"
 excerpt: "Choose the best washing machine with our comprehensive reviews covering capacity, cycles, and energy efficiency..."
 author: "Home Appliances Expert"

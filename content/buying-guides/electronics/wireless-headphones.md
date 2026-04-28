@@ -1,7 +1,7 @@
 ---
 article_id: "BG-EL-260318-001"
 title: "Best Wireless Headphones 2026"
-featured_image: "/images/articles/wireless-headphones.svg"
+featuredimage: "/images/articles/wireless-headphones.svg"
 description: "Top wireless headphones reviewed and compared for audio quality, battery life, and comfort"
 excerpt: "Find the best wireless headphones with our expert rankings of top models for different budgets and use cases..."
 author: "Electronics Reviewer"

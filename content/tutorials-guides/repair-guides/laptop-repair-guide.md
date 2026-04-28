@@ -1,7 +1,7 @@
 ---
 article_id: "TG-RG-260319-001"
 title: "Laptop and Computer Repair Guide - Common Issues and Solutions"
-featured_image: "/images/articles/laptop-repair.svg"
+featuredimage: "/images/articles/laptop-repair.svg"
 description: "Complete guide to fixing common laptop and computer problems including hardware and software issues"
 excerpt: "Master laptop repairs with our detailed guide covering hardware replacement, software troubleshooting, and performance optimization..."
 author: "Tech Repair Expert"

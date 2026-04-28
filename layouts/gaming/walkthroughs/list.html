@@ -1,0 +1,64 @@
+{{ define "main" }}
+
+<div class="articles-page-with-sidebar">
+  <!-- Main Content -->
+  <main class="articles-main-content">
+    <!-- Page Header -->
+    <header class="articles-header">
+      <h1>{{ .Title }}</h1>
+      {{ if .Description }}
+      <p class="articles-description">{{ .Description }}</p>
+      {{ else }}
+      <p class="articles-description">Complete walkthroughs and step-by-step guides</p>
+      {{ end }}
+    </header>
+
+    <!-- Articles Content (if any) -->
+    {{ if .Content }}
+    <div class="articles-intro">
+      {{ .Content }}
+    </div>
+    {{ end }}
+
+    <!-- Filters & Sorting -->
+    <div class="articles-filters">
+      <div class="filter-group">
+        <label for="sort-select">Sort by:</label>
+        <select id="sort-select" class="sort-select">
+          <option value="date-desc">Newest First</option>
+          <option value="date-asc">Oldest First</option>
+          <option value="title-asc">Title (A-Z)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Articles Grid -->
+    <div class="articles-grid">
+      {{ $articles := where (where .Site.RegularPages "Params.category" "Gaming") "Params.subcategory" "Walkthroughs" }}
+      {{ $articles = sort $articles "Date" "desc" }}
+      
+      {{ if $articles }}
+        {{ range $articles }}
+          {{ partial "article-card.html" . }}
+        {{ end }}
+      {{ else }}
+        <div class="no-articles">
+          <p>No articles found in this section.</p>
+        </div>
+      {{ end }}
+    </div>
+
+    <!-- Pagination (if many articles) -->
+    {{ if gt (len $articles) 12 }}
+    <div class="pagination">
+      {{ template "_internal/pagination.html" . }}
+    </div>
+    {{ end }}
+  </main>
+
+  <!-- Sidebar -->
+  <aside class="articles-sidebar">
+    {{ partial "articles/filters-sidebar.html" . }}
+  </aside>
+</div>
+{{ end }}

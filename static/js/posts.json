@@ -1,0 +1,50 @@
+[
+  {
+    "title": "Accessories - 1",
+    "item": "Head Phone - 1 - Item category",
+    "view_all_url": "/buying-guides/electronics/accessories/",
+    "description": "High-fidelity wireless headphones with noise cancellation for immersive listening",
+    "image": "images/computer-2026-01.jpg",
+    "link": "/buying-guides/electronics/accessories/headphone-1/",
+    "youtube": "https://youtube.com/watch?v=camera-eos-r5",
+    "instagram": "https://instagram.com/camera_reviews",
+    "category": "Accessories",
+    "publish_date": "2026-02-27T12:00:00Z"
+  },
+  {
+    "title": "Accessories - 2",
+    "item": "Head Phone - 2 - Item category ",
+    "view_all_url": "/buying-guides/electronics/accessories/",
+    "description": "Lightweight and durable headphones perfect for daily commuting and travel",
+    "image": "images/computer-2026-01.jpg",
+    "link": "/buying-guides/electronics/accessories/headphone-2/",
+    "youtube": "https://youtube.com/watch?v=sony-a7iv",
+    "instagram": "https://instagram.com/photography_tips",
+    "category": "Accessories",
+    "publish_date": "2026-02-26T12:00:00Z"
+  },
+   {
+    "title": "Accessories - 3",
+    "item": "Head Phone - 3 - Item category ",
+    "view_all_url": "/buying-guides/electronics/accessories/",
+    "description": "Lightweight and durable headphones perfect for daily commuting and travel",
+    "image": "images/computer-2026-01.jpg",
+    "link": "/buying-guides/electronics/accessories/headphone-3/",
+    "youtube": "https://youtube.com/watch?v=sony-a7iv",
+    "instagram": "https://instagram.com/photography_tips",
+    "category": "Accessories",
+    "publish_date": "2026-02-26T12:00:00Z"
+  },
+   {
+    "title": "Accessories - 4",
+    "item": "Head Phone - 4 - Item category ",
+    "view_all_url": "/buying-guides/electronics/accessories/",
+    "description": "Lightweight and durable headphones perfect for daily commuting and travel",
+    "image": "images/computer-2026-01.jpg",
+    "link": "/buying-guides/electronics/accessories/headphone-4/",
+    "youtube": "https://youtube.com/watch?v=sony-a7iv",
+    "instagram": "https://instagram.com/photography_tips",
+    "category": "Accessories",
+    "publish_date": "2026-02-26T12:00:00Z"
+  }
+]

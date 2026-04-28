@@ -1,7 +1,7 @@
 ---
 article_id: "TG-SW-260220-001"
 title: "macOS Performance Optimization Complete Guide"
-featured_image: "/images/tutorials/macos-optimization.svg"
+featuredimage: "/images/tutorials/macos-optimization.svg"
 description: "Step-by-step guide to optimize macOS for faster performance and better system efficiency"
 excerpt: "Discover proven methods to speed up your Mac and improve overall system performance..."
 author: "Tech Tutor"

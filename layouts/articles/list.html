@@ -56,8 +56,8 @@
     <!-- Articles Grid -->
     <div class="articles-grid" id="articles-container">
       <!-- Query ONLY articles from actual article sections -->
-      <!-- This includes only: buying-guides, gaming, tutorials-guides -->
-      {{ $allArticles := where (where .Site.RegularPages "Section" "in" (slice "buying-guides" "gaming" "tutorials-guides")) "Type" "ne" "list" }}
+      <!-- This includes: buying-guides, gaming, tutorials-guides, and gaming subcategories -->
+      {{ $allArticles := where (where .Site.RegularPages "Section" "in" (slice "buying-guides" "gaming" "tutorials-guides" "guides" "achievements" "walkthroughs")) "Type" "ne" "list" }}
       {{ $allArticles = sort $allArticles "Date" "desc" }}
       
       {{ if $allArticles }}

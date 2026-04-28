@@ -47,7 +47,7 @@ This document tracks the complete transformation of AITechReviews from a **categ
 **Schema Details**:
 ```json
 {
-  "title", "slug", "description", "excerpt", "content", "featured_image",
+  "title", "slug", "description", "excerpt", "content", "featuredimage",
   "author", "category", "tags", "publish_date", "updated_date",
   "reading_time", "featured", "link",
   "optional": ["related_articles", "article_series", "keywords", "legacy_url"]

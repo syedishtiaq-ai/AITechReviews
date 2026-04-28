@@ -1,7 +1,7 @@
 ---
 article_id: "TG-RG-260318-001"
 title: "Gaming Console Repair Guide - Fix Common Gaming System Issues"
-featured_image: "/images/articles/console-repair.svg"
+featuredimage: "/images/articles/console-repair.svg"
 description: "Comprehensive guide to repairing gaming consoles including Xbox, PlayStation, and Nintendo systems"
 excerpt: "Learn to repair your gaming console with our expert guide covering controller issues, disc problems, and system errors..."
 author: "Gaming Tech Expert"

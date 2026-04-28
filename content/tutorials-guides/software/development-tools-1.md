@@ -1,7 +1,7 @@
 ---
 article_id: "TG-SW-260223-001"
 title: "Essential Development Tools Review"
-featured_image: "/images/articles/software-2.svg"
+featuredimage: "/images/articles/software-2.svg"
 description: "Complete review of must-have development tools for modern software engineers"
 excerpt: "Explore the best development tools and IDEs to enhance your coding productivity and workflow..."
 author: "Software Expert"

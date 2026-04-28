@@ -16,7 +16,7 @@
         "tags": {{ default (slice) .Params.tags | jsonify }},
         "readingTime": {{ .Params.readingTime | jsonify }},
         "featured": {{ (or .Params.featured false) }},
-        "image": {{ .Params.featured_image | jsonify }}
+        "image": {{ .Params.featuredimage | jsonify }}
       }
     {{- end }}
   {{- end }}

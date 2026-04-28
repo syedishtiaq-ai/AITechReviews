@@ -1,7 +1,7 @@
 ---
 article_id: "BG-MG-260222-001"
 title: "Mid-Range Smartphone Comparison"
-featured_image: "/images/articles/smartphone-2.svg"
+featuredimage: "/images/articles/smartphone-2.svg"
 description: "Detailed comparison of three popular mid-range smartphones with pros and cons analysis"
 excerpt: "Compare three excellent mid-range smartphones to find the best value for your budget..."
 author: "Mobile Specialist"

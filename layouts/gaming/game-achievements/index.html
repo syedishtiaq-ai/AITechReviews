@@ -1,0 +1,181 @@
+{{/* Game achievements listing (moved into layouts/gaming/game-achievements/) */}}
+{{ define "main" }}
+  {{ $posts := slice }}
+  {{ $jsonPath := "content/gaming/game-achievements/posts.json" }}
+  {{ with (readFile $jsonPath | transform.Unmarshal) }}
+    {{ $posts = . }}
+  {{ end }}
+  {{ $renderedAny := false }}
+  <div class="section-intro">
+    <div class="section-intro-title">{{ .Title }}</div>
+    {{ with .Content }}
+      <div class="section-intro-text">{{ . }}</div>
+    {{ end }}
+  </div>
+  <section class="electronics-groups" aria-label="Game Achievements categories">
+    {{/* If this section has sub-sections, render grouped cards in that order */}}
+    {{ if gt (len .Sections) 0 }}
+      {{ range .Sections }}
+        {{ $slug := (path.Base .File.Dir) | urlize }}
+        {{ $slugAchievements := printf "%s-achievements" $slug }}
+        {{ $groupURL := .RelPermalink }}
+        {{ $items := slice }}
+        {{ range $posts }}
+          {{ $catSlug := ((.category | default "") | urlize) }}
+          {{ if or (eq $catSlug $slug) (eq $catSlug $slugAchievements) }}
+            {{ $items = append $items (slice .) }}
+          {{ end }}
+        {{ end }}
+        <div class="electronics-group">
+          <div class="electronics-group-head">
+            <h2 class="electronics-group-title">{{ .Title }}</h2>
+          </div>
+          {{ if gt (len $items) 0 }}
+            {{ $renderedAny = true }}
+            {{ $sorted := sort $items "publish_date" "desc" }}
+            <ul class="electronics-posts" aria-label="Posts for {{ .Title }}">
+              {{ range $sorted }}
+                {{ $readMore := .link | default "" }}
+                {{ $youtube := .youtube | default "" }}
+                {{ $insta := or (.instagram | default "") (.insta | default "") }}
+                {{ $displayName := .category | default "" }}
+                <li class="electronics-post">
+                  <div class="electronics-post-main">
+                    {{ if $readMore }}
+                      <a class="electronics-post-title" href="{{ $readMore | relURL }}">{{ $displayName }}</a>
+                    {{ else }}
+                      <span class="electronics-post-title">{{ $displayName }}</span>
+                    {{ end }}
+                    {{ with .publish_date }}
+                      <div class="electronics-post-date">{{ . | time | dateFormat "Jan 2, 2006" }}</div>
+                    {{ end }}
+                  </div>
+                  <div class="electronics-post-actions">
+                    {{ if $groupURL }}
+                      <a class="global-table-readmore" href="{{ $groupURL }}">View All</a>
+                    {{ else if $readMore }}
+                      <a class="global-table-readmore" href="{{ $readMore | relURL }}">View All</a>
+                    {{ end }}
+                    {{ if $youtube }}
+                      <a class="global-table-iconlink" href="{{ $youtube }}" target="_blank" rel="noopener noreferrer" aria-label="Open YouTube">
+                        <img class="global-table-icon" src="/images/youtube.png" alt="YouTube">
+                      </a>
+                    {{ end }}
+                    {{ if $insta }}
+                      <a class="global-table-iconlink" href="{{ $insta }}" target="_blank" rel="noopener noreferrer" aria-label="Open Instagram">
+                        <img class="global-table-icon" src="/images/instagram.png" alt="Instagram">
+                      </a>
+                    {{ end }}
+                  </div>
+                </li>
+              {{ end }}
+            </ul>
+          {{ else }}
+            <div class="global-table-no-results">No posts yet.</div>
+          {{ end }}
+        </div>
+      {{ end }}
+    {{ else }}
+      {{/* No sub-sections: render a single card for this section */}}
+      {{ $selfSlug := (path.Base .File.Dir) | urlize }}
+      {{ $items := slice }}
+      {{ range $posts }}
+        {{ $catSlug := ((.category | default "") | urlize) }}
+        {{ if eq $catSlug $selfSlug }}
+          {{ $items = append $items (slice .) }}
+        {{ end }}
+      {{ end }}
+      {{ if gt (len $items) 0 }}
+        {{ $renderedAny = true }}
+        {{ $sorted := sort $items "publish_date" "desc" }}
+        <div class="electronics-group">
+          <div class="electronics-group-head">
+            <h2 class="electronics-group-title">{{ .Title }}</h2>
+          </div>
+          <ul class="electronics-posts" aria-label="Posts for {{ .Title }}">
+            {{ range $sorted }}
+              {{ $readMore := .link | default "" }}
+              {{ $youtube := .youtube | default "" }}
+              {{ $insta := or (.instagram | default "") (.insta | default "") }}
+              {{ $displayName := .item | default .title | default "" }}
+              <li class="electronics-post">
+                <div class="electronics-post-main">
+                  {{ if $readMore }}
+                    <a class="electronics-post-title" href="{{ $readMore | relURL }}">{{ $displayName }}</a>
+                  {{ else }}
+                    <span class="electronics-post-title">{{ $displayName }}</span>
+                  {{ end }}
+                  {{ with .publish_date }}
+                    <div class="electronics-post-date">{{ . | time | dateFormat "Jan 2, 2006" }}</div>
+                  {{ end }}
+                </div>
+                <div class="electronics-post-actions">
+                  {{ if $readMore }}
+                    <a class="global-table-readmore" href="{{ $readMore | relURL }}">View All</a>
+                  {{ end }}
+                  {{ if $youtube }}
+                    <a class="global-table-iconlink" href="{{ $youtube }}" target="_blank" rel="noopener noreferrer" aria-label="Open YouTube">
+                      <img class="global-table-icon" src="/images/youtube.png" alt="YouTube">
+                    </a>
+                  {{ end }}
+                  {{ if $insta }}
+                    <a class="global-table-iconlink" href="{{ $insta }}" target="_blank" rel="noopener noreferrer" aria-label="Open Instagram">
+                      <img class="global-table-icon" src="/images/instagram.png" alt="Instagram">
+                    </a>
+                  {{ end }}
+                </div>
+              </li>
+            {{ end }}
+          </ul>
+        </div>
+      {{ end }}
+    {{ end }}
+    {{ if not $renderedAny }}
+      {{ if gt (len $posts) 0 }}
+        {{ $sorted := sort $posts "publish_date" "desc" }}
+        <div class="electronics-group">
+          <div class="electronics-group-head">
+            <h2 class="electronics-group-title">{{ .Title }}</h2>
+          </div>
+          <ul class="electronics-posts" aria-label="Posts for {{ .Title }}">
+            {{ range $sorted }}
+              {{ $readMore := .link | default "" }}
+              {{ $youtube := .youtube | default "" }}
+              {{ $insta := or (.instagram | default "") (.insta | default "") }}
+              {{ $displayName := .item | default .title | default "" }}
+              <li class="electronics-post">
+                <div class="electronics-post-main">
+                  {{ if $readMore }}
+                    <a class="electronics-post-title" href="{{ $readMore | relURL }}">{{ $displayName }}</a>
+                  {{ else }}
+                    <span class="electronics-post-title">{{ $displayName }}</span>
+                  {{ end }}
+                  {{ with .publish_date }}
+                    <div class="electronics-post-date">{{ . | time | dateFormat "Jan 2, 2006" }}</div>
+                  {{ end }}
+                </div>
+                <div class="electronics-post-actions">
+                  {{ if $readMore }}
+                    <a class="global-table-readmore" href="{{ $readMore | relURL }}">View All</a>
+                  {{ end }}
+                  {{ if $youtube }}
+                    <a class="global-table-iconlink" href="{{ $youtube }}" target="_blank" rel="noopener noreferrer" aria-label="Open YouTube">
+                      <img class="global-table-icon" src="/images/youtube.png" alt="YouTube">
+                    </a>
+                  {{ end }}
+                  {{ if $insta }}
+                    <a class="global-table-iconlink" href="{{ $insta }}" target="_blank" rel="noopener noreferrer" aria-label="Open Instagram">
+                      <img class="global-table-icon" src="/images/instagram.png" alt="Instagram">
+                    </a>
+                  {{ end }}
+                </div>
+              </li>
+            {{ end }}
+          </ul>
+        </div>
+      {{ else }}
+        <div class="global-table-no-results">No posts found for this section yet.</div>
+      {{ end }}
+    {{ end }}
+  </section>
+{{ end }}

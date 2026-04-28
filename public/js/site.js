@@ -767,25 +767,6 @@
       }
     }, true);
 
-    // Back-to-top button (reintroduced safely). Minimal behavior only.
-    (function() {
-      const btn = document.getElementById('backToTop');
-      if (!btn) return;
-      const isScrollable = () => document.documentElement.scrollHeight > window.innerHeight + 10;
-      const update = () => {
-        if (!isScrollable()) {
-          btn.classList.remove('visible');
-          return;
-        }
-        if (window.pageYOffset > 300) btn.classList.add('visible');
-        else btn.classList.remove('visible');
-      };
-      update();
-      window.addEventListener('scroll', update, { passive: true });
-      window.addEventListener('resize', update);
-      btn.addEventListener('click', (e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
-    })();
-
     // ---------- homepage dynamic sections ----------------
     const initHomePage = () => {
       const postContainer = document.getElementById("postContainer");
@@ -1324,4 +1305,165 @@
 
     })();
   });
+
+  /* ================================================================
+     READING PROGRESS BAR
+     ================================================================
+     Displays reading progress as user scrolls through articles
+     ================================================================ */
+  
+  (function initReadingProgress() {
+    const progressBar = document.getElementById('readingProgress');
+    
+    if (!progressBar) return; // Progress bar not on this page
+    
+    window.addEventListener('scroll', () => {
+      // Calculate scroll progress
+      const windowHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrolled = window.scrollY;
+      const progress = windowHeight > 0 ? (scrolled / windowHeight) * 100 : 0;
+      
+      // Update progress bar width
+      progressBar.style.width = Math.min(progress, 100) + '%';
+    }, { passive: true });
+  })();
+
+  /* ================================================================
+     SCROLL-TO-TOP BUTTON
+     ================================================================
+     Shows button when user scrolls down, smooth scroll to top on click
+     ================================================================ */
+  
+  (function initScrollToTop() {
+    const scrollTopBtn = document.getElementById('scrollTop');
+    
+    if (!scrollTopBtn) return; // Button not on this page
+    
+    // Show/hide button based on scroll position
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        scrollTopBtn.classList.add('show');
+      } else {
+        scrollTopBtn.classList.remove('show');
+      }
+    }, { passive: true });
+    
+    // Smooth scroll to top on click
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  })();
+
+    // ===== TABLE OF CONTENTS ACTIVE LINK TRACKING =====
+    const initTocTracking = () => {
+      const toc = document.querySelector('.article-toc');
+      if (!toc) return; // TOC not on this page
+
+      // Get all heading IDs from the document
+      const headings = document.querySelectorAll('.article-content h1, .article-content h2, .article-content h3');
+      if (headings.length === 0) return;
+
+      // Get all TOC links
+      const tocLinks = toc.querySelectorAll('a');
+      
+      // Create map of heading IDs to their positions
+      const headingMap = new Map();
+      headings.forEach(heading => {
+        if (heading.id) {
+          headingMap.set(heading.id, heading);
+        }
+      });
+
+      // Update active link on scroll
+      const updateActiveLink = () => {
+        let activeId = null;
+        let minDistance = Infinity;
+
+        // Find which heading is closest to top of viewport
+        headingMap.forEach((element, id) => {
+          const rect = element.getBoundingClientRect();
+          const distance = Math.abs(rect.top - 100); // 100px offset from top
+
+          if (rect.top < window.innerHeight && distance < minDistance) {
+            minDistance = distance;
+            activeId = id;
+          }
+        });
+
+        // Update TOC link styling
+        tocLinks.forEach(link => {
+          link.classList.remove('active');
+          const href = link.getAttribute('href');
+          if (href && activeId && href === '#' + activeId) {
+            link.classList.add('active');
+          }
+        });
+      };
+
+      // Listen for scroll events with passive listener for performance
+      window.addEventListener('scroll', updateActiveLink, { passive: true });
+      
+      // Update on page load
+      updateActiveLink();
+
+      // Add smooth scroll behavior for TOC links
+      tocLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          const href = link.getAttribute('href');
+          if (href && href.startsWith('#')) {
+            e.preventDefault();
+            const targetId = href.substring(1);
+            const target = document.getElementById(targetId);
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              window.history.pushState(null, '', href);
+            }
+          }
+        });
+      });
+    };
+
+    // Initialize TOC tracking when DOM is ready
+    initTocTracking();
+
+    // ============ Core Web Vitals Tracking ============
+    // Send additional metrics to Google Analytics for monitoring
+    const trackPerformanceMetrics = () => {
+      if (window.performance && window.performance.timing) {
+        const timing = window.performance.timing;
+        const navigation = window.performance.navigation;
+        
+        // Calculate key performance metrics
+        const pageLoadTime = timing.loadEventEnd - timing.navigationStart;
+        const connectTime = timing.responseEnd - timing.requestStart;
+        const renderTime = timing.domComplete - timing.domLoading;
+        
+        if (window.gtag) {
+          window.gtag('event', 'page_performance', {
+            'page_load_time': pageLoadTime,
+            'connect_time': connectTime,
+            'render_time': renderTime,
+            'navigation_type': navigation.type
+          });
+        }
+        
+        console.log('Performance Metrics:', {
+          pageLoadTime,
+          connectTime,
+          renderTime,
+          navigationType: navigation.type
+        });
+      }
+    };
+    
+    // Track metrics after page load
+    if (document.readyState === 'complete') {
+      trackPerformanceMetrics();
+    } else {
+      window.addEventListener('load', trackPerformanceMetrics, { once: true });
+    }
+
 })();

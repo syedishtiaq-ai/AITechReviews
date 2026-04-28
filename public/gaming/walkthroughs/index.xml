@@ -1,25 +1,33 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Gaming Walkthroughs on AITechReviews</title>
-    <link>http://localhost:1313/gaming/walkthroughs/</link>
-    <description>Recent content in Gaming Walkthroughs on AITechReviews</description>
-    <generator>Hugo</generator>
-    <language>en-us</language>
-    <atom:link href="http://localhost:1313/gaming/walkthroughs/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Complete Walkthrough - Adventure Quest Story Guide</title>
-      <link>http://localhost:1313/gaming/walkthroughs/adventure-quest-complete-walkthrough/</link>
-      <pubDate>Mon, 16 Mar 2026 16:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/gaming/walkthroughs/adventure-quest-complete-walkthrough/</guid>
-      <description>&lt;h1 id=&#34;complete-walkthrough---adventure-quest-story-guide&#34;&gt;Complete Walkthrough - Adventure Quest Story Guide&lt;/h1&gt;&#xA;&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;&#xA;&lt;p&gt;Welcome to the complete walkthrough for Adventure Quest! This guide will help you progress through every level, solve all puzzles, and defeat every boss encounter.&lt;/p&gt;&#xA;&lt;h2 id=&#34;chapter-1-the-beginning&#34;&gt;Chapter 1: The Beginning&lt;/h2&gt;&#xA;&lt;h3 id=&#34;level-1-1-starting-village&#34;&gt;Level 1-1: Starting Village&lt;/h3&gt;&#xA;&lt;p&gt;&lt;strong&gt;Objectives:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Gather 3 potions&lt;/li&gt;&#xA;&lt;li&gt;Talk to the village elder&lt;/li&gt;&#xA;&lt;li&gt;Collect the ancient key&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;&lt;strong&gt;Walkthrough:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;Start at the village center&lt;/li&gt;&#xA;&lt;li&gt;Head north to the blacksmith&lt;/li&gt;&#xA;&lt;li&gt;Collect potions: one inside the shop, one in the garden, one by the well&lt;/li&gt;&#xA;&lt;li&gt;Return to village center and talk to the elder&lt;/li&gt;&#xA;&lt;li&gt;Receive ancient key&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h3 id=&#34;level-1-2-forest-path&#34;&gt;Level 1-2: Forest Path&lt;/h3&gt;&#xA;&lt;p&gt;&lt;strong&gt;Objectives:&lt;/strong&gt;&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Dungeon Crawler Pro Tips - Speed Run and 100% Guide</title>
-      <link>http://localhost:1313/gaming/walkthroughs/dungeon-crawler-speedrun-guide/</link>
-      <pubDate>Sun, 15 Mar 2026 11:15:00 +0000</pubDate>
-      <guid>http://localhost:1313/gaming/walkthroughs/dungeon-crawler-speedrun-guide/</guid>
-      <description>&lt;h1 id=&#34;dungeon-crawler-pro-tips---speed-run-and-100-guide&#34;&gt;Dungeon Crawler Pro Tips - Speed Run and 100% Guide&lt;/h1&gt;&#xA;&lt;h2 id=&#34;game-overview&#34;&gt;Game Overview&lt;/h2&gt;&#xA;&lt;p&gt;Dungeon Crawler is an action RPG that challenges players to explore dangerous dungeons, defeat monsters, and collect treasure. This guide covers both speedrun strategies and 100% completion methods.&lt;/p&gt;&#xA;&lt;h2 id=&#34;general-progression-tips&#34;&gt;General Progression Tips&lt;/h2&gt;&#xA;&lt;h3 id=&#34;early-game-levels-1-10&#34;&gt;Early Game (Levels 1-10)&lt;/h3&gt;&#xA;&lt;p&gt;&lt;strong&gt;Recommended Setup:&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Focus on gathering basic equipment&lt;/li&gt;&#xA;&lt;li&gt;Don&amp;rsquo;t farm too much at start&lt;/li&gt;&#xA;&lt;li&gt;Skip optional side quests initially&lt;/li&gt;&#xA;&lt;li&gt;Focus main boss battles&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;&lt;strong&gt;Key Items to Obtain:&lt;/strong&gt;&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Gaming Walkthroughs on AITechReviews</title><link>http://localhost:1313/gaming/walkthroughs/</link><description>Recent content in Gaming Walkthroughs on AITechReviews</description><generator>Hugo</generator><language>en-us</language><atom:link href="http://localhost:1313/gaming/walkthroughs/index.xml" rel="self" type="application/rss+xml"/><item><title>Complete Walkthrough - Adventure Quest Story Guide</title><link>http://localhost:1313/gaming/walkthroughs/adventure-quest-complete-walkthrough/</link><pubDate>Mon, 16 Mar 2026 16:00:00 +0000</pubDate><guid>http://localhost:1313/gaming/walkthroughs/adventure-quest-complete-walkthrough/</guid><description>&lt;h1 id="complete-walkthrough---adventure-quest-story-guide"&gt;Complete Walkthrough - Adventure Quest Story Guide&lt;/h1&gt;
+&lt;h2 id="introduction"&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;Welcome to the complete walkthrough for Adventure Quest! This guide will help you progress through every level, solve all puzzles, and defeat every boss encounter.&lt;/p&gt;
+&lt;h2 id="chapter-1-the-beginning"&gt;Chapter 1: The Beginning&lt;/h2&gt;
+&lt;h3 id="level-1-1-starting-village"&gt;Level 1-1: Starting Village&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Objectives:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Gather 3 potions&lt;/li&gt;
+&lt;li&gt;Talk to the village elder&lt;/li&gt;
+&lt;li&gt;Collect the ancient key&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Walkthrough:&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Start at the village center&lt;/li&gt;
+&lt;li&gt;Head north to the blacksmith&lt;/li&gt;
+&lt;li&gt;Collect potions: one inside the shop, one in the garden, one by the well&lt;/li&gt;
+&lt;li&gt;Return to village center and talk to the elder&lt;/li&gt;
+&lt;li&gt;Receive ancient key&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="level-1-2-forest-path"&gt;Level 1-2: Forest Path&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Objectives:&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>Dungeon Crawler Pro Tips - Speed Run and 100% Guide</title><link>http://localhost:1313/gaming/walkthroughs/dungeon-crawler-speedrun-guide/</link><pubDate>Sun, 15 Mar 2026 11:15:00 +0000</pubDate><guid>http://localhost:1313/gaming/walkthroughs/dungeon-crawler-speedrun-guide/</guid><description>&lt;h1 id="dungeon-crawler-pro-tips---speed-run-and-100-guide"&gt;Dungeon Crawler Pro Tips - Speed Run and 100% Guide&lt;/h1&gt;
+&lt;h2 id="game-overview"&gt;Game Overview&lt;/h2&gt;
+&lt;p&gt;Dungeon Crawler is an action RPG that challenges players to explore dangerous dungeons, defeat monsters, and collect treasure. This guide covers both speedrun strategies and 100% completion methods.&lt;/p&gt;
+&lt;h2 id="general-progression-tips"&gt;General Progression Tips&lt;/h2&gt;
+&lt;h3 id="early-game-levels-1-10"&gt;Early Game (Levels 1-10)&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Recommended Setup:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Focus on gathering basic equipment&lt;/li&gt;
+&lt;li&gt;Don&amp;rsquo;t farm too much at start&lt;/li&gt;
+&lt;li&gt;Skip optional side quests initially&lt;/li&gt;
+&lt;li&gt;Focus main boss battles&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Key Items to Obtain:&lt;/strong&gt;&lt;/p&gt;</description></item></channel></rss>

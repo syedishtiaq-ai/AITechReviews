@@ -96,6 +96,32 @@ label {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ================================================================
+   BUTTON TRANSITIONS & HOVER EFFECTS
+   ================================================================ */
+button,
+a.button,
+input[type="button"],
+input[type="submit"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+button:hover,
+a.button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:active,
+a.button:active,
+input[type="button"]:active,
+input[type="submit"]:active {
+  transform: translateY(0);
+}
+
 /* Ensure form inputs are touch-friendly */
 input[type="text"],
 input[type="email"],
